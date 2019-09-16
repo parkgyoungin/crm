@@ -1,0 +1,426 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  /* 전체사항 */
+  /* 테두리 */
+  table {width:100%;}
+  th, td {
+    border: 1px solid #444444;
+  }
+  .fs {font-size:x-small;}
+
+  /* table1 */
+  .t1 td {height:80px;}
+  .t1 .c2, .t1 .c4 {
+    width: 400px;
+  }
+  .t1 .c1, .t1 .c3 {
+    width: 110px;
+    text-align: center;
+    background-color: #EFFBFB;
+  }
+  #id_be-cu_rname {width:100px;}
+  #id_be-cu_iaddress {width:100%; height:50px;}
+  #id_be-cu_name, #id_cu_homepage, #id_cu_address {width:250px;}
+
+  /* table2 */
+  .t2 .c1 {
+    width: 110px;
+    text-align: center;
+    background-color: #EFFBFB;
+  }
+  .t2 .c2 {
+    width: 600px;
+    text-align: center;
+    background-color: #EFFBFB;
+  }
+  .t2 .c3 {width:60px; text-align:center;}
+  .t2 select{width:150px;}
+
+  /* table3 */
+  .t3 .c1, .t3 .c2, .t3 .c4, .t3 .c6 {
+    width: 110px;
+    text-align: center;
+    background-color: #EFFBFB;
+  }
+  #id_se-se_etc {width:100%; height:50px;}
+
+  /* table4 */
+  .t4 .c1, .t4 .c2, .t4 .c4, .t4 .c6 {
+    width: 110px;
+    text-align: center;
+    background-color: #EFFBFB;
+  }
+  #id_in-in_etc {width:100%; height:50px;}
+  #id_in-in_ip {width:100%; height:50px;}
+
+  /* table5 */
+  .t5 .c1, .t5 .c2, .t5 .c4 {
+    width: 110px;
+    text-align: center;
+    background-color: #EFFBFB;
+  }
+  .btn_col button{
+    background-color:white;
+    border: 2px solid #D8D8D8;
+    border-radius:20px;
+  }
+  #id_vi-vi_etc {width:100%; height:50px;}
+
+  /* table6 */
+  .t6 .c1, .t6 .c2, .t6 .c4 {
+    width: 110px;
+    text-align: center;
+    background-color: #EFFBFB;
+  }
+  #id_ra-ra_etc {width:100%; height:50px;}
+
+  /* table7 */
+  .t7 .c1, .t7 .c2, .t7 .c4, .t7 .c6, .t7 .c8, .t7 .c10 {
+    width: 55px;
+    text-align: center;
+    background-color: #EFFBFB;
+  }
+
+  .t7 input{width:140px;}
+
+  /* etc */
+  #id_be-bc_etc {width:100%; height:100px;}
+
+</style>
+<h3>전체 수혜기업 현황 글쓰기</h3>
+<form method="post" action="" enctype="multipart/form-data" id="post_form" onsubmit="return change_check()">
+    <h5>고객정보 등록</h5>
+    {%csrf_token%}
+    <table class="t1" border="1">
+        <tr>
+            <td class='c1'>업체명</td>
+            <td class="c2">{{be_form.cu_name}} {{be_form.cu_tenant}}<label for="id_be-cu_tenant">입주기업</label></td>
+            <td class="c3">관리번호</td>
+            <td class="c4" colspan="3">{{be_form.cu_cnumber}} * 필요시 수정</td>
+        </tr>
+        <tr>
+            <td class="c1">서비스현황</td>
+            <td class="c2 fs">보안관제 {{be_form.cu_serstate_security}} 내부보안 {{be_form.cu_serstate_information}}<br> 악성코드 {{be_form.cu_serstate_virus}} 랜섬웨어 {{be_form.cu_serstate_ransomware}}</td>
+            <td class="c3">허수현황</td>
+            <td class="c4" colspan="3">{{be_form.cu_imastate_security}} <label for="id_be-cu_imastate_security"> 보안관제</label> {{be_form.cu_imastate_information}} <label for="id_be-cu_imastate_information"> 내부정보</label>
+                {{be_form.cu_imastate_virus}} <label for="id_be-cu_imastate_virus"> 악성코드</label> {{be_form.cu_imastate_ransomware}}<label for="id_be-cu_imastate_ransomware"> 랜섬웨어</label></td>
+        </tr>
+
+        <tr>
+            <td class="c1">업태</td>
+            <td class="c2">{{be_form.cu_business}}</td>
+            <td class="c3">업종</td>
+            <td class="c4" colspan="3">{{be_form.cu_comclass}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">가입경로</td>
+            <td>{{be_form.cu_path}}</td>
+            <td class="c1">대표자명</td>
+            <td>{{be_form.cu_rname}}</td>
+            <td class="c1">대표자<br>E-mail</td>
+            <td>{{be_form.cu_remail}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">홈페이지</td>
+            <td class="c2">{{be_form.cu_homepage}}</td>
+            <td class="c3">사업자번호</td>
+            <td class="c4" colspan="3">{{be_form.cu_bnumber}} <button type="button" onclick="popup_idChk()">중복확인</button>{{be_form.cu_bnumber_h}}
+        </tr>
+
+        <tr>
+            <td class="c1">주소</td>
+            <td class="c2">{{be_form.cu_address}}</td>
+            <td class="c3">설치주소</td>
+            <td class="c4" colspan="3">{{be_form.cu_iaddress}}</td>
+        </tr>
+    </table>
+
+    <h5>업체구분</h5>
+    <table class="t2">
+        <tr>
+            <td class="c1" rowspan="5">운영환경</td>
+            <td class="c2">1.테크노파크, 지식재산센터 등 대규모 입주단지</td>
+            <td class="c3"><input type="checkbox" id="be-op_imove" onchange="op_disabled(this)"></td>
+            <td class="c4">{{be_form.op_imove}}</td>
+        </tr>
+        <tr>
+            <td class="c2">2. 대기업 협력사</td>
+            <td class="c3"><input type="checkbox" id="be-op_lpartner" onchange="op_disabled(this)"></td>
+            <td class="4">{{be_form.op_lpartner}}</td>
+        </tr>
+        <tr>
+            <td class="c2">3. 폐쇠망 운영 여부</td>
+            <td class="c3"><input type="checkbox" id="be-op_closer" onchange="op_disabled(this)"></td>
+            <td class="4">{{be_form.op_closer}}</td>
+        </tr>
+        <tr>
+            <td class="c2">4. 방위산업체/방위산업협력기업</td>
+            <td class="c3"><input type="checkbox" id="be-op_defense" onchange="op_disabled(this)"></td>
+            <td class="c4">{{be_form.op_defense}}</td>
+        </tr>
+        <tr>
+            <td class="c2">5. 기타 특이사항 입력</td>
+            <td class="c3"><input type="checkbox" id="be-op_etc" onchange="op_disabled(this)"></td>
+            <td class="c4">{{be_form.op_etc}}</td>
+        </tr>
+    </table>
+
+    <h5>서비스 정보</h5>
+    <table class="t3">
+        <tr>
+            <td class="c1" rowspan="6">보안관제</td>
+            <td class="c2">계약사항</td>
+            <td class="c3">{{se_form.se_contract}}</td>
+            <td class="c4">선차단 권한</td>
+            <td class="c5">{{se_form.se_pblock}}</td>
+            <td class="c6">보고서발송일</td>
+            <td class="c7">{{se_form.se_sdate}}</td>
+        </tr>
+        <tr>
+            <td class="c2">연동일</td>
+            <td class="c3">{{se_form.se_cdate}}</td>
+            <td class="c4">시리얼 번호</td>
+            <td class="c5">{{se_form.se_serial}}</td>
+            <td class="c6">라이선스 만료일</td>
+            <td class="c7">{{se_form.se_edate}}</td>
+        </tr>
+        <tr>
+            <td class="c2">장비 펌웨어</td>
+            <td class="c3">{{se_form.se_firmware}}</td>
+            <td class="c4">장비 분류</td>
+            <td class="c5">{{se_form.se_eqclass}}</td>
+            <td class="c6">소유권</td>
+            <td class="c7">{{se_form.se_ownership}}</td>
+        </tr>
+        <tr>
+            <td class="c2">접근 권한</td>
+            <td class="c3">{{se_form.se_access}}</td>
+            <td class="c4">IPS/Check</td>
+            <td class="btn_col" colspan="3">
+                {{se_form.se_ips}}
+                <button type="button"  value="0" id="btn_ips" onclick="change_btn_state(this)">IPSrule 사용</button>
+                <button type="button"  value="0" id="btn_sys" onclick="change_btn_state(this)">Syslog</button>
+                <button type="button"  value="0" id="btn_icm" onclick="change_btn_state(this)">ICMP</button>
+                <button type="button"  value="0" id="btn_snm" onclick="change_btn_state(this)">SNMPv2c</button>
+            </td>
+        </tr>
+        <tr>
+            <td class="c2">해지일/사유</td>
+            <td colspan="5">{{se_form.se_tdate}} / {{se_form.se_treason}}</td>
+        </tr>
+        <tr>
+            <td class="c2">기타사항</td>
+            <td colspan="5">{{se_form.se_etc}}</td>
+        </tr>
+    </table>
+
+    <table class="t4">
+        <tr>
+            <td rowspan="3" class="c1">내부정보</td>
+            <td class="c2">계약사항</td>
+            <td class="c3">{{in_form.in_contract}}</td>
+            <td class="c4">신청대수</td>
+            <td class="c5">{{in_form.in_apply}} 대</td>
+            <td class="c6">연동일</td>
+            <td class="c7">{{in_form.in_cdate}}</td>
+        </tr>
+        <tr>
+            <td class="c2">IP</td>
+            <td colspan="3">{{in_form.in_ip}}</td>
+            <td class="c4">해지일(사유)</td>
+            <td class="c5">{{in_form.in_tdate}} / {{in_form.in_treason}}</td>
+        </tr>
+        <tr>
+            <td class="c2">기타사항</td>
+            <td colspan="3">{{in_form.in_etc}}</td>
+        </tr>
+    </table>
+
+    <table class="t5">
+        <tr>
+            <td rowspan="3" class="c1">악성코드</td>
+            <td class="c2">계약사항</td>
+            <td class="c3">{{vi_form.vi_contract}}</td>
+            <td class="c4">신청대수</td>
+            <td class="c5">{{vi_form.vi_apply}} 대</td>
+        </tr>
+        <tr>
+            <td class="c2">연동일</td>
+            <td class="c3">{{vi_form.vi_cdate}}</td>
+            <td class="c4">해지일(사유)</td>
+            <td class="c5">{{vi_form.vi_tdate}} / {{vi_form.vi_treason}}</td>
+        </tr>
+        <tr>
+            <td class="c2">기타사항</td>
+            <td colspan="3">{{vi_form.vi_etc}}</td>
+        </tr>
+    </table>
+
+    <table class="t6">
+        <tr>
+            <td rowspan="3" class="c1">랜섬웨어</td>
+            <td class="c2">계약사항</td>
+            <td class="c3">{{ra_form.ra_contract}}</td>
+            <td class="c4">신청대수</td>
+            <td class="c5">{{ra_form.ra_apply}} 대</td>
+        </tr>
+        <tr>
+            <td class="c2">연동일</td>
+            <td class="c3">{{ra_form.ra_cdate}}</td>
+            <td class="c4">해지일(사유)</td>
+            <td class="c5">{{ra_form.ra_tdate}} / {{ra_form.ra_treason}}</td>
+        </tr>
+        <tr>
+            <td class="c2">기타사항</td>
+            <td colspan="3">{{ra_form.ra_etc}}</td>
+        </tr>
+    </table>
+
+    <h5>담당자 등록정보</h5>
+    <table class="t7">
+        <tr>
+            <td class="c1">(정)</td>
+            <td class="c2">이름</td>
+            <td class="c3">{{be_form.ma_name}}</td>
+            <td class="c4">부서</td>
+            <td class="c5">{{be_form.ma_circles}}</td>
+            <td class="c6">휴대폰</td>
+            <td class="c7">{{be_form.ma_phone}}</td>
+            <td class="c8">회사<br>전화</td>
+            <td class="c9">{{be_form.ma_cphone}}</td>
+            <td class="c10">E-mail</td>
+            <td class="c11">{{be_form.ma_email}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">(부)</td>
+            <td class="c2">이름</td>
+            <td class="c3">{{be_form.re_name}}</td>
+            <td class="c4">부서</td>
+            <td class="c5">{{be_form.re_circles}}</td>
+            <td class="c6">휴대폰</td>
+            <td class="c7">{{be_form.re_phone}}</td>
+            <td class="c8">회사<br>전화</td>
+            <td class="c9">{{be_form.re_cphone}}</td>
+            <td class="c10">E-mail</td>
+            <td class="c11">{{be_form.re_email}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">(요금)</td>
+            <td class="c2">이름</td>
+            <td class="c3">{{be_form.ch_name}}</td>
+            <td class="c4">부서</td>
+            <td class="c5">{{be_form.ch_circles}}</td>
+            <td class="c6">휴대폰</td>
+            <td class="c7">{{be_form.ch_phone}}</td>
+            <td class="c8">회사<br>전화</td>
+            <td class="c9">{{be_form.ch_cphone}}</td>
+            <td class="c10">E-mail</td>
+            <td class="c11">{{be_form.ch_email}}</td>
+        </tr>
+
+        <tr>
+            <td colspan="2" class="c1">세금계산서 발송일</td>
+            <td colspan="9">매월 {{be_form.bc_sdate}} 일</td>
+        </tr>
+    </table>
+
+    <h5>기타사항</h5>
+    {{be_form.bc_etc}}
+    <h5>첨부파일</h5>
+    {{be_form.bc_file}}
+
+    <button type="submit">작성완료</button>
+    <button type="button">취소</button>
+</form>
+{% if be_form.errors %}
+    {% for field in be_form %}
+        {% if field.errors %}
+            <p>{{field.name}} : {{field.errors}}</p>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+<script>
+    //window on load function
+    window.onload = function() {
+        //사업자번호 히든태그 로드
+        document.getElementById("id_be-cu_bnumber_h").value = document.getElementById("id_be-cu_bnumber").value;
+
+        //운영환경 체크박스 로드
+        var id_list = ["be-op_imove", "be-op_lpartner", "be-op_closer", "be-op_defense", "be-op_etc"];
+        for(var i=0; i<id_list.length; i++){
+            id = id_list[i]
+            if(document.getElementById("id_"+id).value){
+                document.getElementById(id).setAttribute("checked", "true");
+                document.getElementById("id_"+id).removeAttribute('disabled');
+            }
+        }
+
+        //보안관제 ips toggle button 로드
+        var values = document.getElementById("id_se-se_ips").value;
+        var btn_list = ["btn_ips", "btn_sys", "btn_icm", "btn_snm"];
+        if(values){
+            for(var i=0; i<4; i++){
+                if(values[i] == '1'){
+                    ele = document.getElementById(btn_list[i]);
+                    change_btn_state(ele);
+                }
+            }
+        }
+    }
+
+
+
+    //js active functions on browser
+    function change_btn_state(ele){
+        if(ele.value == 0){
+            ele.value = 1;
+            ele.setAttribute("style", "border: 2px solid #2E9AFE; background-color:white; border-radius:20px;");
+        }
+        else{
+            ele.value = 0;
+            ele.setAttribute("style", "border: 2px solid #D8D8D8; background-color:white; border-radius:20px;");
+        }
+        v1 = document.getElementById("btn_ips").value;
+        v2 = document.getElementById("btn_sys").value;
+        v3 = document.getElementById("btn_icm").value;
+        v4 = document.getElementById("btn_snm").value;
+        document.getElementById("id_se-se_ips").value = v1+v2+v3+v4;
+    }
+
+    function op_disabled(ele){
+        target_id = "id_" + ele.id;
+        if(ele.checked == true){
+            document.getElementById(target_id).removeAttribute('disabled');
+        }
+        else{
+            document.getElementById(target_id).setAttribute("disabled", "true");
+            document.getElementById(target_id).value = "";
+        }
+    }
+
+    function popup_idChk(){
+        window.open('{% url 'post:check_bnumber' %}', 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+    }
+
+
+
+    //validation check functions before form submit
+    function change_check(){
+        bnum1 = document.getElementById('id_be-cu_bnumber').value;
+        bnum2 = document.getElementById('id_be-cu_bnumber_h').value;
+        if(bnum1 == bnum2 && bnum1 != ""){
+            return true;
+        }
+        else{
+            alert("사업자등록번호가 정상적으로 중복체크 되지 않았습니다. 다시 중복체크 해주세요.");
+            return false;
+        }
+    }
+</script>
+{% endblock %}

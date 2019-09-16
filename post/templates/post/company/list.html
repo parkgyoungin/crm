@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .t1 td {width:150px;}
+
+    /* table2 */
+    .t2 {width:100%;}
+    .t2 td{text-align:center;}
+</style>
+<h3>전체 수혜기업 현황</h3>
+<table class="t1">
+    <tr>
+        <td>전체 기업 : </td>
+        <td>보안관제 : {{3}}</td>
+        <td>내부정보 : {{4}}</td>
+        <td>악성코드 : {{5}}</td>
+        <td>랜섬웨어 : {{6}}</td>
+        <td>*total : {{999}}</td>
+    </tr>
+    <tr>
+        <td>방산 기업 : </td>
+        <td>보안관제 : {{7}}</td>
+        <td>내부정보 : {{8}}</td>
+        <td>악성코드 : {{9}}</td>
+        <td>랜섬웨어 : {{10}}</td>
+    </tr>
+</table>
+<br>
+<table class="t2" border="1">
+    <thead>
+    <tr>
+        <td width="60px;">번호</td>
+        <td>업체명</td>
+        <td width="110px;">업체구분</td>
+        <td width="110px;">보안관제</td>
+        <td width="110px;">내부정보</td>
+        <td width="110px;">악성코드</td>
+        <td width="110px;">랜섬웨어</td>
+        <td width="110px;">지역</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for beneficCom in beneficComs %}
+    <tr>
+        <td>{{11}}</td>
+        <td><a href="{% url 'post:detail' model='company' id=beneficCom.id %}">{{beneficCom.cu_name}}</a></td>
+        <td>{{13}}</td>
+        <td>{{14}}</td>
+        <td>{{15}}</td>
+        <td>{{16}}</td>
+        <td>{{17}}</td>
+        <td>{{18}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

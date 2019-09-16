@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    {% block script %}
+    {% endblock %}
+    {% block style %}
+    {% endblock %}
+</head>
+<body>
+<!-- brand -->
+<a class="navbar-brand" href="{% url 'main:home' %}">중소기업 기술지킴센터</a>
+<!-- navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-dark">
+    <!-- dropdown menu1 -->
+    <div class="btn-group">
+      <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        수혜기업 관리
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">전체 수혜기업 현황</a>
+        <a class="dropdown-item" href="#">수혜기업 이력관리</a>
+      </div>
+    </div>
+    <!-- dropdown menu2 -->
+    <div class="btn-group">
+      <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        이벤트 관리
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">탐지패턴 분석</a>
+        <a class="dropdown-item" href="#">IPS(시그니처) 튜닝</a>
+      </div>
+    </div>
+    <!-- dropdown menu3 -->
+    <div class="btn-group">
+      <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        행정 및 공지
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">일정 관리</a>
+        <a class="dropdown-item" href="#">근무표</a>
+        <a class="dropdown-item" href="#">보안 공지</a>
+        <a class="dropdown-item" href="#">인계인수(순환근무)</a>
+        <a class="dropdown-item" href="#">보고서</a>
+      </div>
+    </div>
+    <!-- dropdown menu4 -->
+    <div class="btn-group">
+      <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        행정 및 공지
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">이상징후</a>
+        <a class="dropdown-item" href="#">기술유출</a>
+        <a class="dropdown-item" href="#">랜섬웨어</a>
+
+      </div>
+    </div>
+    <!-- dropdown menu5 -->
+    <div class="btn-group">
+      <button type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        통보현황
+      </button>
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">관련사이트</a>
+        <a class="dropdown-item" href="#">KAITS 연락망</a>
+      </div>
+    </div>
+</nav>
+    <div class="row">
+        <div class="col-2">
+            개인정보
+        </div>
+
+        <div class="col-8 ">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+    {% block script2 %}
+    {% endblock %}
+</html>

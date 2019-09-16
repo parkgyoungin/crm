@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>check</title>
+    <style>
+        td {height:100px; text-align:center;}
+    </style>
+</head>
+<body>
+<form method="post" action="{% url 'post:check_bnumber' %}">
+    {% csrf_token %}
+    <table>
+        <tr>
+            <td>{{form.bnumber.label}} : </td>
+            <td>{{form.bnumber}}</td>
+            <td><button type="submit">중복확인</button></td>
+        </tr>
+        {% if success %}
+        <tr><td colspan="3">"{{form.cleaned_data.bnumber}}"는 사용가능합니다.</td></tr>
+        <tr><td colspan="3"><button type="button" onclick="use()">사용하기</button></td></tr>
+        {% else %}
+        <tr><td colspan="3">{{form.bnuber.errors}}</td></tr>
+        {% endif %}
+    </table>
+</form>
+<script>
+    function use(){
+        opener.document.getElementById("id_be-cu_bnumber").value = {{form.cleaned_data.bnumber}};
+        opener.document.getElementById("id_be-cu_bnumber_h").value = {{form.cleaned_data.bnumber}};
+        window.close();
+    }
+</script>
+</body>
+</html>

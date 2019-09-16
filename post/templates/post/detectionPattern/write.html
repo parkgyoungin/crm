@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    table {width:100%;}
+    .c1, .c3, .c5 {
+        background-color: #EFFBFB;
+        width: 130px;
+        text-align: center;
+    }
+    td {padding:10px;}
+    .c2 input, .c4 input, .c6 input {width: 130px;}
+    #id_countermeasures {width:100%;}
+</style>
+<h4>탐지패턴 분석 글쓰기</h4><br>
+<h5>탐지패턴 정보</h5>
+<form action="" method="post" onsubmit="return change_check()">
+    {% csrf_token %}
+    <table class="t1" border="1">
+        <tr>
+            <td class="c1">IPS 탐지 패턴명</td>
+            <td class="c2">{{form.pat_name}} {{form.pat_name_h}}<button type="button" onclick="popup_idChk()">중복확인</button> </td>
+            <td class="c3">위험도</td>
+            <td class="c4">{{form.risk}}</td>
+            <td class="c5">CVE</td>
+            <td class="c6">{{form.cve}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">IPS룰 등록일</td>
+            <td class="c2">{{form.rule_rdate}}</td>
+            <td class="c3">IPS룰 갱신일</td>
+            <td class="c4">{{form.rule_udate}}</td>
+            <td class="c5">업무처리 상태</td>
+            <td class="c6">{{form.pro_state}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">보안장비 분류</td>
+            <td colspan="5">{{form.equ_class}}
+                <input name="a" type="radio" id="trusguard" onclick="set_equ_class(this)"><label for="trusguard" >TrusGuard</label>
+                <input name="a" type="radio" id="fortigate" onclick="set_equ_class(this)"><label for="fortigate" >Fortigate</label>
+                <input name="a" type="radio" id="sniper" onclick="set_equ_class(this)"><label for="sniper" >SNIPER</label>
+                <input name="a" type="radio" id="secui" onclick="set_equ_class(this)"><label for="secui" >secui</label>
+                <input name="a" type="radio" id="palo" onclick="set_equ_class(this)"><label for="palo" >PaloAlto</label>
+                <input name="a" type="radio" id="etc_0" onclick="set_equ_class(this)"><label for="etc_0" >기타</label>
+                {{form.etc_equ_class}}
+            </td>
+        </tr>
+
+        <tr>
+            <td class="c1">공격 분류</td>
+            <td colspan="5">{{form.att_class}}
+                <input name="b" type="radio" id="virus" onclick="set_att_class(this)"><label for="virus" >악성코드감염</label>
+                <input name="b" type="radio" id="web" onclick="set_att_class(this)"><label for="web" >웹해킹</label>
+                <input name="b" type="radio" id="ser_denial" onclick="set_att_class(this)"><label for="ser_denial" >서비스거부공격(DoS/DDos)</label>
+                <input name="b" type="radio" id="sec_weakness" onclick="set_att_class(this)"><label for="sec_weakness" >서비스취약점공격</label>
+                <input name="b" type="radio" id="etc_1" onclick="set_att_class(this)"><label for="etc_1" >기타</label>
+                {{form.etc_att_class}}
+            </td>
+        </tr>
+
+        <tr>
+            <td class="c1">공격 유형 선택</td>
+            <td colspan="5">
+                {{form.att_type}}
+                {{form.etc_att_type}} *기타 선택시 입력하세요
+            </td>
+        </tr>
+    </table><br>
+
+    <h5>탐지근거 및 패턴분석</h5>
+    {{form.pat_analysis}}
+    <br>
+
+    <h5>대응 방안</h5>
+    {{form.countermeasures}}
+    <br>
+    <button type="submit">작성완료</button>
+</form>
+<script>
+    window.onload = function() {
+        //pat_name 로드
+        document.getElementById("id_pat_name_h").value = document.getElementById("id_pat_name").value;
+
+        //equ_class 라디오버튼 체크
+        var id = document.getElementById("id_equ_class").value;
+        document.getElementById(id).setAttribute('checked','true');
+
+        //att_class 라디오버튼 체크
+        var id = document.getElementById("id_att_class").value;
+        document.getElementById(id).setAttribute('checked','true');
+
+    }
+
+    //js active functions
+    function set_equ_class(ele){
+        var target = document.getElementById("id_equ_class");
+        target.value = ele.id;
+    }
+
+    function set_att_class(ele){
+        var target = document.getElementById("id_att_class");
+        target.value = ele.id;
+    }
+
+    function popup_idChk(){
+        window.open('{% url 'post:check_ips' %}', 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+    }
+
+
+    //validation check functions before form submit
+    function change_check(){
+        ips1 = document.getElementById('id_pat_name').value;
+        ips2 = document.getElementById('id_pat_name_h').value;
+        if(ips1 == ips2 && ips1 != ""){
+            return true;
+        }
+        else{
+            alert("IPS 탐지 패턴명이 정상적으로 중복체크 되지 않았습니다. 다시 중복체크 해주세요.");
+            return false;
+        }
+    }
+</script>
+{% endblock %}
