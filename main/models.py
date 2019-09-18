@@ -1,232 +1,207 @@
 from django.db import models
+from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
+from django.utils import timezone
 
-class BeneficCom(models.Model):
-    cu_name = models.CharField(max_length=100)
+class UserManager(BaseUserManager):
+    def create_user(self,userid, name, nickname ,email, password=None):
+        if not userid:
+            raise ValueError('Users must have an userid')
 
-    cu_tenant = models.BooleanField()
+        user = self.model(
+            userid = userid,
+            user_name = name,
+            nickname = nickname,
+            email=self.normalize_email(email),
+        )
 
-    cu_cnumber = models.CharField(max_length=100)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
-    cu_serstate_security = models.CharField(max_length=100)
+    def create_superuser(self, userid, user_name , nickname, email, password):
+        user = self.create_user(
+            userid,
+            user_name,
+            nickname,
+            email,
+            password,
+        )
+        user.is_admin = True
+        user.save(using=self._db)
+        return user
 
-    cu_serstate_information = models.CharField(max_length=100)
+class User(AbstractBaseUser):
+    userid = models.CharField(
+        verbose_name='아이디',
+        max_length=50,
+        unique=True,
+    )
 
-    cu_serstate_virus = models.CharField(max_length=100)
+    user_name = models.CharField(
+        verbose_name='이름',
+        max_length=50,
+    )
 
-    cu_serstate_ransomware = models.CharField(max_length=100)
+    email = models.EmailField(
+        verbose_name='이메일',
+        max_length=255,
+    )
+    nickname = models.CharField(
+        verbose_name='닉네임',
+        max_length=30,
+        unique=True
+    )
+    date_joined = models.DateTimeField(
+        verbose_name='가입일자',
+        default=timezone.now
+    )
+    password = models.CharField(
+        verbose_name='비밀번호',
+        max_length=255
+    )
+    is_admin = models.BooleanField(default=False)
 
-    cu_imastate_security = models.BooleanField()
+    objects = UserManager()
 
-    cu_imastate_information = models.BooleanField()
+    USERNAME_FIELD = 'userid'
+    REQUIRED_FIELDS = ['nickname', ]
 
-    cu_imastate_virus = models.BooleanField()
+    class Meta:
+        ordering = ('-date_joined',)
 
-    cu_imastate_ransomware = models.BooleanField()
+    def __str__(self):
+        return self.nickname
 
-    #업태
-    cu_business = models.CharField(max_length=100)
+    def has_perm(self, perm, obj=None):
+        return True
 
-    # 업종
-    cu_comclass = models.CharField(max_length=100)
+    def has_module_perms(self, app_label):
+        return True
 
-    # 가입경로
-    cu_path = models.CharField(max_length=100)
+    @property
+    def is_staff(self):
+        return self.is_admin
 
-    # 대표자명
-    cu_rname = models.CharField(max_length=100)
+class TbBeneficcom(models.Model):
+    bc_number = models.AutoField(primary_key=True, default=0)
+    bc_date = models.DateTimeField(auto_now_add=True)
+    bc_cu_name = models.CharField(max_length=50)
+    bc_cu_namein = models.BooleanField(default=False)
+    bc_cu_cnumber = models.IntegerField()
+    bc_cu_rname = models.CharField(max_length=50)
+    bc_cu_remail = models.EmailField()
+    bc_cu_bnumber = models.IntegerField(unique=True)
+    bc_cu_comclass = models.CharField(max_length=50)
+    bc_cu_business = models.CharField(max_length=50)
+    bc_cu_path = models.CharField(max_length=50)
+    bc_cu_homepage = models.CharField(max_length=150, blank=True, null=True)
+    bc_cu_address = models.CharField(max_length=100)
+    bc_cu_iaddress = models.CharField(max_length=100)
+    bc_im_security = models.BooleanField(default=False)
+    bc_im_internal = models.BooleanField(default=False)
+    bc_im_virus = models.BooleanField(default=False)
+    bc_im_ransomware = models.BooleanField(default=False)
+    bc_ss_security = models.CharField(max_length=10)
+    bc_ss_internal = models.CharField(max_length=10)
+    bc_ss_virus = models.CharField(max_length=10)
+    bc_ss_ransomware = models.CharField(max_length=10)
+    bc_op_lmove = models.CharField(max_length=10, blank=True, null=True)
+    bc_op_lpartner = models.CharField(max_length=10, blank=True, null=True)
+    bc_op_closure = models.CharField(max_length=10, blank=True, null=True)
+    bc_op_defense = models.CharField(max_length=10, blank=True, null=True)
+    bc_op_etc = models.CharField(max_length=50, blank=True, null=True)
+    bc_ma_name = models.CharField(max_length=10, blank=True, null=True)
+    bc_ma_circles = models.CharField(max_length=50, blank=True, null=True)
+    bc_ma_phone = models.CharField(max_length=50, blank=True, null=True)
+    bc_ma_cphone = models.CharField(max_length=50, blank=True, null=True)
+    bc_ma_email = models.EmailField()
+    bc_re_name = models.CharField(max_length=10, blank=True, null=True)
+    bc_re_circles = models.CharField(max_length=50, blank=True, null=True)
+    bc_re_phone = models.CharField(max_length=50, blank=True, null=True)
+    bc_re_cphone = models.CharField(max_length=50, blank=True, null=True)
+    bc_re_email = models.EmailField()
+    bc_ch_name = models.CharField(max_length=10, blank=True, null=True)
+    bc_ch_circles = models.CharField(max_length=50, blank=True, null=True)
+    bc_ch_phone = models.CharField(max_length=50, blank=True, null=True)
+    bc_ch_cphone = models.CharField(max_length=50, blank=True, null=True)
+    bc_ch_email = models.EmailField()
+    bc_sdate = models.IntegerField()
+    bc_etc = models.TextField(blank=True, null=True)
+    bc_file = models.FileField(blank=True, null=True)
 
-    # 대표자 이메일
-    cu_remail = models.EmailField(max_length=100)
+    class Meta:
+        db_table = 'tb_beneficcom'
 
-    # 홈페이지
-    cu_homepage = models.CharField(max_length=100)
-
-    # 사업자번호
-    cu_bnumber = models.CharField(max_length=100)
-
-    # 주소
-    cu_address = models.CharField(max_length=100)
-
-    # 설치주소
-    cu_iaddress = models.CharField(max_length=100)
-
-    # 대규모 입주단지
-    op_imove = models.CharField(max_length=100)
-
-    # 대기업 협력사
-    op_lpartner = models.CharField(max_length=100)
-
-    # 패쇄망
-    op_closer = models.CharField(max_length=100)
-
-    # 방위산업
-    op_defense = models.CharField(max_length=100)
-
-    # 기타
-    op_etc = models.CharField(max_length=100)
-
-    # 정:이름
-    ma_name = models.CharField(max_length=100)
-
-    # 정:부서
-    ma_circles = models.CharField(max_length=100)
-
-    # 정:휴대폰
-    ma_phone = models.CharField(max_length=100)
-
-    # 정:회사전화
-    ma_cphone = models.CharField(max_length=100)
-
-    # 정:이메일
-    ma_email = models.EmailField()
-
-    # 부:이름
-    re_name = models.CharField(max_length=100)
-
-    # 부:부서
-    re_circles = models.CharField(max_length=100)
-
-    # 부:휴대폰
-    re_phone = models.CharField(max_length=100)
-
-    # 부:회사전화
-    re_cphone = models.CharField(max_length=100)
-
-    # 부:이메일
-    re_email = models.EmailField()
-
-    # 요금:이름
-    ch_name = models.CharField(max_length=100)
-
-    # 요금:부서
-    ch_circles = models.CharField(max_length=100)
-
-    # 요금:휴대폰
-    ch_phone = models.CharField(max_length=100)
-
-    # 요금:회사전화
-    ch_cphone = models.CharField(max_length=100)
-
-    # 요금:이메일
-    ch_email = models.EmailField()
-
-    # 세금계산서발송일
-    bc_sdate = models.DateField()
-
-    # 기타사항
-    bc_etc = models.TextField()
-
-    # 첨부파일
-    bc_file = models.FileField(upload_to='files/%Y/%m/%d')
-
-class Security(models.Model):
-    beneficCom = models.ForeignKey(BeneficCom, on_delete=models.CASCADE, related_name='security')
-    # 계약사항
-    se_contract = models.CharField(max_length=100)
-
-    # 선차단 권한
-    se_pblock = models.CharField(max_length=100)
-
-    # 보고서 발송일
+class TbSecurity(models.Model):
+    se_number = models.AutoField(primary_key=True, default=0)
+    se_date = models.DateTimeField(auto_now_add=True)
+    se_benumber = models.ForeignKey(TbBeneficcom, models.DO_NOTHING, db_column='se_benumber')
+    se_contract = models.CharField(max_length=50)
+    se_pblock = models.CharField(max_length=80)
+    se_serial = models.CharField(max_length=80)
     se_sdate = models.DateField()
-
-    # 연동일
     se_cdate = models.DateField()
-
-    # 시리얼번호
-    se_serial = models.CharField(max_length=100)
-
-    # 라이선스 만료일
     se_edate = models.DateField()
-
-    # 장비펌웨어
-    se_firmware = models.CharField(max_length=100)
-
-    # 장비분류
-    se_eqclass = models.CharField(max_length=100)
-
-    # 소유권
-    se_ownership = models.CharField(max_length=100)
-
-    # 접근권한
-    se_access = models.CharField(max_length=100)
-
-    # ips/check
-    se_ips = models.CharField(max_length=100)
-
-    # 해지일
     se_tdate = models.DateField()
+    se_treason = models.CharField(max_length=80, blank=True, null=True)
+    se_firmware = models.CharField(max_length=50)
+    se_eqclass = models.CharField(max_length=50)
+    se_ownership = models.CharField(max_length=50)
+    se_access = models.CharField(max_length=50)
+    se_ipsrule = models.BooleanField(default=False)
+    se_syslog = models.BooleanField(default=False)
+    se_icmp = models.BooleanField(default=False)
+    se_snmp = models.BooleanField(default=False)
+    se_etc = models.TextField(blank=True, null=True)
 
-    # 해지일 사유
-    se_treason = models.CharField(max_length=100)
+    class Meta:
+        db_table = 'tb_security'
 
-    # 기타사항
-    se_etc = models.TextField()
-
-
-
-class Internal(models.Model):
-    beneficCom = models.ForeignKey(BeneficCom, on_delete=models.CASCADE, related_name='internal')
-    # 계약사항
-    in_contract = models.CharField(max_length=100)
-
-    # 신청대수
-    in_apply = models.PositiveIntegerField()
-
-    # 연동일
+class TbInternal(models.Model):
+    in_number = models.AutoField(primary_key=True, default=0)
+    in_date = models.DateTimeField(auto_now_add=True)
+    in_benumber = models.ForeignKey(TbBeneficcom, models.DO_NOTHING, db_column='in_benumber')
+    in_contract = models.CharField(max_length=50)
+    in_apply = models.IntegerField()
     in_cdate = models.DateField()
-
-    # ip
-    in_ip = models.TextField()
-
-    # 해지일
+    in_ip = models.CharField(max_length=50)
     in_tdate = models.DateField()
+    in_treason = models.CharField(max_length=80, blank=True, null=True)
+    in_etc = models.TextField(blank=True, null=True)
 
-    # 해지일-사유
-    in_treason = models.CharField(max_length=100)
+    class Meta:
+        db_table = 'tb_internal'
 
-    # 기타사항
-    in_etc = models.TextField()
-
-class Virus(models.Model):
-    beneficCom = models.ForeignKey(BeneficCom, on_delete=models.CASCADE, related_name='virus')
-    # 계약사항
-    vi_contract = models.CharField(max_length=100)
-
-    # 신청대수
-    vi_apply = models.PositiveIntegerField()
-
-    # 연동일
+class TbVirus(models.Model):
+    vi_number = models.AutoField(primary_key=True, default=0)
+    vi_date = models.DateTimeField(auto_now_add=True)
+    vi_benumber = models.ForeignKey(TbBeneficcom, models.DO_NOTHING, db_column='vi_benumber')
+    vi_contract = models.CharField(max_length=50)
+    vi_apply = models.IntegerField()
     vi_cdate = models.DateField()
-
-    # 해지일
     vi_tdate = models.DateField()
+    vi_treason = models.CharField(max_length=80, blank=True, null=True)
+    vi_etc = models.TextField(blank=True, null=True)
 
-    # 해지일-사유
-    vi_treason = models.CharField(max_length=100)
+    class Meta:
+        db_table = 'tb_virus'
 
-    # 기타사항
-    vi_etc = models.TextField()
-
-class Ransomware(models.Model):
-    beneficCom = models.ForeignKey(BeneficCom, on_delete=models.CASCADE, related_name='ransomware')
-    # 계약사항
-    ra_contract = models.CharField(max_length=100)
-
-    # 신청대수
-    ra_apply = models.PositiveIntegerField()
-
-    # 연동일
+class TbRansom(models.Model):
+    ra_number = models.AutoField(primary_key=True, default=0)
+    ra_date = models.DateTimeField(auto_now_add=True)
+    re_benumber = models.ForeignKey(TbBeneficcom, models.DO_NOTHING, db_column='re_benumber')
+    ra_contract = models.CharField(max_length=50)
+    ra_apply = models.IntegerField()
     ra_cdate = models.DateField()
-
-    # 해지일
     ra_tdate = models.DateField()
+    ra_treason = models.CharField(max_length=80, blank=True, null=True)
+    ra_etc = models.TextField(blank=True, null=True)
 
-    # 해지일-사유
-    ra_treason = models.CharField(max_length=100)
+    class Meta:
+        db_table = 'tb_ransom'
 
-    # 기타사항
-    ra_etc = models.TextField()
+
+
 
 
 

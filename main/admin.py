@@ -1,5 +1,5 @@
 from django.contrib import admin
 from .models import *
 
-admin.site.register(BeneficCom)
-admin.site.register(Security)
+admin.site.register(TbBeneficcom)
+admin.site.register(TbSecurity)

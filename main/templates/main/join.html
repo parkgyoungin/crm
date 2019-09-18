@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:50px; padding:10px;}
+    .tb {margin:20px 0px;}
+    .c1 {width:150px; text-align:center; background-color: #EFFBFB;}
+</style>
+
+<h4>회원 정보 수정</h4>
+<form action="" method="post" onsubmit="return change_check_all()">
+    {% csrf_token %}
+    <div class="tb">
+    <h5>사이트 이용정보 입력</h5>
+        <table class="t1" border="1">
+            <tr>
+                <td class="c1">{{form.userid.label_tag}}</td>
+                <td class="c2">{{form.userid}}{{form.userid_h}} <button type="button" onclick="popup_useridChk()">중복확인</button> </td>
+            </tr>
+
+            <tr>
+                <td class="c1">비밀번호</td>
+                <td class="c2">{{form.password}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">{{form.password_confirm.label_tag}}</td>
+                <td class="c2">{{form.password_confirm}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="tb">
+    <h5>개인정보 입력</h5>
+        <table class="t2" border="1">
+            <tr>
+                <td class="c1">{{form.user_name.label_tag}}</td>
+                <td class="c2">{{form.user_name}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">{{form.nickname.label_tag}}</td>
+                <td class="c2">{{form.nickname}} {{form.nickname_h}}<button type="button" onclick="popup_nicknameChk()">중복확인</button></td>
+            </tr>
+
+            <tr>
+                <td class="c1">{{form.email.label_tag}}</td>
+                <td class="c2">{{form.email}}</td>
+            </tr>
+        </table>
+    </div>
+    <button type="submit">가입하기</button>
+</form>
+{{form.errors}}
+<script>
+    // 히든태그 로드
+    window.onload = function(){
+        document.getElementById("id_userid_h").value = document.getElementById("id_userid").value;
+        document.getElementById("id_nickname_h").value = document.getElementById("id_nickname").value;
+    }
+    function popup_useridChk(){
+        window.open('{% url 'main:check_userid' %}', 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+    }
+    function popup_nicknameChk(){
+        window.open('{% url 'main:check_nickname' %}', 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+    }
+
+    //validation check functions before form submit
+    function change_check_all(){
+        check1 = change_check('userid', "아이디가 정상적으로 중복체크 되지 않았습니다. 다시 중복체크 해주세요.");
+        check2 = change_check('nickname', "닉네임이 정상적으로 중복체크 되지 않았습니다. 다시 중복체크 해주세요.");
+        return (check1 && check2);
+    }
+    function change_check(id, err){
+        check1 = document.getElementById('id_'+ id).value;
+        check2 = document.getElementById('id_' + id + '_h').value;
+        if(check1 == check2 && check1 != ""){
+            return true;
+        }
+        else{
+            alert(check1+check2+err);
+            return false;
+        }
+    }
+</script>
+{% endblock %}

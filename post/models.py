@@ -22,24 +22,32 @@ class DetectionPat(models.Model):
     #장비분류
     equ_class = models.CharField(max_length=50)
 
+    #장비분류-기타
     etc_equ_class = models.CharField(max_length=50, null=True)
 
     #공격분류
     att_class = models.CharField(max_length=50)
 
+    #공격분류-기타
     etc_att_class = models.CharField(max_length=50, null=True)
 
     #공격유형
     att_type = models.CharField(max_length=50)
 
+    #공격유형-기타
     etc_att_type = models.CharField(max_length=50, null=True)
 
     #패턴분석
     pat_analysis = models.TextField()
 
+    #대응방안
     countermeasures = models.TextField()
 
 class Comment(models.Model):
-    model = models.CharField(max_length=50)
+    model_name = models.CharField(max_length=50)
+
+    model_pk = models.PositiveIntegerField()
+
+    com_class = models.CharField(max_length=50, null=True)
 
     comment = models.TextField()

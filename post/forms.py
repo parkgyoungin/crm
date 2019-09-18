@@ -6,425 +6,39 @@ from main.models import *
 from .models import *
 
 #https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Forms
-class WriteCompany(forms.Form):
-    #업체명
-    cu_name = forms.CharField(
-        max_length=50,
-    )
 
-    #입주기업
-    cu_tenant= forms.BooleanField()
-
-    #관리번호
-    cu_cnumber = forms.CharField(
-        max_length=20
-    )
-
-    #서비스현황-보안관제
-    cu_serstate_security = forms.ChoiceField(
-        choices=choices.serstate,
-    )
-
-    #서비스현황-내부정보
-    cu_serstate_information = forms.ChoiceField(
-        choices=choices.serstate
-    )
-
-    #서비스현황-악성코드
-    cu_serstate_virus = forms.ChoiceField(
-        choices=choices.serstate
-    )
-
-    #서비스현황-랜섬웨어
-    cu_serstate_ransomware = forms.ChoiceField(
-        choices=choices.serstate
-    )
-
-    #허수현황-보안관제
-    cu_imastate_security = forms.BooleanField()
-
-    #허수현황-내부정보
-    cu_imastate_information = forms.BooleanField()
-
-    #허수현황-악성코드
-    cu_imastate_virus = forms.BooleanField()
-
-    #허수현황-랜섬웨어
-    cu_imastate_ransomware = forms.BooleanField()
-
-    #업태
-    cu_business = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #업종
-    cu_comclass = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #가입경로
-    cu_path = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #대표자명
-    cu_rname = forms.CharField(
-        max_length=50
-    )
-
-    #대표자 이메일
-    cu_remail = forms.EmailField()
-
-    #홈페이지
-    cu_homepage = forms.URLField()
-
-    #사업자번호
-    cu_bnumber = forms.CharField(
-        max_length=50
-    )
-
-    #주소
-    cu_address = forms.CharField(
-        max_length=100
-    )
-
-    #설치주소
-    cu_iaddress = forms.CharField(
-        widget=forms.Textarea
-    )
-
-    #대규모 입주단지
-    op_imove = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #대기업 협력사
-    op_lpartner = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #패쇄망
-    op_closer = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #방위산업
-    op_defense = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #기타
-    op_etc = forms.CharField(
-        max_length=100
-    )
-
-    #계약사항
-    se_contract = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #선차단 권한
-    se_pblock = forms.CharField(
-        max_length=100
-    )
-
-    #보고서 발송일
-    se_sdate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
-    #연동일
-    se_cdate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
-    #시리얼번호
-    se_serial = forms.CharField(
-        max_length=100
-    )
-
-    #라이선스 만료일
-    se_edate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
-    #장비펌웨어
-    se_firmware = forms.CharField(
-        max_length=100
-    )
-
-    #장비분류
-    se_eqclass = forms.CharField(
-        max_length=100
-    )
-
-    #소유권
-    se_ownership = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #접근권한
-    se_access = forms.CharField(
-        max_length=100
-    )
-
-    #ips/check
-    se_ipsrule = forms.BooleanField()
-
-    #ips/check
-    se_syslog = forms.BooleanField()
-
-    #ips/check
-    se_icmp = forms.BooleanField()
-
-    #ips/check
-    se_snmp = forms.BooleanField()
-
-    #해지일
-    se_tdate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
-    #해지일 사유
-    se_treason = forms.CharField(
-        max_length=100
-    )
-
-    #기타사항
-    se_etc = forms.CharField(
-        widget=forms.Textarea
-    )
-
-
-    #계약사항
-    in_contract = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #신청대수
-    in_apply = forms.IntegerField()
-
-    #연동일
-    in_cdate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
-    #ip
-    in_ip = forms.CharField(
-        widget=forms.Textarea
-    )
-
-    #해지일
-    in_tdate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
-    #해지일-사유
-    in_treason = forms.CharField(
-        max_length=100
-    )
-
-    #기타사항
-    in_etc = forms.CharField(
-        widget=forms.Textarea
-    )
-
-    #계약사항
-    vi_contract = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #신청대수
-    vi_apply = forms.IntegerField()
-
-    #연동일
-    vi_cdate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
-    #해지일
-    vi_tdate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
-    #해지일-사유
-    vi_treason = forms.CharField(
-        max_length=100
-    )
-
-    #기타사항
-    vi_etc = forms.CharField(
-        widget=forms.Textarea
-    )
-
-    #계약사항
-    ra_contract = forms.ChoiceField(
-        choices=choices.sample
-    )
-
-    #신청대수
-    ra_apply = forms.IntegerField()
-
-    #연동일
-    ra_cdate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
-    #해지일
-    ra_tdate = forms.DateField(
-        widget=forms.DateInput(
-            attrs={
-                'type': 'date'
-            }
-        )
-    )
-
-    #해지일-사유
-    ra_treason = forms.CharField(
-        max_length=100
-    )
-
-    #기타사항
-    ra_etc = forms.CharField(
-        widget=forms.Textarea
-    )
-
-    #정:이름
-    ma_name = forms.CharField(
-        max_length=100
-    )
-
-    #정:부서
-    ma_circles = forms.CharField(
-        max_length=100
-    )
-
-    #정:휴대폰
-    ma_phone = forms.IntegerField()
-
-    #정:회사전화
-    ma_cphone = forms.IntegerField()
-
-    #정:이메일
-    ma_email = forms.EmailField()
-
-    # 부:이름
-    re_name = forms.CharField(
-        max_length=100
-    )
-
-    # 부:부서
-    re_circles = forms.CharField(
-        max_length=100
-    )
-
-    # 부:휴대폰
-    re_phone = forms.IntegerField()
-
-    # 부:회사전화
-    re_cphone = forms.IntegerField()
-
-    # 부:이메일
-    re_email = forms.EmailField()
-
-    # 요금:이름
-    ch_name = forms.CharField(
-        max_length=100
-    )
-
-    # 요금:부서
-    ch_circles = forms.CharField(
-        max_length=100
-    )
-
-    # 요금:휴대폰
-    ch_phone = forms.IntegerField()
-
-    # 요금:회사전화
-    ch_cphone = forms.IntegerField()
-
-    # 요금:이메일
-    ch_email = forms.EmailField()
-
-    #세금계산서발송일
-    bc_sdate = forms.IntegerField()
-
-    #기타사항
-    bc_etc = forms.CharField(
-        widget=forms.Textarea
-    )
-
-    #첨부파일
-    bc_file = forms.FileField(
-        widget=forms.FileInput
-    )
-
-
-class BeneficComForm(forms.ModelForm):
-    cu_bnumber_h = forms.CharField(widget=forms.HiddenInput)
+class TbBeneficcomForm(forms.ModelForm):
+    bc_cu_bnumber_h = forms.CharField(widget=forms.HiddenInput)
     class Meta:
-        model = BeneficCom
+        model = TbBeneficcom
         fields = '__all__'
         widgets = {
-            'cu_serstate_security': forms.Select(choices=choices.serstate, attrs={'required':'true'} ),
 
-            'cu_serstate_information': forms.Select(choices=choices.serstate, attrs={'required': 'true'}),
+            'bc_im_ransomware': forms.CheckboxInput,
 
-            'cu_serstate_virus': forms.Select(choices=choices.serstate, attrs={'required': 'true'}),
+            'bc_ss_security': forms.Select(choices=choices.serstate, attrs={'required':'true'} ),
 
-            'cu_serstate_ransomware': forms.Select(choices=choices.serstate, attrs={'required': 'true'}),
+            'bc_ss_internal': forms.Select(choices=choices.serstate, attrs={'required': 'true'}),
 
-            'cu_business': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
+            'bc_ss_virus': forms.Select(choices=choices.serstate, attrs={'required': 'true'}),
 
-            'cu_comclass': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
+            'bc_ss_ransomware': forms.Select(choices=choices.serstate, attrs={'required': 'true'}),
 
-            'cu_path': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
+            'bc_cu_business': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
 
-            'op_imove': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
+            'bc_cu_comclass': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
 
-            'op_lpartner': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
+            'bc_cu_path': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
 
-            'op_closer': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
+            'bc_op_lmove': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
 
-            'op_defense': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
+            'bc_op_lpartner': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
 
-            'cu_bnumber': forms.TextInput(attrs={'onclick':'popup_idChk()'}),
+            'bc_op_closure': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
+
+            'bc_op_defense': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
+
+            'bc_cu_bnumber': forms.TextInput(attrs={'onclick':'popup_idChk()'}),
 
             'bc_sdate': forms.DateInput(attrs={'type':'date'}),
         }
@@ -433,11 +47,18 @@ class BeneficComForm(forms.ModelForm):
     def get_prefix():
         return 'be'
 
-class SecurityForm(forms.ModelForm):
+class TbSecurityForm(forms.ModelForm):
     class Meta:
-        model = Security
+        model = TbSecurity
         exclude = ('beneficCom',)
         widgets = {
+            # 'se_ipsrule':forms.TextInput,
+
+            # 'se_syslog':forms.HiddenInput(),
+
+            'se_icmp':forms.HiddenInput(),
+
+            'se_snmp':forms.HiddenInput(),
             'se_contract': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
             'se_ips': forms.HiddenInput(),
             'se_sdate': forms.DateInput(attrs={'type':'date'}),
@@ -451,9 +72,9 @@ class SecurityForm(forms.ModelForm):
     def get_prefix():
         return 'se'
 
-class InternalForm(forms.ModelForm):
+class TbInternalForm(forms.ModelForm):
     class Meta:
-        model = Internal
+        model = TbInternal
         exclude = ('beneficCom',)
         widgets = {
             'in_contract': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
@@ -465,9 +86,9 @@ class InternalForm(forms.ModelForm):
     def get_prefix():
         return 'in'
 
-class VirusForm(forms.ModelForm):
+class TbVirusForm(forms.ModelForm):
     class Meta:
-        model = Virus
+        model = TbVirus
         exclude = ('beneficCom',)
         widgets = {
             'vi_contract': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
@@ -479,9 +100,9 @@ class VirusForm(forms.ModelForm):
     def get_prefix():
         return 'vi'
 
-class RansomwareForm(forms.ModelForm):
+class TbRansomForm(forms.ModelForm):
     class Meta:
-        model = Ransomware
+        model = TbRansom
         exclude = ('beneficCom',)
         widgets = {
             'ra_contract': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
@@ -518,7 +139,7 @@ class CheckBnumberForm(forms.Form):
 
     def clean_bnumber(self):
         bnumber = self.cleaned_data['bnumber']
-        if BeneficCom.objects.filter(cu_bnumber=bnumber):
+        if TbBeneficcom.objects.filter(bc_cu_bnumber=bnumber):
             raise forms.ValidationError(' "%s"는 이미 사용중인 사업자등록번호 입니다.'%bnumber)
         return bnumber
 
@@ -532,7 +153,7 @@ class CheckIpsForm(forms.Form):
         return pat_name
 
 class CommentForm(forms.ModelForm):
+    com_class = forms.ChoiceField(choices=choices.com_class, required=False)
     class Meta:
         model = Comment
-        exclude = ('model',)
-
+        exclude = ('model_name','model_pk')

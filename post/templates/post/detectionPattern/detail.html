@@ -52,5 +52,26 @@
     {{model.pat_analysis|safe}}
 </div>
 <h4>대응방안</h4>
-<textarea>{{model.countermeasures}}</textarea>
+<textarea>{{model.countermeasures}}</textarea><br>
+
+<h4>댓글</h4>
+{% if not comments %}
+<textarea style="text-align:center;">등록된 댓글이 없습니다.</textarea>
+{% else %}
+<div class="comment">
+    {% for comment in comments %}
+        <p>- 내용 : {{comment.comment}}</p>
+    {% endfor %}
+</div>
+{% endif %}
+<form action="" method="post">
+    {% csrf_token %}
+    <table border="1">
+        <tr>
+            <td class="c1">{{form.com_class}}</td>
+            <td>{{form.comment}}</td>
+        </tr>
+    </table>
+    <button type="submit">댓글등록</button>
+</form>
 {% endblock %}

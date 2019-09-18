@@ -8,26 +8,26 @@
     </style>
 </head>
 <body>
-<form method="post" action="{% url 'post:check_bnumber' %}">
+<form method="post" action="">
     {% csrf_token %}
     <table>
         <tr>
-            <td>{{form.bnumber.label}} : </td>
-            <td>{{form.bnumber}}</td>
+            <td>{{form.nickname.label}} : </td>
+            <td>{{form.nickname}}</td>
             <td><button type="submit">중복확인</button></td>
         </tr>
         {% if success %}
-        <tr><td colspan="3">"{{form.cleaned_data.bnumber}}"는 사용가능합니다.</td></tr>
+        <tr><td colspan="3">"{{form.cleaned_data.nickname}}"는 사용가능합니다.</td></tr>
         <tr><td colspan="3"><button type="button" onclick="use()">사용하기</button></td></tr>
         {% else %}
-        <tr><td colspan="3">{{form.bnuber.errors}}</td></tr>
+        <tr><td colspan="3">{{form.nickname.errors}}</td></tr>
         {% endif %}
     </table>
 </form>
 <script>
     function use(){
-        opener.document.getElementById("id_be-bc_cu_bnumber").value = {{form.cleaned_data.bnumber}};
-        opener.document.getElementById("id_be-bc_cu_bnumber_h").value = {{form.cleaned_data.bnumber}};
+        opener.document.getElementById("id_nickname").value = '{{form.cleaned_data.nickname}}';
+        opener.document.getElementById("id_nickname_h").value = '{{form.cleaned_data.nickname}}';
         window.close();
     }
 </script>
