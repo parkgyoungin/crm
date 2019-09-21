@@ -231,6 +231,8 @@ choices = {
     'business_uptae':business_uptae,
     'business_type':business_type,
     'service_state':service_state,
+    'reply':reply,
+    'process_state':process_state
 }
 
 
@@ -246,6 +248,7 @@ def insert_db():
             Choice(**{'field_name': name, 'value':value}).save()
 
 def get_choices(field_name):
+    #return [('', 'test')]
     from .models import Choice
     choice = Choice.objects.filter(field_name=field_name)
     result = [('','선택하세요')]

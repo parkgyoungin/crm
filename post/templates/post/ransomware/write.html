@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+</style>
+<h3>랜섬웨어 글쓰기</h3>
+<form action="" method="post">
+    <div class="tb">
+        <h5>통보 정보</h5>
+        <table border="1">
+            <tr>
+                <td class="c1">기업명</td>
+                <td class="c2">{{form.company}} <button type="button" onclick="search('company', 'name')">검색</button></td>
+                <td class="c3">문서번호</td>
+                <td class="c4">{{form.document_n}}</td>
+                <td class="c5">발송 날짜</td>
+                <td class="c6">{{form.send_date}}</td>
+            </tr>
+            <tr>
+                <td class="c1">에이전트명</td>
+                <td class="c2">{{form.agent_name}}</td>
+                <td class="c3">에이전트IP</td>
+                <td class="c4">{{form.agent_ip}}</td>
+                <td class="c5">탐지일</td>
+                <td class="c6">{{form.detect_date}}</td>
+            </tr>
+            <tr>
+                <td class="c1">대상 경로</td>
+                <td colspan="3">{{form.path}}</td>
+                <td class="c5">회신유무</td>
+                <td class="c6">{{form.reply}}</td>
+            </tr>
+            <tr>
+                <td class="c1">파일명</td>
+                <td colspan="3">{{form.file_name}}</td>
+                <td class="c5">처리상태</td>
+                <td class="c6">{{form.process_state}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="tb">
+        <button type="submit">작성완료</button><button type="button">취소</button>
+    </div>
+</form>
+<script>
+    function search(){
+        var url_mask = "/post/search/" + model + '/' + field_name
+        child = window.open(url_mask, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+    }
+</script>
+{% endblock %}

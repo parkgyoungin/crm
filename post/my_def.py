@@ -22,3 +22,9 @@ def get_instance_forms(forms, pk, POST=None, FILES=None):
         instance = eval("main_instance.%s"%field_name)
         new_forms[key] = form(data=POST, files=FILES, instance=instance, prefix=form.get_prefix())
     return new_forms
+
+def to_date_widget(fields):
+    from django import forms
+    for key, field in fields.items():
+        if key[-4:] == 'date':
+            fields[key].widget = forms.DateInput(attrs={'type': 'date'})

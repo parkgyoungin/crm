@@ -18,6 +18,8 @@
         <tr>
             <button type="button" onclick="close_window()">사용하기</button>
         </tr>
+        {% elif confirm_data %}
+            '{{confirm_data}}'는 이미 사용중입니다.
         {% endif %}
     </table>
 </form>

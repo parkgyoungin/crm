@@ -109,9 +109,9 @@ class Security(models.Model):
 
     termination_reason = models.CharField(max_length=50, null=True, blank=True)
 
-    ips_rule = models.CharField(max_length=30, null=True, blank=True, choices=get_choices('ips_rule'))
+    ips_rule = models.CharField(max_length=30, null=True, blank=True, choices=get_choices('ips_check'))
 
-    sys_log = models.CharField(max_length=30, null=True, blank=True, choices=get_choices('sys_log)'))
+    sys_log = models.CharField(max_length=30, null=True, blank=True, choices=get_choices('ips_check'))
 
     icmp = models.CharField(max_length=30, null=True, blank=True, choices=get_choices('ips_check'))
 
@@ -168,7 +168,7 @@ class Ransomware(models.Model):
 
 
 class Company(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, verbose_name='회사이름')
 
     tenant = models.BooleanField(blank=True, default=False, verbose_name='입주기업')
 

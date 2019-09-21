@@ -1,5 +1,6 @@
 from django.db import models
 from main.models import Company
+from choice.choices import get_choices
 
 class DetectionPat(models.Model):
     #IPS 탐지 패턴명
@@ -47,7 +48,7 @@ class DetectionPat(models.Model):
 #랜섬웨어
 
 class RansomwarePost(models.Model):
-    company = models.ForeignKey(Company,on_delete=models.CASCADE)
+    company = models.CharField(max_length=100)
 
     document_n = models.PositiveIntegerField()
 
@@ -61,11 +62,11 @@ class RansomwarePost(models.Model):
 
     path = models.CharField(max_length=100)
 
-    reply = models.CharField(max_length=30, )
+    reply = models.CharField(max_length=30, choices=get_choices('reply'))
 
     file_name = models.CharField(max_length=100)
 
-    process_state = models.CharField(max_length=30, )
+    process_state = models.CharField(max_length=30, choices=get_choices('process_state'))
 
     created = models.DateTimeField(auto_now_add=True)
 
