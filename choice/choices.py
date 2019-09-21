@@ -1,4 +1,4 @@
-#
+from .models import Choice
 #('value', 'visible'),
 serstate = [
     ('', '선택하세요'),
@@ -233,15 +233,15 @@ choices = {
     'service_state':service_state,
 }
 
-'''
-def inset_db():
+
+def insert_db():
     from .models import Choice
     for name, list in choices.items():
         for tuple in list:
             value = tuple[0]
             if value == '':
                 continue
-            if Choice.objects.filter(value=value):
+            if Choice.objects.filter(field_name=name ,value=value):
                 continue
             Choice(**{'field_name': name, 'value':value}).save()
 
@@ -252,6 +252,6 @@ def get_choices(field_name):
     for c in choice:
         result.append( (c.value, c.value) )
     return result
-'''
+
 #from post.choices import inset_db
 #inset_db()

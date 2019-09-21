@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'main',
     'post',
     'django_summernote',
+    'choice'
 ]
 
 MIDDLEWARE = [
@@ -117,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ko'
 
-TIME_ZONE = 'UTC' """'Asia/Seoul'"""
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -130,6 +131,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'statics'),
+]
 
 MEDIA_URL = '/media/'
 

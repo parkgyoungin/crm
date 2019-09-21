@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="" method="post">
+    {% csrf_token %}
+    <table>
+        <tr>
+            {{verbose_name}} : <input type="text" name="confirm_data"> <button type="submit">중복확인</button>
+        </tr>
+        {% if success %}
+        <tr>
+            '{{confirm_data}}'는 사용 가능합니다
+        </tr>
+        <tr>
+            <button type="button" onclick="close_window()">사용하기</button>
+        </tr>
+        {% endif %}
+    </table>
+</form>
+<script>
+    function close_window(){
+        opener.check_list['{{ele_id}}'] = true;
+        opener.document.getElementById('{{ele_id}}').value = '{{confirm_data}}';
+        window.close()
+    }
+</script>
+</body>
+</html>

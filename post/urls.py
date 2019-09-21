@@ -8,6 +8,5 @@ urlpatterns = [
     path('<str:model>/update/<int:pk>', views.update, name='update'),
     path('<str:model>/list', views.list, name='list'),
     path('<str:model>/detail/<int:pk>', views.detail, name='detail'),
-    path('check/bnumber', views.check_bnumber, name='check_bnumber'),
-    path('check/ips', views.check_ips, name='check_ips'),
+    path('check/<str:model>/<str:field_name>/<str:ele_id>', views.check, name='check')
 ]

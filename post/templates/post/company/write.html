@@ -1,8 +1,16 @@
 {% extends 'base.html' %}
 
+{% block script %}
+<script src = "/static/js/my.js"></script>
+{% endblock %}
+
 {% block content %}
 <style>
-  /* 전체사항 */
+/* 전체사항 */
+  .tb {margin-top:50px;}
+  select {width:120px;}
+  td {padding:5px;}
+
   /* 테두리 */
   table {width:100%;}
   th, td {
@@ -12,17 +20,15 @@
 
   /* table1 */
   .t1 td {height:80px;}
-  .t1 .c2, .t1 .c4 {
-    width: 400px;
-  }
+
   .t1 .c1, .t1 .c3 {
     width: 110px;
     text-align: center;
     background-color: #EFFBFB;
   }
-  #id_bc_cu_rname {width:100px;}
-  #id_bc_cu_iaddress {width:100%; height:50px;}
-  #id_bc_cu_name, #id_bc_cu_homepage, #id_bc_cu_address {width:250px;}
+  #id_co-top_name {width:100px;}
+
+  #id_co-install_address, #id_co-homepage, #id_co-address {width:80%; height:50px;}
 
   /* table2 */
   .t2 .c1 {
@@ -31,7 +37,7 @@
     background-color: #EFFBFB;
   }
   .t2 .c2 {
-    width: 600px;
+    width: 500px;
     text-align: center;
     background-color: #EFFBFB;
   }
@@ -44,7 +50,7 @@
     text-align: center;
     background-color: #EFFBFB;
   }
-  #id_se_etc {width:100%; height:50px;}
+  .t3 td {height:50px;}
 
   /* table4 */
   .t4 .c1, .t4 .c2, .t4 .c4, .t4 .c6 {
@@ -52,8 +58,8 @@
     text-align: center;
     background-color: #EFFBFB;
   }
-  #id_in_etc {width:100%; height:50px;}
-  #id_in_ip {width:100%; height:50px;}
+  #id_in-in_etc {width:100%; height:50px;}
+  #id_in-in_ip {width:100%; height:50px;}
 
   /* table5 */
   .t5 .c1, .t5 .c2, .t5 .c4 {
@@ -61,7 +67,12 @@
     text-align: center;
     background-color: #EFFBFB;
   }
-  #id_vi_etc {width:100%; height:50px;}
+  .btn_col button{
+    background-color:white;
+    border: 2px solid #D8D8D8;
+    border-radius:20px;
+  }
+  #id_vi-vi_etc {width:100%; height:50px;}
 
   /* table6 */
   .t6 .c1, .t6 .c2, .t6 .c4 {
@@ -69,7 +80,7 @@
     text-align: center;
     background-color: #EFFBFB;
   }
-  #id_ra_etc {width:100%; height:50px;}
+  #id_ra-ra_etc {width:100%; height:50px;}
 
   /* table7 */
   .t7 .c1, .t7 .c2, .t7 .c4, .t7 .c6, .t7 .c8, .t7 .c10 {
@@ -77,257 +88,391 @@
     text-align: center;
     background-color: #EFFBFB;
   }
-  #id_bc_ma_name, #id_bc_ma_email, #id_bc_ch_name {width:100px;}
-  #id_bc_ma_circles, #id_bc_re_circles, #id_bc_ch_circles {width:120px;}
-  #id_bc_ma_phone, #id_bc_re_phone, #id_bc_ch_phone {width:120px;}
-  #id_bc_ma_cphone, #id_bc_re_cphone, #id_bc_ch_cphone {width:140px;}
+
+  .t7 input{width:140px;}
 
   /* etc */
-  #id_bc_etc {width:100%; height:100px;}
-
+  #id_co-etc {width:100%; height:100px;}
 </style>
 <h3>전체 수혜기업 현황 글쓰기</h3>
-<form method="post" action="{% url 'post:write' 'company'%}">
+<form method="post" action="" enctype="multipart/form-data" id="post_form" onsubmit="return last_check()">
+    <input type="hidden" name="csrfmiddlewaretoken" value="1VmNIWcKmUEQSmjozN9eQgMuOWeG3PgqBsm4czWmiYB6eT0QY6L88ZGvqZGu0Glw">
+    <div class="tb">
     <h5>고객정보 등록</h5>
-    {%csrf_token%}
     <table class="t1" border="1">
         <tr>
             <td class='c1'>업체명</td>
-            <td class="c2">{{form.bc_cu_name}} {{form.bc_cu_namein}}<label for="id_bc_cu_namein">입주기업</label></td>
+            <td class="c2">{{co_form.name}} {{co_form.tenant}} {{co_form.tenant.label_tag}}</td>
             <td class="c3">관리번호</td>
-            <td class="c4" colspan="3">{{form.bc_cu_cnumber}} * 필요시 수정</td>
+            <td class="c4" colspan="3"> * 필요시 수정</td>
         </tr>
-
         <tr>
             <td class="c1">서비스현황</td>
-            <td class="c2 fs">보안관제 {{form.bc_im_security}} 내부보안 {{form.bc_im_internal}} 악성코드 {{form.bc_im_virus}} 랜섬웨어 {{form.bc_im_ransomware}}</td>
+            <td class="c2 fs">보안관제 {{co_form.ss_security}} 내부보안 {{co_form.ss_internal}}<br> 악성코드{{co_form.ss_virus}} 랜섬웨어 {{co_form.ss_ransomware}}</td>
             <td class="c3">허수현황</td>
-            <td class="c4" colspan="3">{{form.bc_ss_security}} <label for="id_bc_ss_security"> 보안관제</label> {{form.bc_ss_internal}} <label for="id_bc_ss_internal"> 내부정보</label>
-                {{form.bc_ss_virus}} <label for="id_bc_ss_virus"> 악성코드</label> {{form.bc_ss_ransomware}}<label for="id_bc_ss_ransomware"> 랜섬웨어</label></td>
+            <td class="c4" colspan="3">{{co_form.im_1}} <label for="id_co-im_1"> 보안관제</label> {{co_form.im_2}} <label for="id_co-im_2"> 내부정보</label>
+                {{co_form.im_3}} <label for="id_co-im_3"> 악성코드</label> {{co_form.im_4}}<label for="id_co-im_4"> 랜섬웨어</label>{{co_form.im_state}}</td>
         </tr>
 
         <tr>
-            <td class="c1">업태</td>
-            <td class="c2">{{form.bc_cu_business}}</td>
-            <td class="c3">업종</td>
-            <td class="c4" colspan="3">{{form.bc_cu_comclass}}</td>
+            <td class="c1">사업자 유형</td>
+            <td class="c2">{{co_form.business_type}}</td>
+            <td class="c3">업태</td>
+            <td class="c4">{{co_form.business_uptae}}</td>
+            <td class="c1">업종</td>
+            <td class="c6">{{co_form.business_class}}</td>
         </tr>
 
         <tr>
             <td class="c1">가입경로</td>
-            <td>{{form.bc_cu_path}}</td>
+            <td>{{co_form.join_path}}</td>
             <td class="c1">대표자명</td>
-            <td>{{form.bc_cu_rname}}</td>
+            <td>{{co_form.top_name}}</td>
             <td class="c1">대표자<br>E-mail</td>
-            <td>{{form.bc_cu_remail}}</td>
+            <td>{{co_form.top_email}}</td>
         </tr>
 
         <tr>
             <td class="c1">홈페이지</td>
-            <td class="c2">{{form.bc_cu_homepage}}</td>
+            <td class="c2">{{co_form.homepage}}</td>
             <td class="c3">사업자번호</td>
-            <td class="c4" colspan="3">{{form.bc_cu_bnumber}} <button type="button">중복확인</button></td>
+            <td class="c4" colspan="3">{{co_form.business_n}} <button type="button" onclick="popup_check('Company','business_n', 'id_co-business_n')">중복확인</button>
         </tr>
 
         <tr>
             <td class="c1">주소</td>
-            <td class="c2">{{form.bc_cu_address}}</td>
+            <td class="c2">{{co_form.address}}></td>
             <td class="c3">설치주소</td>
-            <td class="c4" colspan="3">{{form.bc_cu_iaddress}}</td>
+            <td class="c4" colspan="3">{{co_form.install_address}}</td>
         </tr>
     </table>
+    </div>
 
+
+    <div class="tb">
     <h5>업체구분</h5>
-    <table class="t2">
+    <table class="t2" border="1">
         <tr>
-            <td class="c1" rowspan="5">운영환경</td>
+            <td class="c1" rowspan="6">운영환경</td>
             <td class="c2">1.테크노파크, 지식재산센터 등 대규모 입주단지</td>
-            <td class="c3"><input type="checkbox" id="op_check1"></td>
-            <td class="c4">{{form.bc_op_lmove}}</td>
+            <td class="c3"><input type="checkbox" id="ch_id_co-large_scale" onchange="set_another(this)"></td>
+            <td class="c4">{{co_form.large_scale}} {{co_form.large_etc}}</td>
         </tr>
         <tr>
             <td class="c2">2. 대기업 협력사</td>
-            <td class="c3"><input type="checkbox" id="op_check2"></td>
-            <td class="4">{{form.bc_op_lpartner}}</td>
+            <td class="c3"><input type="checkbox" id="ch_id_co-major_partner" onchange="set_another(this)"></td>
+            <td class="4">{{co_form.major_partner}} {{co_form.major_etc}}</td>
         </tr>
         <tr>
             <td class="c2">3. 폐쇠망 운영 여부</td>
-            <td class="c3"><input type="checkbox" id="op_check3"></td>
-            <td class="4">{{form.bc_op_closure}}</td>
+            <td class="c3"><input type="checkbox" id="ch_id_co-closed_net" onchange="set_another(this)"></td>
+            <td class="4">{{co_form.closed_net}} {{co_form.closed_etc}}</td>
         </tr>
         <tr>
             <td class="c2">4. 방위산업체/방위산업협력기업</td>
-            <td class="c3"><input type="checkbox" id="op_check4"></td>
-            <td class="c4">{{form.bc_op_defense}}</td>
+            <td class="c3"><input type="checkbox" id="ch_id_co-defense_industry" onchange="set_another(this)"></td>
+            <td class="c4">{{co_form.defense_industry}} {{co_form.defense_etc}}</td>
         </tr>
         <tr>
-            <td class="c2">5. 기타 특이사항 입력</td>
-            <td class="c3"><input type="checkbox" id="op_check5"></td>
-            <td class="c4">{{form.bc_op_etc}}</td>
+            <td class="c2">5. 스마트공장 </td>
+            <td class="c3"><input type="checkbox" id="ch_id_co-smart_factory" onchange="set_another(this)"></td>
+            <td class="c4">{{co_form.smart_factory}} {{co_form.smart_etc}}</td>
+        </tr>
+        <tr>
+            <td class="c2">6. 기타 특이사항 입력</td>
+            <td class="c3"><input type="checkbox" id="ch_id_co-operation_etc" onchange="set_another_etc(this)"></td>
+            <td class="c4">{{co_form.operation_etc}}</td>
         </tr>
     </table>
+    </div>
 
+    <div class="tb">
     <h5>서비스 정보</h5>
-    <table class="t3">
+    <table class="t3" border="1">
         <tr>
             <td class="c1" rowspan="6">보안관제</td>
             <td class="c2">계약사항</td>
-            <td class="c3">{{form.se_contract}}</td>
+            <td class="c3">{{se_form.contract}}</td>
             <td class="c4">선차단 권한</td>
-            <td class="c5">{{form.se_pblock}}</td>
+            <td class="c5">{{se_form.block_permis}}</td>
             <td class="c6">보고서발송일</td>
-            <td class="c7">{{form.se_sdate}}</td>
+            <td class="c7">{{se_form.send_date}}</td>
         </tr>
         <tr>
             <td class="c2">연동일</td>
-            <td class="c3">{{form.se_cdate}}</td>
+            <td class="c3">{{se_form.interlock_date}}</td>
             <td class="c4">시리얼 번호</td>
-            <td class="c5">{{form.se_serial}}</td>
+            <td class="c5">{{se_form.serial}}</td>
             <td class="c6">라이선스 만료일</td>
-            <td class="c7">{{form.se_edate}}</td>
+            <td class="c7">{{se_form.expiry_date}}</td>
         </tr>
         <tr>
             <td class="c2">장비 펌웨어</td>
-            <td class="c3">{{form.se_firmware}}</td>
+            <td class="c3">{{se_form.firmware}}</td>
             <td class="c4">장비 분류</td>
-            <td class="c5">{{form.se_eqclass}}</td>
+            <td class="c5">{{se_form.equipment_class}}</td>
             <td class="c6">소유권</td>
-            <td class="c7">{{form.se_ownership}}</td>
+            <td class="c7">{{se_form.ownership}}</td>
         </tr>
         <tr>
             <td class="c2">접근 권한</td>
-            <td class="c3">{{form.se_access}}</td>
-            <td class="c4">IPS/Check</td>
-            <td colspan="3">{{form.se_ipsrule}} {{form.se_syslog}} {{form.se_icmp}} {{form.se_snmp}}</td>
+            <td class="c3">{{se_form.access_permis}}</td>
+            <td class="c4">해지일/사유</td>
+            <td colspan="3">{{se_form.termination_date}} / {{se_form.termination_reason}}</td>
         </tr>
         <tr>
-            <td class="c2">해지일/사유</td>
-            <td colspan="5">{{form.se_tdate}} / {{form.se_treason}}</td>
+            <td class="c2">IPS/Check</td>
+            <td colspan="5">
+                IPSrule {{se_form.ips_rule}}
+                Syslog {{se_form.sys_log}}
+                ICMP {{se_form.icmp}}
+                SNMP {{se_form.snmp}} {{se_form.snmp_sub}}
+            </td>
         </tr>
         <tr>
             <td class="c2">기타사항</td>
-            <td colspan="5">{{form.se_etc}}</td>
+            <td colspan="5">{{se_form.etc}}</td>
         </tr>
     </table>
+    </div>
 
-    <table class="t4">
+    <div class="tb">
+    <table class="t4" border="1">
         <tr>
             <td rowspan="3" class="c1">내부정보</td>
             <td class="c2">계약사항</td>
-            <td class="c3">{{form.in_contract}}</td>
+            <td class="c3">{{in_form.contract}}</td>
             <td class="c4">신청대수</td>
-            <td class="c5">{{form.in_apply}} 대</td>
+            <td class="c5">{{in_form.apply_n}} 대</td>
             <td class="c6">연동일</td>
-            <td class="c7">{{form.in_cdate}}</td>
+            <td class="c7">{{in_form.interlock_date}}</td>
         </tr>
         <tr>
             <td class="c2">IP</td>
-            <td colspan="3">{{form.in_ip}}</td>
+            <td colspan="3">{{in_form.ip}}</td>
             <td class="c4">해지일(사유)</td>
-            <td class="c5">{{form.in_tdate}} / {{form.in_treason}}</td>
+            <td class="c5">{{in_form.termination_date}} / {{in_form.termination_reason}}</td>
         </tr>
         <tr>
             <td class="c2">기타사항</td>
-            <td colspan="3">{{form.in_etc}}</td>
+            <td colspan="5">{{in_form.etc}}</td>
         </tr>
     </table>
+    </div>
 
-    <table class="t5">
+
+    <div class="tb">
+    <table class="t5" border="1">
         <tr>
             <td rowspan="3" class="c1">악성코드</td>
             <td class="c2">계약사항</td>
-            <td class="c3">{{form.vi_contract}}</td>
+            <td class="c3">{{vi_form.contract}}</td>
             <td class="c4">신청대수</td>
-            <td class="c5">{{form.vi_apply}} 대</td>
+            <td class="c5">{{vi_form.apply_n}} 대</td>
         </tr>
         <tr>
             <td class="c2">연동일</td>
-            <td class="c3">{{form.vi_cdate}}</td>
+            <td class="c3">{{vi_form.interlock_date}}</td>
             <td class="c4">해지일(사유)</td>
-            <td class="c5">{{form.vi_tdate}} / {{form.vi_treason}}</td>
+            <td class="c5">{{vi_form.termination_date}} / {{vi_form.termination_reason}}</td>
         </tr>
         <tr>
             <td class="c2">기타사항</td>
-            <td colspan="3">{{form.vi_etc}}</td>
+            <td colspan="3">{{vi_form.etc}}</td>
         </tr>
     </table>
+    </div>
 
-    <table class="t6">
+    <div class="tb">
+    <table class="t6" border="1">
         <tr>
             <td rowspan="3" class="c1">랜섬웨어</td>
             <td class="c2">계약사항</td>
-            <td class="c3">{{form.ra_contract}}</td>
+            <td class="c3">{{ra_form.contract}}</td>
             <td class="c4">신청대수</td>
-            <td class="c5">{{form.ra_apply}} 대</td>
+            <td class="c5">{{ra_form.apply_n}} 대</td>
         </tr>
         <tr>
             <td class="c2">연동일</td>
-            <td class="c3">{{form.ra_cdate}}</td>
+            <td class="c3">{{ra_form.interlock_date}}</td>
             <td class="c4">해지일(사유)</td>
-            <td class="c5">{{form.ra_tdate}} / {{form.ra_treason}}</td>
+            <td class="c5">{{ra_form.termination_date}} / {{ra_form.termination_reason}}</td>
         </tr>
         <tr>
             <td class="c2">기타사항</td>
-            <td colspan="3">{{form.ra_etc}}</td>
+            <td colspan="3">{{ra_form.etc}}</td>
         </tr>
     </table>
+    </div>
 
+    <div class="tb">
     <h5>담당자 등록정보</h5>
-    <table class="t7">
+    <table class="t7" border="1">
         <tr>
             <td class="c1">(정)</td>
             <td class="c2">이름</td>
-            <td class="c3">{{form.bc_ma_name}}</td>
+            <td class="c3">{{co_form.manager_m_name}}</td>
             <td class="c4">부서</td>
-            <td class="c5">{{form.bc_ma_circles}}</td>
+            <td class="c5">{{co_form.manager_m_depart}}</td>
             <td class="c6">휴대폰</td>
-            <td class="c7">{{form.bc_ma_phone}}</td>
+            <td class="c7">{{co_form.manager_m_phone}}</td>
             <td class="c8">회사<br>전화</td>
-            <td class="c9">{{form.bc_ma_cphone}}</td>
+            <td class="c9">{{co_form.manager_m_cphone}}</td>
             <td class="c10">E-mail</td>
-            <td class="c11">{{form.bc_ma_email}}</td>
+            <td class="c11">{{co_form.manager_m_email}}</td>
         </tr>
 
         <tr>
             <td class="c1">(부)</td>
             <td class="c2">이름</td>
-            <td class="c3">{{form.bc_ma_name}}</td>
+            <td class="c3">{{co_form.manager_s_name}}</td>
             <td class="c4">부서</td>
-            <td class="c5">{{form.bc_ma_circles}}</td>
+            <td class="c5">{{co_form.manager_s_depart}}</td>
             <td class="c6">휴대폰</td>
-            <td class="c7">{{form.bc_ma_phone}}</td>
+            <td class="c7">{{co_form.manager_s_phone}}</td>
             <td class="c8">회사<br>전화</td>
-            <td class="c9">{{form.bc_ma_cphone}}</td>
+            <td class="c9">{{co_form.manager_s_cphone}}</td>
             <td class="c10">E-mail</td>
-            <td class="c11">{{form.bc_ma_email}}</td>
+            <td class="c11">{{co_form.manager_s_email}}</td>
         </tr>
 
         <tr>
             <td class="c1">(요금)</td>
             <td class="c2">이름</td>
-            <td class="c3">{{form.bc_ma_name}}</td>
+            <td class="c3">{{co_form.manager_f_name}}</td>
             <td class="c4">부서</td>
-            <td class="c5">{{form.bc_ma_circles}}</td>
+            <td class="c5">{{co_form.manager_f_depart}}</td>
             <td class="c6">휴대폰</td>
-            <td class="c7">{{form.bc_ma_phone}}</td>
+            <td class="c7">{{co_form.manager_f_phone}}</td>
             <td class="c8">회사<br>전화</td>
-            <td class="c9">{{form.bc_ma_cphone}}</td>
+            <td class="c9">{{co_form.manager_f_cphone}}</td>
             <td class="c10">E-mail</td>
-            <td class="c11">{{form.bc_ma_email}}</td>
+            <td class="c11">{{co_form.manager_f_email}}</td>
         </tr>
 
         <tr>
             <td colspan="2" class="c1">세금계산서 발송일</td>
-            <td colspan="9">매월 {{form.bc_sdate}} 일</td>
+            <td colspan="9">매월 {{co_form.bill_send_date}} 일</td>
         </tr>
     </table>
-
-    <h5>기타사항</h5>
-    {{form.bc_etc}}
-    <h5>첨부파일</h5>
-    {{form.bc_file}}
-
-    <button type="submit">작성완료</button>
-    <button type="button">취소</button>
+    </div>
+    <div class="tb">
+        <h5>기타사항</h5>
+        {{co_form.etc}}
+        <h5>첨부파일</h5>
+        {{co_form.file}}
+        <button type="submit">작성완료</button>
+        <button type="button">취소</button>
+    </div>
 </form>
+
+
+<script>
+    //전역변수
+    var connections = [
+            ['ch_id_co-large_scale','id_co-large_scale', 'id_co-large_etc'],
+            ['ch_id_co-major_partner','id_co-major_partner', 'id_co-major_etc'],
+            ['ch_id_co-closed_net','id_co-closed_net', 'id_co-closed_etc'],
+            ['ch_id_co-defense_industry','id_co-defense_industry', 'id_co-defense_etc'],
+            ['ch_id_co-smart_factory','id_co-smart_factory', 'id_co-smart_etc'],
+            //['ch_id_co-operation_etc','id_co-operation_etc'],
+        ];
+    window.onload = function(){
+
+        window.check_list = {'id_co-business_n':false};
+        for(var key in window.check_list){
+            if(document.getElementById(key).value){
+                window.check_list[key] = true;
+            }
+        }
+
+        //load initial data
+        sets = [
+            {'main':[1, selected_etc], 'sub': [[0,set_checked], [2,able], [1,able]]},
+            {'main':[1, selected_ex_none], 'sub': [[0,set_checked], [1,able]]},
+        ];
+        ele = [
+        document.getElementById(connections[0][1]),
+         document.getElementById(connections[1][1]),
+          document.getElementById(connections[2][1]),
+          document.getElementById(connections[3][1]),
+           document.getElementById(connections[4][1]),
+           ];
+        for(var i=0; i<ele.length; i++){
+            set_another_js(ele[i], connections, sets);
+        }
+
+        //6기타 load initial data
+        connections = [['ch_id_co-operation_etc','id_co-operation_etc']];
+        sets = [
+            {'main':[1, selected_etc], 'sub': [[0,set_checked], [1,able]]},
+            {'main':[1, selected_ex_none], 'sub': [[0,set_checked], [1,able]]},
+        ];
+        set_another_js(document.getElementById(connections[0][1]), connections, sets);
+
+    }
+
+    //동적 활성화
+    function set_another(ele){
+        var connections = [
+            ['ch_id_co-large_scale','id_co-large_scale', 'id_co-large_etc'],
+            ['ch_id_co-major_partner','id_co-major_partner', 'id_co-major_etc'],
+            ['ch_id_co-closed_net','id_co-closed_net', 'id_co-closed_etc'],
+            ['ch_id_co-defense_industry','id_co-defense_industry', 'id_co-defense_etc'],
+            ['ch_id_co-smart_factory','id_co-smart_factory', 'id_co-smart_etc'],
+            //['ch_id_co-operation_etc','id_co-operation_etc'],
+        ];
+        sets = [
+            {'main':[0, checked], 'sub': [[1,able]]},
+            {'main':[0, nonChecked], 'sub':[[1, disable], [2, disable]]},
+            {'main':[1, selected_etc], 'sub':[[2, able]]},
+            {'main':[1, selected_another], 'sub':[[2, disable]]},
+        ];
+        set_another_js(ele, connections, sets);
+    }
+    function set_another_etc(ele){
+        connections = [
+            ['ch_id_co-operation_etc','id_co-operation_etc']
+        ];
+        sets = [
+            {'main':[0, checked], 'sub': [[1,able]]},
+            {'main':[0, nonChecked], 'sub':[[1, disable]]},
+        ];
+        set_another_js(ele, connections, sets);
+    }
+
+
+    //중복체크 변경체크
+    function change_check(ele){
+        window.check_list[ele.id] = false;
+    }
+
+    //중복체크 팝업
+    function popup_check(model, field_name, id){
+        var model_field = '/' + model + '/' + field_name + '/' + id;
+        var url_mask = "/post/check/abc/def/ghi".replace('/abc/def/ghi', model_field);
+        child = window.open(url_mask, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+    }
+
+    function change_data(){
+        var v1 = (document.getElementById('id_co-im_1').checked ==true) ? '1':'0';
+        var v2 = (document.getElementById('id_co-im_2').checked ==true) ? '1':'0';
+        var v3 = (document.getElementById('id_co-im_3').checked ==true) ? '1':'0';
+        var v4 = (document.getElementById('id_co-im_4').checked ==true) ? '1':'0';
+        document.getElementById('id_co-im_state').value = v1+v2+v3+v4;
+        //alert(document.getElementById('id_co-im_state').value);
+    }
+
+    //before submit
+    function last_check(){
+        for(var key in window.check_list){
+            if(window.check_list[key] == false){
+                alert('중복확인이 되지않은 항목이 있습니다');
+                return false;
+            }
+        }
+        return true;
+    }
+
+</script>
 {% endblock %}

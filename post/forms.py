@@ -1,114 +1,137 @@
 from django import forms
 from . import choices
 from django_summernote.widgets import SummernoteWidget
-from django.utils.safestring import mark_safe
-from main.models import *
-from .models import *
+from main.models import Company,Security,Internal,Virus,Ransomware
+from .models import Comment,DetectionPat
+
+duplicate_check_fields = {
+    'business_n',
+}
+onchange_fields = {
+    'large_scale',
+    'major_partner',
+    'closed_net',
+    'defense_industry',
+    'smart_factory',
+}
+
+disable_fields = {
+    'large_scale',
+    'major_partner',
+    'closed_net',
+    'defense_industry',
+    'smart_factory',
+    'large_etc',
+    'major_etc',
+    'closed_etc',
+    'defense_etc',
+    'smart_etc',
+    'operation_etc',
+}
+
+attrs_configs = [
+    {'fields': duplicate_check_fields, 'attrs': 'onchange', 'value': 'change_check(this)'},
+    {'fields': onchange_fields, 'attrs': 'onchange', 'value': 'set_another(this)'},
+    {'fields': disable_fields, 'attrs': 'disabled', 'value': 'true'},
+]
+
+def get_available(field, *args, **kwargs):
+    title = None
+    if kwargs.get('instance'):
+        title = eval("kwargs['instance'].%s"%field)
+    elif args:
+        title = args[0][field]
+    return title
 
 #https://developer.mozilla.org/ko/docs/Learn/Server-side/Django/Forms
+class CompanyForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        im_state = get_available('im_state', *args, **kwargs)
+        super(CompanyForm, self).__init__(*args, **kwargs)
 
-class TbBeneficcomForm(forms.ModelForm):
-    bc_cu_bnumber_h = forms.CharField(widget=forms.HiddenInput)
+        #위젯 attribute 수정
+        for key, field in self.fields.items():
+            for config in attrs_configs:
+                if key in config['fields']:
+                    self.fields[key].widget.attrs[config['attrs']] = config['value']
+        self.fields['im_state'].widget = forms.HiddenInput()
+
+        #im_state 초기 설정
+        if im_state:
+            self.fields['im_1'].initial = bool(int(im_state[0]))
+            self.fields['im_2'].initial = bool(int(im_state[1]))
+            self.fields['im_3'].initial = bool(int(im_state[2]))
+            self.fields['im_4'].initial = bool(int(im_state[3]))
+
+    im_1 = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'onchange':'change_data()'}))
+    im_2 = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'onchange':'change_data()'}))
+    im_3 = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'onchange':'change_data()'}))
+    im_4 = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={'onchange':'change_data()'}))
+
     class Meta:
-        model = TbBeneficcom
-        fields = '__all__'
-        widgets = {
-
-            'bc_im_ransomware': forms.CheckboxInput,
-
-            'bc_ss_security': forms.Select(choices=choices.serstate, attrs={'required':'true'} ),
-
-            'bc_ss_internal': forms.Select(choices=choices.serstate, attrs={'required': 'true'}),
-
-            'bc_ss_virus': forms.Select(choices=choices.serstate, attrs={'required': 'true'}),
-
-            'bc_ss_ransomware': forms.Select(choices=choices.serstate, attrs={'required': 'true'}),
-
-            'bc_cu_business': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
-
-            'bc_cu_comclass': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
-
-            'bc_cu_path': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
-
-            'bc_op_lmove': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
-
-            'bc_op_lpartner': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
-
-            'bc_op_closure': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
-
-            'bc_op_defense': forms.Select(choices=choices.op, attrs={'required': 'true', 'disabled':'true'}),
-
-            'bc_cu_bnumber': forms.TextInput(attrs={'onclick':'popup_idChk()'}),
-
-            'bc_sdate': forms.DateInput(attrs={'type':'date'}),
-        }
+        model = Company
+        exclude = ('security', 'internal', 'virus', 'ransomware')
 
     @staticmethod
     def get_prefix():
-        return 'be'
+        return 'co'
 
-class TbSecurityForm(forms.ModelForm):
+
+class SecurityForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SecurityForm, self).__init__(*args, **kwargs)
+        for key, field in self.fields.items():
+            if key[-4:] == 'date':
+                self.fields[key].widget = forms.DateInput(attrs={'type':'date'})
+
     class Meta:
-        model = TbSecurity
-        exclude = ('beneficCom',)
-        widgets = {
-            # 'se_ipsrule':forms.TextInput,
-
-            # 'se_syslog':forms.HiddenInput(),
-
-            'se_icmp':forms.HiddenInput(),
-
-            'se_snmp':forms.HiddenInput(),
-            'se_contract': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
-            'se_ips': forms.HiddenInput(),
-            'se_sdate': forms.DateInput(attrs={'type':'date'}),
-            'se_cdate': forms.DateInput(attrs={'type':'date'}),
-            'se_edate': forms.DateInput(attrs={'type': 'date'}),
-            'se_tdate': forms.DateInput(attrs={'type': 'date'}),
-
-        }
+        model = Security
+        fields = '__all__'
 
     @staticmethod
     def get_prefix():
         return 'se'
 
-class TbInternalForm(forms.ModelForm):
+class InternalForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(InternalForm, self).__init__(*args, **kwargs)
+        for key, field in self.fields.items():
+            if key[-4:] == 'date':
+                self.fields[key].widget = forms.DateInput(attrs={'type':'date'})
+
     class Meta:
-        model = TbInternal
-        exclude = ('beneficCom',)
-        widgets = {
-            'in_contract': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
-            'in_cdate': forms.DateInput(attrs={'type': 'date'}),
-            'in_tdate': forms.DateInput(attrs={'type': 'date'}),
-        }
+        model = Internal
+        fields = '__all__'
 
     @staticmethod
     def get_prefix():
         return 'in'
 
-class TbVirusForm(forms.ModelForm):
+class VirusForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(VirusForm, self).__init__(*args, **kwargs)
+        for key, field in self.fields.items():
+            if key[-4:] == 'date':
+                self.fields[key].widget = forms.DateInput(attrs={'type':'date'})
+
     class Meta:
-        model = TbVirus
-        exclude = ('beneficCom',)
-        widgets = {
-            'vi_contract': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
-            'vi_cdate': forms.DateInput(attrs={'type': 'date'}),
-            'vi_tdate': forms.DateInput(attrs={'type': 'date'}),
-        }
+        model = Virus
+        fields = '__all__'
 
     @staticmethod
     def get_prefix():
         return 'vi'
 
-class TbRansomForm(forms.ModelForm):
+class RansomwareForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(RansomwareForm, self).__init__(*args, **kwargs)
+        for key, field in self.fields.items():
+            if key[-4:] == 'date':
+                self.fields[key].widget = forms.DateInput(attrs={'type':'date'})
+
     class Meta:
-        model = TbRansom
-        exclude = ('beneficCom',)
-        widgets = {
-            'ra_contract': forms.Select(choices=choices.sample, attrs={'required': 'true'}),
-            'ra_cdate': forms.DateInput(attrs={'type': 'date'}),
-            'ra_tdate': forms.DateInput(attrs={'type': 'date'}),
-        }
+        model = Ransomware
+        fields = '__all__'
 
     @staticmethod
     def get_prefix():
@@ -133,13 +156,18 @@ class DetectionPatternForm(forms.ModelForm):
             'rule_udate':forms.DateInput(attrs={'type': 'date'}),
         }
 
+class CommentForm(forms.ModelForm):
+    com_class = forms.ChoiceField(choices=choices.com_class, required=False)
+    class Meta:
+        model = Comment
+        exclude = ('model_name','model_pk')
 
 class CheckBnumberForm(forms.Form):
     bnumber = forms.CharField(max_length=100, label='사업자등록번호')
 
     def clean_bnumber(self):
         bnumber = self.cleaned_data['bnumber']
-        if TbBeneficcom.objects.filter(bc_cu_bnumber=bnumber):
+        if Company.objects.filter(bc_cu_bnumber=bnumber):
             raise forms.ValidationError(' "%s"는 이미 사용중인 사업자등록번호 입니다.'%bnumber)
         return bnumber
 
@@ -152,8 +180,6 @@ class CheckIpsForm(forms.Form):
             raise forms.ValidationError(' "%s"는 이미 사용중인 사업자등록번호 입니다.'%pat_name)
         return pat_name
 
-class CommentForm(forms.ModelForm):
-    com_class = forms.ChoiceField(choices=choices.com_class, required=False)
-    class Meta:
-        model = Comment
-        exclude = ('model_name','model_pk')
+class CheckForm(forms.Form):
+    saved_data = forms.CharField(max_length=100)
+    confirm_data = forms.CharField(max_length=100)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 from django.utils import timezone
+from choice.choices import get_choices
 
 class UserManager(BaseUserManager):
     def create_user(self,userid, name, nickname ,email, password=None):
@@ -82,127 +83,192 @@ class User(AbstractBaseUser):
     def is_staff(self):
         return self.is_admin
 
-class TbBeneficcom(models.Model):
-    bc_number = models.AutoField(primary_key=True, default=0)
-    bc_date = models.DateTimeField(auto_now_add=True)
-    bc_cu_name = models.CharField(max_length=50)
-    bc_cu_namein = models.BooleanField(default=False)
-    bc_cu_cnumber = models.IntegerField()
-    bc_cu_rname = models.CharField(max_length=50)
-    bc_cu_remail = models.EmailField()
-    bc_cu_bnumber = models.IntegerField(unique=True)
-    bc_cu_comclass = models.CharField(max_length=50)
-    bc_cu_business = models.CharField(max_length=50)
-    bc_cu_path = models.CharField(max_length=50)
-    bc_cu_homepage = models.CharField(max_length=150, blank=True, null=True)
-    bc_cu_address = models.CharField(max_length=100)
-    bc_cu_iaddress = models.CharField(max_length=100)
-    bc_im_security = models.BooleanField(default=False)
-    bc_im_internal = models.BooleanField(default=False)
-    bc_im_virus = models.BooleanField(default=False)
-    bc_im_ransomware = models.BooleanField(default=False)
-    bc_ss_security = models.CharField(max_length=10)
-    bc_ss_internal = models.CharField(max_length=10)
-    bc_ss_virus = models.CharField(max_length=10)
-    bc_ss_ransomware = models.CharField(max_length=10)
-    bc_op_lmove = models.CharField(max_length=10, blank=True, null=True)
-    bc_op_lpartner = models.CharField(max_length=10, blank=True, null=True)
-    bc_op_closure = models.CharField(max_length=10, blank=True, null=True)
-    bc_op_defense = models.CharField(max_length=10, blank=True, null=True)
-    bc_op_etc = models.CharField(max_length=50, blank=True, null=True)
-    bc_ma_name = models.CharField(max_length=10, blank=True, null=True)
-    bc_ma_circles = models.CharField(max_length=50, blank=True, null=True)
-    bc_ma_phone = models.CharField(max_length=50, blank=True, null=True)
-    bc_ma_cphone = models.CharField(max_length=50, blank=True, null=True)
-    bc_ma_email = models.EmailField()
-    bc_re_name = models.CharField(max_length=10, blank=True, null=True)
-    bc_re_circles = models.CharField(max_length=50, blank=True, null=True)
-    bc_re_phone = models.CharField(max_length=50, blank=True, null=True)
-    bc_re_cphone = models.CharField(max_length=50, blank=True, null=True)
-    bc_re_email = models.EmailField()
-    bc_ch_name = models.CharField(max_length=10, blank=True, null=True)
-    bc_ch_circles = models.CharField(max_length=50, blank=True, null=True)
-    bc_ch_phone = models.CharField(max_length=50, blank=True, null=True)
-    bc_ch_cphone = models.CharField(max_length=50, blank=True, null=True)
-    bc_ch_email = models.EmailField()
-    bc_sdate = models.IntegerField()
-    bc_etc = models.TextField(blank=True, null=True)
-    bc_file = models.FileField(blank=True, null=True)
 
-    class Meta:
-        db_table = 'tb_beneficcom'
+class Security(models.Model):
+    contract = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('contract'))
 
-class TbSecurity(models.Model):
-    se_number = models.AutoField(primary_key=True, default=0)
-    se_date = models.DateTimeField(auto_now_add=True)
-    se_benumber = models.ForeignKey(TbBeneficcom, models.DO_NOTHING, db_column='se_benumber')
-    se_contract = models.CharField(max_length=50)
-    se_pblock = models.CharField(max_length=80)
-    se_serial = models.CharField(max_length=80)
-    se_sdate = models.DateField()
-    se_cdate = models.DateField()
-    se_edate = models.DateField()
-    se_tdate = models.DateField()
-    se_treason = models.CharField(max_length=80, blank=True, null=True)
-    se_firmware = models.CharField(max_length=50)
-    se_eqclass = models.CharField(max_length=50)
-    se_ownership = models.CharField(max_length=50)
-    se_access = models.CharField(max_length=50)
-    se_ipsrule = models.BooleanField(default=False)
-    se_syslog = models.BooleanField(default=False)
-    se_icmp = models.BooleanField(default=False)
-    se_snmp = models.BooleanField(default=False)
-    se_etc = models.TextField(blank=True, null=True)
+    block_permis = models.CharField(max_length=50, null=True, blank=True)
 
-    class Meta:
-        db_table = 'tb_security'
+    send_date = models.DateField(null=True, blank=True)
 
-class TbInternal(models.Model):
-    in_number = models.AutoField(primary_key=True, default=0)
-    in_date = models.DateTimeField(auto_now_add=True)
-    in_benumber = models.ForeignKey(TbBeneficcom, models.DO_NOTHING, db_column='in_benumber')
-    in_contract = models.CharField(max_length=50)
-    in_apply = models.IntegerField()
-    in_cdate = models.DateField()
-    in_ip = models.CharField(max_length=50)
-    in_tdate = models.DateField()
-    in_treason = models.CharField(max_length=80, blank=True, null=True)
-    in_etc = models.TextField(blank=True, null=True)
+    interlock_date = models.DateField(null=True, blank=True)
 
-    class Meta:
-        db_table = 'tb_internal'
+    serial = models.CharField(max_length=100, null=True, blank=True)
 
-class TbVirus(models.Model):
-    vi_number = models.AutoField(primary_key=True, default=0)
-    vi_date = models.DateTimeField(auto_now_add=True)
-    vi_benumber = models.ForeignKey(TbBeneficcom, models.DO_NOTHING, db_column='vi_benumber')
-    vi_contract = models.CharField(max_length=50)
-    vi_apply = models.IntegerField()
-    vi_cdate = models.DateField()
-    vi_tdate = models.DateField()
-    vi_treason = models.CharField(max_length=80, blank=True, null=True)
-    vi_etc = models.TextField(blank=True, null=True)
+    expiry_date = models.DateField(null=True, blank=True)
 
-    class Meta:
-        db_table = 'tb_virus'
+    firmware = models.CharField(max_length=50, null=True, blank=True)
 
-class TbRansom(models.Model):
-    ra_number = models.AutoField(primary_key=True, default=0)
-    ra_date = models.DateTimeField(auto_now_add=True)
-    re_benumber = models.ForeignKey(TbBeneficcom, models.DO_NOTHING, db_column='re_benumber')
-    ra_contract = models.CharField(max_length=50)
-    ra_apply = models.IntegerField()
-    ra_cdate = models.DateField()
-    ra_tdate = models.DateField()
-    ra_treason = models.CharField(max_length=80, blank=True, null=True)
-    ra_etc = models.TextField(blank=True, null=True)
+    equipment_class = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('equipment_class'))
 
-    class Meta:
-        db_table = 'tb_ransom'
+    ownership = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('ownership'))
+
+    access_permis = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('access_permis'))
+
+    termination_date = models.DateField(null=True, blank=True)
+
+    termination_reason = models.CharField(max_length=50, null=True, blank=True)
+
+    ips_rule = models.CharField(max_length=30, null=True, blank=True, choices=get_choices('ips_rule'))
+
+    sys_log = models.CharField(max_length=30, null=True, blank=True, choices=get_choices('sys_log)'))
+
+    icmp = models.CharField(max_length=30, null=True, blank=True, choices=get_choices('ips_check'))
+
+    snmp = models.CharField(max_length=30, null=True, blank=True, choices=get_choices('ips_check'))
+
+    snmp_sub = models.CharField(max_length=30, null=True, blank=True, choices=get_choices('snmp_sub'))
+
+    etc = models.CharField(max_length=255, null=True, blank=True)
+
+
+class Internal(models.Model):
+    contract = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('contract'))
+
+    apply_n = models.IntegerField(null=True, blank=True)
+
+    interlock_date = models.DateField(null=True, blank=True)
+
+    ip = models.CharField(max_length=100, null=True, blank=True)
+
+    termination_date = models.DateField(null=True, blank=True)
+
+    termination_reason = models.CharField(max_length=50, null=True, blank=True)
+
+    etc = models.CharField(max_length=255, null=True, blank=True)
+
+
+class Virus(models.Model):
+    contract = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('contract'))
+
+    apply_n = models.IntegerField(null=True, blank=True)
+
+    interlock_date = models.DateField(null=True, blank=True)
+
+    termination_date = models.DateField(null=True, blank=True)
+
+    termination_reason = models.CharField(max_length=50, null=True, blank=True)
+
+    etc = models.CharField(max_length=255, null=True, blank=True)
+
+
+class Ransomware(models.Model):
+    contract = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('contract'))
+
+    apply_n = models.IntegerField(null=True, blank=True)
+
+    interlock_date = models.DateField(null=True, blank=True)
+
+    termination_date = models.DateField(null=True, blank=True)
+
+    termination_reason = models.CharField(max_length=50, null=True, blank=True)
+
+    etc = models.CharField(max_length=255, null=True, blank=True)
 
 
 
+class Company(models.Model):
+    name = models.CharField(max_length=50)
 
+    tenant = models.BooleanField(blank=True, default=False, verbose_name='입주기업')
+
+    ss_security = models.CharField(max_length=20, choices=get_choices('service_state'))
+
+    ss_internal = models.CharField(max_length=20, choices=get_choices('service_state'))
+
+    ss_virus = models.CharField(max_length=20, choices=get_choices('service_state'))
+
+    ss_ransomware = models.CharField(max_length=20, choices=get_choices('service_state'))
+
+    im_state = models.CharField(max_length=20, blank=True, default='0000')
+
+    business_type = models.CharField(max_length=50, choices=get_choices('business_type'))
+
+    business_etc = models.CharField(max_length=50, blank=True, null=True)
+
+    business_uptae = models.CharField(max_length=50, choices=get_choices('business_uptae'))
+
+    business_class = models.CharField(max_length=50, choices=get_choices('business_class'))
+
+    join_path = models.CharField(max_length=50, choices=get_choices('join_path'))
+
+    top_name = models.CharField(max_length=50)
+
+    top_email = models.EmailField()
+
+    homepage = models.CharField(max_length=100, null=True, blank=True)
+
+    business_n = models.IntegerField(verbose_name='사업자번호')
+
+    address = models.CharField(max_length=100)
+
+    install_address = models.CharField(max_length=100)
+
+    large_scale = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('large_scale'))
+
+    major_partner = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('major_partner'))
+
+    closed_net = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('closed_net'))
+
+    defense_industry = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('defense_industry'))
+
+    smart_factory = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('smart_factory'))
+
+    operation_etc = models.CharField(max_length=50, null=True, blank=True)
+
+    large_etc = models.CharField(max_length=50, null=True, blank=True)
+
+    major_etc = models.CharField(max_length=50, null=True, blank=True)
+
+    closed_etc = models.CharField(max_length=50, null=True, blank=True)
+
+    defense_etc = models.CharField(max_length=50, null=True, blank=True)
+
+    smart_etc = models.CharField(max_length=50, null=True, blank=True)
+
+    manager_m_name = models.CharField(max_length=50)
+
+    manager_m_depart = models.CharField(max_length=50)
+
+    manager_m_phone = models.IntegerField()
+
+    manager_m_cphone = models.IntegerField()
+
+    manager_m_email = models.EmailField()
+
+    manager_s_name = models.CharField(max_length=50, null=True, blank=True)
+
+    manager_s_depart = models.CharField(max_length=50, null=True, blank=True)
+
+    manager_s_phone = models.IntegerField(null=True, blank=True)
+
+    manager_s_cphone = models.IntegerField(null=True, blank=True)
+
+    manager_s_email = models.EmailField(null=True, blank=True)
+
+    manager_f_name = models.CharField(max_length=50, null=True, blank=True)
+
+    manager_f_depart = models.CharField(max_length=50, null=True, blank=True)
+
+    manager_f_phone = models.IntegerField(null=True, blank=True)
+
+    manager_f_cphone = models.IntegerField(null=True, blank=True)
+
+    manager_f_email = models.EmailField(null=True, blank=True)
+
+    bill_send_date = models.IntegerField()
+
+    etc = models.TextField(null=True, blank=True)
+
+    file = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    security = models.ForeignKey(Security, on_delete=models.DO_NOTHING)
+
+    internal = models.ForeignKey(Internal, on_delete=models.DO_NOTHING)
+
+    virus = models.ForeignKey(Virus, on_delete=models.DO_NOTHING)
+
+    ransomware = models.ForeignKey(Ransomware, on_delete=models.DO_NOTHING)
 
 
 

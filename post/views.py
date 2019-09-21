@@ -1,6 +1,9 @@
 from django.shortcuts import render, HttpResponseRedirect, reverse
-from .forms import *
-from main.models import *
+from .forms import CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm, CheckForm, DetectionPatternForm, CommentForm
+from main.models import Company, Security, Internal, Virus, Ransomware
+from .models import DetectionPat, Comment
+from django.db.models import Max
+from .my_def import get_fomrs,get_instance_forms
 
 
 
@@ -28,24 +31,33 @@ def detail(request, model,pk):
 
 #https://stackoverflow.com/questions/569468/django-multiple-models-in-one-template-using-forms
 def writeCompany(request):
-    Forms = [TbBeneficcomForm, TbSecurityForm, TbInternalForm, TbVirusForm, TbRansomForm,]
+    Forms = [CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm,]
+    id_max = Company.objects.all().aggregate(Max('id'))['id__max']
+    id_next = id_max + 1 if id_max else 1
+
     if request.method == 'POST':
         forms = get_fomrs(Forms, request.POST, request.FILES)
         if False not in {form.is_valid() for form in forms.values()}:
-            be = forms['be_form'].save()
-            for form in forms.values():
-                instance = form.save(commit=False)
-                instance.beneficCom = be
-                instance.save()
+            se = forms['se_form'].save()
+            it = forms['in_form'].save()
+            vi = forms['vi_form'].save()
+            ra = forms['ra_form'].save()
+            co = forms['co_form'].save(commit=False)
+            co.security = se
+            co.internal = it
+            co.virus = vi
+            co.ransomware = ra
+            co.save()
             return HttpResponseRedirect(reverse('main:home'))
     else:
         forms = get_fomrs(Forms)
-    return render(request, 'post/company/writeTest.html', forms)
+    forms.update({'id_next':id_next})
+    return render(request, 'post/company/write.html', forms)
 
 def updateCompany(request, pk):
     Forms = {
-        'main': TbBeneficcomForm,
-        'sub': [TbSecurityForm, TbInternalForm, TbVirusForm, TbRansomForm]
+        'main': CompanyForm,
+        'sub': [SecurityForm, InternalForm, VirusForm, RansomwareForm]
     }
     if request.method == 'POST':
         forms = get_instance_forms(Forms, pk, request.POST, request.FILES)
@@ -55,14 +67,14 @@ def updateCompany(request, pk):
             return HttpResponseRedirect(reverse('main:home'))
     else:
         forms = get_instance_forms(Forms, pk)
-    return render(request, 'post/company/writeTest.html', forms)
+    return render(request, 'post/company/write.html', forms)
 
 def listCompany(request):
-    beneficComs = TbBeneficcom.objects.all()
+    beneficComs = Company.objects.all()
     return render(request, 'post/company/list.html', {'beneficComs':beneficComs})
 
 def detailCompany(request,pk):
-    beneficCom = TbBeneficcom.objects.get(pk=pk)
+    beneficCom = Company.objects.get(pk=pk)
     return render(request, 'post/company/detail.html', {'beneficCom':beneficCom})
 
 def writeDetectionPattern(request):
@@ -107,47 +119,24 @@ def updateDetectionPattern(request, pk):
         form = DetectionPatternForm(instance=instance)
     return render(request, 'post/detectionPattern/write.html', {'form':form})
 
-def check_bnumber(request):
+#랜섬웨어
+
+
+def check(request, model,field_name, ele_id):
+    success = False
+    verbose_name = eval("%s._meta.get_field('%s').verbose_name"%(model,field_name))
+    confirm_data = ""
     if request.method == 'POST':
-        form = CheckBnumberForm(request.POST)
-        if form.is_valid():
-            return render(request, 'post/company/idCheck.html', {'form':form, 'success':True})
-    else:
-        form = CheckBnumberForm()
-    return render(request, 'post/company/idCheck.html', {'form':form})
-
-def check_ips(request):
-    if request.method == 'POST':
-        form = CheckIpsForm(request.POST)
-        if form.is_valid():
-            return render(request, 'post/detectionPattern/ipsCheck.html', {'form':form, 'success':True})
-    else:
-        form = CheckIpsForm()
-    return render(request, 'post/detectionPattern/ipsCheck.html', {'form':form})
+        confirm_data = request.POST['confirm_data']
+        if not eval("%s.objects.filter(%s=%s)"%(model,field_name,confirm_data)):
+            success = True
+    content = {
+        'verbose_name':verbose_name,
+        'confirm_data':confirm_data,
+        'success':success,
+        'ele_id':ele_id,
+    }
+    return render(request, 'post/check/check.html', content)
 
 
-def get_fomrs(forms, POST=None, FILES=None):
-    new_forms = {}
-    for form in forms:
-        key = form.get_prefix() + '_form'
-        new_forms[key] = form(data=POST, files=FILES, prefix=form.get_prefix())
-    return new_forms
-
-def get_instance_forms(forms, pk, POST=None, FILES=None):
-    new_forms = {}
-
-    main_model = forms['main'].Meta.model
-
-    main_instance = main_model.objects.get(pk=pk)
-
-    key = forms['main'].get_prefix()+'_form'
-
-    new_forms[key] = forms['main'](data=POST, files=FILES, instance=main_instance, prefix=forms['main'].get_prefix())
-
-    for form in forms['sub']:
-        key = form.get_prefix()+'_form'
-        foreignKey = main_model.__name__[0].lower() + main_model.__name__[1:] + '_id'
-        instance = eval("form.Meta.model.objects.get(%s=main_instance.pk)"%foreignKey)
-        new_forms[key] = form(data=POST, files=FILES, instance=instance, prefix=form.get_prefix())
-    return new_forms
 

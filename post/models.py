@@ -1,4 +1,5 @@
 from django.db import models
+from main.models import Company
 
 class DetectionPat(models.Model):
     #IPS 탐지 패턴명
@@ -42,6 +43,34 @@ class DetectionPat(models.Model):
 
     #대응방안
     countermeasures = models.TextField()
+
+#랜섬웨어
+
+class RansomwarePost(models.Model):
+    company = models.ForeignKey(Company,on_delete=models.CASCADE)
+
+    document_n = models.PositiveIntegerField()
+
+    send_date = models.DateField(null=True, blank=True)
+
+    agent_name = models.CharField(max_length=100)
+
+    agent_ip = models.CharField(max_length=50)
+
+    detect_date = models.DateField()
+
+    path = models.CharField(max_length=100)
+
+    reply = models.CharField(max_length=30, )
+
+    file_name = models.CharField(max_length=100)
+
+    process_state = models.CharField(max_length=30, )
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
 
 class Comment(models.Model):
     model_name = models.CharField(max_length=50)
