@@ -78,6 +78,6 @@ class Comment(models.Model):
 
     model_pk = models.PositiveIntegerField()
 
-    com_class = models.CharField(max_length=50, null=True)
+    com_class = models.CharField(max_length=50, null=True, blank=True)
 
     comment = models.TextField()

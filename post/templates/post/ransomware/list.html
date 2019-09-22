@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block style %}
+<script src = "/static/js/my.js"></script>
+<link rel="stylesheet" href="/static/js/mystyle.css">
+{% endblock %}
+{% block content %}
+<style>
+    table {width:100%;}
+    table *{text-align:center;}
+    thead {background-color:lightcyan;}
+    td {height:50px;}
+</style>
+<div>
+    {{request.GET.order_by}}
+    <h3>랜섬웨어</h3>
+    <h5>*Total : {{objects|length}}</h5>
+    <table class="t1">
+        <thead>
+        <tr>
+            <td><a id="send_date" href="#" onclick = "location.href = get_url('order_by', this) ">발송 날짜&#9660;</a></td>
+            <td><a id="document_n" href="#" onclick = "location.href = get_url('order_by', this) ">문서번호&#9660;</a> </td>
+            <td><a id="company" href="#" onclick = "location.href = get_url('order_by', this) ">기업명&#9660;</a> </td>
+            <td><a id="path" href="#" onclick = "location.href = get_url('order_by', this) ">대상경로&#9660;</a></td>
+            <td><a id="file_name" href="#" onclick = "location.href = get_url('order_by', this) ">파일명&#9660;</a></td>
+            <td><a id="reply" href="#" onclick = "location.href = get_url('order_by', this) ">회신유무&#9660;</a></td>
+            <td><a id="process_state" href="#" onclick = "location.href = get_url('order_by', this) ">처리상태&#9660;</a></td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in objects %}
+            <tr>
+
+                <td><a href="#" onclick="location.href ='{% url 'post:detail' 'ransomware_post' object.id %}'">{{object.send_date}}</a></td>
+                <td>{{object.document_n}}</td>
+                <td> {{object.company}}</td>
+                <td>{{object.path}}</td>
+                <td>{{object.file_name}}</td>
+                <td>{{object.reply}}</td>
+                <td>{{object.process_state}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    window.onload = function(){
+        order_by = '{{request.GET.order_by}}';
+        is_down = order_by[0] == "-";
+        if(is_down)
+            order_by = order_by.substr(1);
+        ele = document.getElementById(order_by);
+        inner = ele.innerHTML;
+        inner = inner.substr(0, inner.length-1);
+        if(is_down)
+            ele.innerHTML = inner + '▼';
+        else
+            ele.innerHTML = inner + '▲';
+
+    }
+    function get_url(key,ele){
+        request_get = {};
+        {% for key, val in request.GET.items %}
+            request_get['{{key}}'] = '{{val}}';
+        {% endfor %}
+        return get_url_js(key, ele, request_get);
+    }
+</script>
+{% endblock %}

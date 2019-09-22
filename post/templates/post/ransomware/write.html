@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
+{% block script %}
+<script src = "/static/js/my.js"></script>
+{% endblock %}
+
 {% block content %}
 <style>
     table {width:100%;}
@@ -12,12 +16,13 @@
 </style>
 <h3>랜섬웨어 글쓰기</h3>
 <form action="" method="post">
+    {% csrf_token %}
     <div class="tb">
         <h5>통보 정보</h5>
         <table border="1">
             <tr>
                 <td class="c1">기업명</td>
-                <td class="c2">{{form.company}} <button type="button" onclick="search('company', 'name')">검색</button></td>
+                <td class="c2">{{form.company}} <button type="button" onclick="search('Company', 'name')">검색</button></td>
                 <td class="c3">문서번호</td>
                 <td class="c4">{{form.document_n}}</td>
                 <td class="c5">발송 날짜</td>
@@ -51,9 +56,16 @@
     </div>
 </form>
 <script>
-    function search(){
-        var url_mask = "/post/search/" + model + '/' + field_name
-        child = window.open(url_mask, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+    window.onload = function(){
+        if(!document.getElementById('id_process_state').value)
+            document.getElementById('id_process_state').value = '처리중';
+    }
+
+    function set_process_state(ele){
+        if(ele.value)
+            document.getElementById('id_process_state').value = '처리완료';
+        else
+            document.getElementById('id_process_state').value = '처리중';
     }
 </script>
 {% endblock %}

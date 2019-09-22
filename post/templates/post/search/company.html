@@ -1,10 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
+<style>
+    table {width: 100%; text-align: center; margin-top:50px;}
+    thead {background-color:lightcyan;}
+    .astext {
+    background:none;
+    border:none;
+    margin:0;
+    padding:0;
+    cursor: pointer;
+    }
+</style>
+<form action="" method="post">
+    {% csrf_token %}
+    <table class="t1" >
+        <tr>
+            <td>{{verbose_name}} : <input type="text" name="search_data"> <button type="submit">검색하기</button></td>
+        </tr>
+    </table>
+    <table class="t2">
+        <thead>
+        <tr>
+            <td>회사이름</td> <td>사업자번호</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% if objects %}
+        {% for object in objects %}
+            <tr>
 
+                <td><button class="astext" onclick="select_data('{{object.name}}', 'id_company')" type="button">{{object.name}}</button></td>
+                <td>{{object.business_n}}</td>
+            </tr>
+        {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+</form>
+<script>
+    function select_data(data, send_id){
+        ele = opener.document.getElementById(send_id)
+        ele.value = data;
+        window.close();
+    }
+    function bold_text(ele){
+        ele.style.fontweight = '900';
+    }
+</script>
 </body>
 </html>

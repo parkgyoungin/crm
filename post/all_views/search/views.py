@@ -5,7 +5,7 @@ def search(request, model, field_name):
     objects = None
     verbose_name = eval("%s._meta.get_field('%s').verbose_name" % (model, field_name))
     if request.method == 'POST':
-        objects = eval('model.objects.filter(field_name = request.POST["search_data"])')
+        objects = eval('%s.objects.filter(%s__icontains = request.POST["search_data"])'%(model, field_name))
     content = {
         'objects':objects,
         'verbose_name':verbose_name

@@ -51,3 +51,31 @@ function set_another_js(ele, connections, sets){
         }
     }
 }
+
+function search(model, field_name){
+    var url_mask = "/post/search/" + model + '/' + field_name;
+    child = window.open(url_mask, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+}
+
+function get_url_js(key, ele, request){
+    var val = get_btn_value(ele);
+    result = "?";
+    for(var r in request){
+        if (r != key)
+            result += get_sentence(r, request[r]) ;
+    }
+    result += get_sentence(key, val);
+    return result;
+}
+function get_sentence(key, val){
+    result = "&" + key + "=" + val;
+    return result;
+}
+function get_btn_value(ele){
+    var inner = ele.innerHTML;
+    var last = inner.substr(inner.length - 1);
+    if(last == '▼')
+        return ele.id;
+    else
+        return '-' + ele.id;
+}
