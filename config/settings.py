@@ -147,3 +147,5 @@ SUMMERNOTE_CONFIG = {
         'height': '480',
     },
 }
+
+LIST_CONDITIONS_ID = 'list_conditions_in_session'
