@@ -67,10 +67,9 @@ def get_side_pk(pk_list, id):
     return left_pk, right_pk
 
 def get_page(request, id, model, PAGE):
-    codition = request.session[settings.LIST_CONDITIONS_ID]
+    pk_list = request.session.get(model, None)
     page = 1
-    if codition['model'] == model:
-        pk_list = codition['pk_list']
+    if pk_list:
         idx = pk_list.index(id)
         page = (idx)//PAGE + 1
 

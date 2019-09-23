@@ -72,6 +72,34 @@ class RansomwarePost(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
 
+class Outflow(models.Model):
+    company = models.CharField(max_length=100)
+
+    document_n = models.PositiveIntegerField()
+
+    send_date = models.DateField()
+
+    url = models.CharField(max_length=200)
+
+    process_state = models.CharField(max_length=30, choices=get_choices('process_state'))
+
+    content = models.TextField()
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
+class Weekness(models.Model):
+    outflow = models.ForeignKey(Outflow, on_delete=models.CASCADE)
+
+    widget_id = models.CharField(max_length=100)
+
+    value = models.CharField(max_length=100)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
 
 class Comment(models.Model):
     model_name = models.CharField(max_length=50)

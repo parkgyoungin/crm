@@ -53,7 +53,7 @@
     {% if next_obj %}
     <a href="#" onclick="location.href = '{% url 'post:detail' 'ransomware_post' next_obj.id %}'"><button type="button">다음글</button></a>
     {% endif %}
-    <a href="#" onclick="location.href = '{% url 'post:list' 'ransomware_post' %}?order_by={{order_by}}&page={{page}}&search_field={{search_field}}&search_data={{search_data}}'">
+    <a href="#" onclick="location.href = '{{uri}}'">
         <button type="button">목록으로</button>
     </a>
 
