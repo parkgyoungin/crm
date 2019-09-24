@@ -1,0 +1,49 @@
+<div class="modal fade" id="m_text" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" >필터링 정렬</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            필터옵션
+            <select id="filter_option_text">
+                <option value="__icontains">포함</option>
+                <option value="">일치</option>
+            </select>
+            정렬옵션
+            <select id="order_by_text">
+                <option value="-">내림차순</option>
+                <option value="">오름차순</option>
+            </select><p></p>
+            <input type="text" id="data_text">
+            <select id="relation_text">
+                <option value="&">and</option>
+                <option value="|">or</option>
+            </select>
+            <input type="text" id="data2_text">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-primary" onclick="filter_by_text()">적용하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+
+    function filter_by_text(){
+        document.getElementById('order_by').value = document.getElementById('order_by_text').value + search_field;
+        document.getElementById('filter_option').value = document.getElementById('filter_option_text').value;
+        document.getElementById('search_field').value = search_field;
+        document.getElementById('search_data').value = document.getElementById('data_text').value;
+        document.getElementById('search_data2').value = document.getElementById('data2_text').value;
+        document.getElementById('relation').value = document.getElementById('relation_text').value;
+
+        f = document.getElementById('condition');
+        f.submit();
+    }
+</script>

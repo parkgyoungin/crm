@@ -1,10 +1,12 @@
 from main.models import Company, Security, Internal, Virus, Ransomware
 from post.all_forms.company.forms import CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm
-from post.my_def import get_fomrs, get_instance_forms
+from post.my_def import get_fomrs, get_instance_forms, get_objects_by_request
 from django.db.models import Max
-
+from django.conf import settings
 from django.shortcuts import render, HttpResponseRedirect, reverse
+from django.core.paginator import Paginator
 
+PAGE = 5
 
 def writeCompany(request):
     Forms = [CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm,]
@@ -46,8 +48,27 @@ def updateCompany(request, pk):
     return render(request, 'post/company/write.html', forms)
 
 def listCompany(request):
-    beneficComs = Company.objects.all()
-    return render(request, 'post/company/list.html', {'beneficComs':beneficComs})
+    default_order = 'send_date'
+    objects, page = get_objects_by_request(request, Company, default_order)
+    request.session[settings.LIST_CONDITIONS_ID] = {
+        'model': 'RansomwarePost',
+        'pk_list': list(objects.values_list('id', flat=True)),
+        'uri': request.build_absolute_uri(),
+    }
+
+    total = len(objects)
+    paginator = Paginator(objects, PAGE)
+
+    try:
+        objects = paginator.page(page)
+    except:
+        objects = paginator.page(1)
+
+    content = {
+        'objects':objects,
+        'total':total,
+    }
+    return render(request, 'post/company/list.html', content)
 
 def detailCompany(request,pk):
     beneficCom = Company.objects.get(pk=pk)
