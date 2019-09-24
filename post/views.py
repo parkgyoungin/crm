@@ -6,6 +6,8 @@ from post.all_views.search.views import search
 
 from post.all_views.notification_status.views import writeRansomware_post, detailRansomware_post, updateRansomware_post, listRansomware_post
 
+from post.all_views.notification_status.views import writeOutflow, updateOutflow, listOutflow, detailOutflow
+
 
 def write(request, model):
     model = model[0].upper() + model[1:]

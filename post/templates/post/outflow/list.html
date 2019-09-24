@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block style %}
+<script src = "/static/js/my.js"></script>
+<link rel="stylesheet" href="/static/js/mystyle.css">
+{% endblock %}
+{% block content %}
+<style>
+    table {width:100%;}
+    table *{text-align:center;}
+    thead {background-color:lightcyan;}
+    td {height:50px;}
+</style>
+<div>
+    <a href="{% url 'post:list' 'outflow'%}"><h3>기술유출</h3></a>
+    <h5>*Total : {{total}}</h5>
+    <table class="t1">
+        <thead>
+        <tr>
+            <td><a style="cursor:pointer" id="send_date" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_date">발송 날짜&#9660;</a></td>
+            <td><a style="cursor:pointer" id="document_n" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">문서번호&#9660;</a> </td>
+            <td><a style="cursor:pointer" id="company" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">기업명&#9660;</a> </td>
+            <td><a style="cursor:pointer" id="weekness" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_only">발견 취약점&#9660;</a></td>
+            <td><a style="cursor:pointer" id="process_state" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">처리상태&#9660;</a></td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in objects %}
+            <tr>
+                <td><a href="#" onclick="location.href ='{% url 'post:detail' 'outflow' object.id %}'">{{object.send_date}}</a></td>
+                <td>{{object.document_n}}</td>
+                <td> {{object.company}}</td>
+                <td>{{object.get_weekness_as_text}}</td>
+                <td>{{object.process_state}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div>
+{% if objects.has_other_pages %}
+  <ul class="pagination">
+    {% if objects.has_previous %}
+      <li class="page-item"><a class="page-link" onclick="set_page({{objects.previous_page_number}})">처음</a></li>
+    {% else %}
+      <li class="page-item disabled"><a class="page-link"><span>처음</span></a></li>
+    {% endif %}
+    {% for i in objects.paginator.page_range %}
+      {% if objects.number == i %}
+        <li class="page-item active "><a class="page-link"><span>{{ i }} <span class="sr-only">(current)</span></span></a></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" onclick="set_page({{i}})">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if objects.has_next %}
+      <li class="page-item"><a class="page-link" onclick="set_page({{objects.next_page_number}})">맨끝</a></li>
+    {% else %}
+      <li class="page-item disabled"><a class="page-link"><span>맨끝</span></a></li>
+    {% endif %}
+  </ul>
+{% endif %}
+</div>
+
+<div>
+    <form id="condition" action="" method="get">
+        <input type="hidden" id="order_by" name="order_by" value="send_date">
+        <input type="hidden" id="filter_option" name="filter_option" value="__icontains">
+        <input type="hidden" id="relation" name="relation" value="&">
+        <input type="hidden" id="search_field" name="search_field" value="company">
+        <input type="hidden" id="search_data" name="search_data" value="">
+        <input type="hidden" id="search_data2" name="search_data2" value="">
+        <input type="hidden" id="page" name="page" value="1">
+    </form>
+</div>
+
+{% include 'post/modal/textFilter.html'  %}
+{% include 'post/modal/dateFilter.html'  %}
+{% include 'post/modal/onlyFilter.html'  %}
+<script>
+    var form = document.getElementById('condition');
+    var search_field = '';
+    window.onload = function(){
+        set_btn_inner();
+        set_request_get();
+    }
+
+    function set_btn_inner(){
+        order_by = '{{request.GET.order_by}}';
+        is_down = order_by[0] == "-";
+        if(is_down)
+            order_by = order_by.substr(1);
+        ele = document.getElementById(order_by);
+        inner = ele.innerHTML;
+        inner = inner.substr(0, inner.length-1);
+        if(is_down)
+            ele.innerHTML = inner + '▼';
+        else
+            ele.innerHTML = inner + '▲';
+    }
+
+    function set_order_by(ele){
+        document.getElementById('order_by').value = get_btn_value(ele);
+        form.submit();
+    }
+    function set_page(i){
+        document.getElementById('page').value = i;
+        form.submit();
+    }
+
+    function set_request_get(){
+        {% for key, val in request.GET.items %}
+            document.getElementById('{{key}}').value = '{{val|safe}}';
+        {% endfor %}
+    }
+
+    function set_search_field(ele){
+        search_field = ele.id;
+    }
+
+
+</script>
+{% endblock %}

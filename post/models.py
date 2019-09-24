@@ -77,7 +77,7 @@ class Outflow(models.Model):
 
     document_n = models.PositiveIntegerField()
 
-    send_date = models.DateField()
+    send_date = models.DateField(null=True, blank=True)
 
     url = models.CharField(max_length=200)
 
@@ -89,8 +89,17 @@ class Outflow(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
 
+    def get_weekness_as_text(self):
+        weekness = self.weekness.all()
+        text = ''
+        for i in range(min(len(weekness), 3)):
+            text += weekness[i].value + ', '
+        if len(weekness) > 3:
+            text += '등..'
+        return text
+
 class Weekness(models.Model):
-    outflow = models.ForeignKey(Outflow, on_delete=models.CASCADE)
+    outflow = models.ForeignKey(Outflow, on_delete=models.CASCADE ,related_name= 'weekness')
 
     widget_id = models.CharField(max_length=100)
 

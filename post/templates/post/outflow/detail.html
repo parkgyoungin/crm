@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .btn_div *{margin:30px;}
+     .btn_div {text-align:center;}
+</style>
+<h3>기술유출 상세</h3>
+
+
+<div class="tb">
+    <h5>통보 정보</h5>
+    <table border="1">
+        <tr>
+            <td class="c1">기업명</td>
+            <td class="c2">{{object.company}}</td>
+            <td class="c3">문서번호</td>
+            <td class="c4">{{object.document_n}}</td>
+            <td class="c5">발송 날짜</td>
+            <td class="c6">{{object.send_date}}</td>
+        </tr>
+        <tr>
+            <td class="c1">URL</td>
+            <td colspan="5">{{object.url}}</td>
+        </tr>
+        <tr>
+            <td class="c1">발견 취약점</td>
+            <td colspan="5">
+                {% for w in object.weekness.all %}
+                    {{w.value}},
+                {% endfor %}
+            </td>
+        </tr>
+        <tr>
+            <td class="c1">처리상태</td>
+            <td colspan="5">
+                {{object.process_state}}
+            </td>
+        </tr>
+    </table>
+    <h5>권고 내용</h5>
+    {{object.content|safe}}
+</div>
+
+<div class="tb">
+<div class="btn_div">
+    {% if next_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'outflow' next_obj.id %}'"><button type="button">다음글</button></a>
+    {% endif %}
+    <a href="#" onclick="location.href = '{{uri}}'">
+        <button type="button">목록으로</button>
+    </a>
+
+    <button type="button">취소</button>
+</div>
+</div>
+{% endblock %}

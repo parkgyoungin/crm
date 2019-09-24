@@ -1,0 +1,45 @@
+<div class="modal fade" id="m_only" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" >필터링 정렬</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            필터옵션
+            <select id="filter_option_only">
+                <option value="__icontains">포함</option>
+                <option value="">일치</option>
+            </select>
+
+            <p></p>
+            <input type="text" id="data_only">
+            <select id="relation_only">
+                <option value="&">and</option>
+                <option value="|">or</option>
+            </select>
+            <input type="text" id="data2_only">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+        <button type="button" class="btn btn-primary" onclick="filter_by_only()">적용하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+
+    function filter_by_only(){
+        document.getElementById('filter_option').value = document.getElementById('filter_option_only').value;
+        document.getElementById('search_field').value = search_field;
+        document.getElementById('search_data').value =  document.getElementById('data_only').value;
+        document.getElementById('search_data2').value = document.getElementById('data2_only').value;
+        document.getElementById('relation').value = document.getElementById('relation_only').value;
+
+        f = document.getElementById('condition');
+        f.submit();
+    }
+</script>

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block script %}
+<script src = "/static/js/my.js"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .errorlist {color:red;}
+</style>
+<h3>기술유출 글쓰기</h3>
+<form action="" method="post">
+    {% csrf_token %}
+    <div class="tb">
+        <h5>통보 정보</h5>
+        <table border="1">
+            <tr>
+                <td class="c1">기업명</td>
+                <td class="c2">{{form.company}} <button type="button" onclick="search('Company', 'name')">검색</button></td>
+                <td class="c3">문서번호</td>
+                <td class="c4">{{form.document_n}}</td>
+                <td class="c5">발송 날짜</td>
+                <td class="c6">{{form.send_date}}</td>
+            </tr>
+            <tr>
+                <td class="c1">URL</td>
+                <td colspan="5">{{form.url}}</td>
+            </tr>
+            <tr>
+                <td class="c1">발견 취약점</td>
+                <td colspan="5">
+                    {{form.weekness1}}{{form.weekness1.label_tag}} {{form.weekness2}}{{form.weekness2.label_tag}} {{form.weekness3}}{{form.weekness3.label_tag}} {{form.weekness4}}{{form.weekness4.label_tag}}
+                    {{form.weekness5}}{{form.weekness5.label_tag}} {{form.weekness6}}{{form.weekness6.label_tag}}<br> {{form.weekness7}}{{form.weekness7.label_tag}} {{form.weekness8}}{{form.weekness8.label_tag}}
+                    {{form.weekness9}}{{form.weekness9.label_tag}} {{form.weekness10}}{{form.weekness10.label_tag}} {{form.weekness11}}{{form.weekness11.label_tag}} {{form.weekness12}}{{form.weekness12.label_tag}}
+                </td>
+            </tr>
+            <tr>
+                <td class="c1">처리상태</td>
+                <td colspan="5">
+                    {{form.process_state}}
+                </td>
+            </tr>
+        </table>
+        <h5>권고 내용</h5>{{form.content.errors}}
+        {{form.content|safe}}
+    </div>
+
+    <div class="tb">
+        <button type="submit">작성완료</button><button type="button">취소</button>
+    </div>
+</form>
+<script>
+    window.onload = function(){
+        {% for w in weekness %}
+            document.getElementById('id_{{w.widget_id}}').setAttribute('checked', 'true');
+        {% endfor %}
+
+        if(!document.getElementById('id_process_state').value)
+            document.getElementById('id_process_state').value = '처리중';
+    }
+
+    function set_process_state(ele){
+        if(ele.value)
+            document.getElementById('id_process_state').value = '처리완료';
+        else
+            document.getElementById('id_process_state').value = '처리중';
+    }
+</script>
+{% endblock %}
