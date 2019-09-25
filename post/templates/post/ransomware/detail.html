@@ -51,7 +51,7 @@
 </div>
 <div class="btn_div">
     {% if next_obj %}
-    <a href="#" onclick="location.href = '{% url 'post:detail' 'ransomware_post' next_obj.id %}'"><button type="button">다음글</button></a>
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'ransomwarepost' next_obj.id %}'"><button type="button">다음글</button></a>
     {% endif %}
     <a href="#" onclick="location.href = '{{uri}}'">
         <button type="button">목록으로</button>

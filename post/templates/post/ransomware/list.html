@@ -11,7 +11,7 @@
     td {height:50px;}
 </style>
 <div>
-    <a href="{% url 'post:list' 'ransomware_post'%}"><h3>랜섬웨어</h3></a>
+    <a href="{% url 'post:list' 'ransomwarepost'%}"><h3>랜섬웨어</h3></a>
     <h5>*Total : {{total}}</h5>
     <table class="t1">
         <thead>
@@ -28,7 +28,7 @@
         <tbody>
         {% for object in objects %}
             <tr>
-                <td><a href="#" onclick="location.href ='{% url 'post:detail' 'ransomware_post' object.id %}'">{{object.send_date}}</a></td>
+                <td><a href="#" onclick="location.href ='{% url 'post:detail' 'ransomwarepost' object.id %}'">{{object.send_date}}</a></td>
                 <td>{{object.document_n}}</td>
                 <td> {{object.company}}</td>
                 <td>{{object.path}}</td>
@@ -82,7 +82,7 @@
     var form = document.getElementById('condition');
     var search_field = '';
     window.onload = function(){
-        set_btn_inner();
+        //set_btn_inner();
         set_request_get();
     }
 

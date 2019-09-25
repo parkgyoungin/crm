@@ -9,12 +9,12 @@ from django.db.models import Q
 
 PAGE = 5
 
-def writeRansomware_post(request):
+def writeRansomwarepost(request):
     if request.method == 'POST':
         form = RansomwarePostForm(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("post:list",args=['ransomware_post']))
+            return HttpResponseRedirect(reverse("post:list",args=['ransomwarepost']))
     else:
         form = RansomwarePostForm()
     return render(request, 'post/ransomware/write.html', {'form':form})
@@ -26,23 +26,30 @@ def writeOutflow(request):
             outflow = form.save()
             save_connected_model(Weekness, outflow, form, 12, request)
 
-            return HttpResponseRedirect(reverse("post:list", args=['ransomware_post']))
+            return HttpResponseRedirect(reverse("post:list", args=['outflow']))
     else:
         form = OutflowForm()
     return render(request, 'post/outflow/write.html', {'form': form})
 
-def detailRansomware_post(request, id):
-    object = RansomwarePost.objects.get(id=id)
-    pre_obj, next_obj = get_side_obj(request, id, model='RansomwarePost')
-    comment = Comment.objects.filter(model_name='RansomwarePost', model_pk=id)
+def detailRansomwarepost(request, id):
+    model = RansomwarePost
+
+    object = model.objects.get(id=id)
+    pre_obj, next_obj = get_side_obj(request, id, model=model.__name__)
+    comment = Comment.objects.filter(model_name=model.__name__, model_pk=id)
+
+    uri = reverse('post:list', args=[model.__name__])
+    if request.session[settings.LIST_CONDITIONS_ID].get(model.__name__):
+        uri = config_page_uri(request, id, model.__name__, PAGE)
 
     content = {
         'object':object,
         'pre_obj':pre_obj,
         'next_obj':next_obj,
         'comment':comment,
-        'uri' : config_page_uri(request, id, 'RansomwarePost', PAGE)
+        'uri' : uri,
     }
+
     return render(request, 'post/ransomware/detail.html', content)
 
 def detailOutflow(request, id):
@@ -52,16 +59,21 @@ def detailOutflow(request, id):
     pre_obj, next_obj = get_side_obj(request, id, model=model.__name__)
     comment = Comment.objects.filter(model_name=model.__name__, model_pk=id)
 
+    uri = reverse('post:list', args=[model.__name__])
+    if request.session[settings.LIST_CONDITIONS_ID].get(model.__name__):
+        uri = config_page_uri(request, id, model.__name__, PAGE)
+
     content = {
         'object':object,
         'pre_obj':pre_obj,
         'next_obj':next_obj,
         'comment':comment,
-        'uri' : config_page_uri(request, id, model.__name__, PAGE)
+        'uri' : uri,
     }
+
     return render(request, 'post/outflow/detail.html', content)
 
-def updateRansomware_post(request, id):
+def updateRansomwarepost(request, id):
     instance = RansomwarePost.objects.get(id=id)
     if request.method == 'POST':
         form = RansomwarePostForm(request.POST, instance=instance)
@@ -86,15 +98,20 @@ def updateOutflow(request, id):
         form = OutflowForm(instance=instance)
     return render(request, 'post/outflow/write.html', {'form':form, 'weekness':weekness})
 
-def listRansomware_post(request):
-    default_order = 'send_date'
-    objects, page = get_objects_by_request(request, RansomwarePost, default_order)
-    request.session[settings.LIST_CONDITIONS_ID] = {
-        'model': 'RansomwarePost',
-        'pk_list': list(objects.values_list('id', flat=True)),
-        'uri': request.build_absolute_uri(),
-    }
+def listRansomwarepost(request):
+    model = RansomwarePost
+    default_GET = '?order_by=created&search_field=company&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
 
+    if not request.GET:
+        return set_default(model, request, default_GET)
+
+    result = get_objects_by_request_ex(request, model, default_GET)
+    if result['success']:
+        objects, page = result['data']
+    else:
+        return set_default(model, request, default_GET)
+
+    set_session(request,objects,model)
     total = len(objects)
     paginator = Paginator(objects, PAGE)
 
@@ -109,15 +126,21 @@ def listRansomware_post(request):
     }
     return render(request, 'post/ransomware/list.html', content)
 
-def listOutflow(request):
-    default_order = 'send_date'
-    objects, page = get_objects_by_request_ex(request, Outflow, default_order, relation_model='weekness')
-    request.session[settings.LIST_CONDITIONS_ID] = {
-        'model': Outflow.__name__,
-        'pk_list': list(objects.values_list('id', flat=True)),
-        'uri': request.build_absolute_uri(),
-    }
 
+def listOutflow(request):
+    model = Outflow
+    default_GET = '?order_by=created&search_field=company&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
+
+    if not request.GET:
+        return set_default(model, request, default_GET)
+
+    result = get_objects_by_request_ex(request, model, default_GET, relation_model='weekness')
+    if result['success']:
+        objects, page = result['data']
+    else:
+        return set_default(model, request, default_GET)
+
+    set_session(request,objects,model)
     total = len(objects)
     paginator = Paginator(objects, PAGE)
 
@@ -133,10 +156,26 @@ def listOutflow(request):
     return render(request, 'post/outflow/list.html', content)
 
 
-
-
-
 #from post.all_views.notification_status.views import get_filter_list_by_conn_model
 #from post.models import Outflow
 #get_filter_list_by_conn_model('a', Outflow)
 
+def set_default(model, request, GET):
+
+    objects = model.objects.all().order_by('created')
+    request.session[model.__name__] = list(objects.values_list('id', flat=True))
+    request.session[settings.LIST_CONDITIONS_ID] = {
+        model.__name__: {
+            'pk_list': list(objects.values_list('id', flat=True)),
+            'uri': reverse('post:list', args=[model.__name__]) + GET,
+        }
+    }
+    return HttpResponseRedirect(reverse('post:list', args=[model.__name__[0].upper()+ model.__name__[1:].lower()]) + GET)
+
+def set_session(request, objects, model):
+    request.session[settings.LIST_CONDITIONS_ID] = {
+        model.__name__: {
+            'pk_list': list(objects.values_list('id', flat=True)),
+            'uri': request.build_absolute_uri()
+        }
+    }

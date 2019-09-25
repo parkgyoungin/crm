@@ -1,7 +1,7 @@
 from django.conf import settings
 from post.models import RansomwarePost, Outflow
 from django.db.models import Q
-from django.urls import reverse
+from django.shortcuts import reverse, HttpResponseRedirect
 
 def get_fomrs(forms, POST=None, FILES=None):
     new_forms = {}
@@ -45,8 +45,8 @@ def get_side_obj(request, id, model):
     condition = request.session[settings.LIST_CONDITIONS_ID]
     left_obj = None
     right_obj = None
-    if condition['model']==model:
-        left_pk, right_pk = get_side_pk(condition['pk_list'],id)
+    if condition.get(model):
+        left_pk, right_pk = get_side_pk(condition[model]['pk_list'],id)
         if left_pk:
             left_obj = eval('%s.objects.get(id=%s)'%(model,left_pk))
         if right_pk:
@@ -120,7 +120,9 @@ def get_objects_by_request(request, model, default_order):
 
 def config_page_uri(request, id, model, PAGE):
     page = get_page(request, id, model, PAGE)
-    uri = request.session[settings.LIST_CONDITIONS_ID].get('uri', reverse("main:home"))
+    uri = reverse("main:home")
+    if request.session[settings.LIST_CONDITIONS_ID].get(model):
+        uri = request.session[settings.LIST_CONDITIONS_ID].get(model)['uri']
     try:
         idx = uri.index('&page=')
         uri = uri[:idx] + '&page=%s'%page
@@ -129,51 +131,45 @@ def config_page_uri(request, id, model, PAGE):
     return uri
 
 
-def get_objects_by_request_ex(request, model, default_order, relation_model):
+def get_objects_by_request_ex(request, model, default_GET, relation_model=None):
     session = request.session
-    page = 1
-    if request.GET:
-        if session.get(model.__name__):
+    if session.get(model.__name__):
+        # 필터링 데이터
+        try:
             page = request.GET['page']
-            if request.GET.get('is_detail'):
-                # GET 요청이면서 세션이 있고, 디테일 접근일경우 모든오브젝트
-                order_by = request.GET.get('order_by', default_order)
-                objects = RansomwarePost.objects.filter(id__in=session[model.__name__]).order_by(order_by)
-            else:
-                # 필터링 데이터
-                search_field = request.GET['search_field']
-                order_by = request.GET['order_by']
-                filter_option = request.GET['filter_option']
-                relation = request.GET['relation']
-                data1 = request.GET['search_data']
-                data2 = request.GET['search_data2']
-                prev_objects = model.objects.filter(id__in=session[model.__name__])
-                if search_field == relation_model:
-                    pk_list = get_filter_list_by_conn_model(request, model, relation_model)
-                    command = 'prev_objects.filter(id__in=pk_list).order_by(order_by)'
-                elif filter_option == '__range':
-                        if data1 == 'all_date' and data2 == 'all_date':
-                            command = 'prev_objects.order_by(order_by)'
-                        else:
-                            command = 'prev_objects.filter(%s%s = [data1,data2]).order_by(order_by)' %(search_field, filter_option)
+            search_field = request.GET['search_field']
+            order_by = request.GET['order_by']
+            filter_option = request.GET['filter_option']
+            relation = request.GET['relation']
+            data1 = request.GET['search_data']
+            data2 = request.GET['search_data2']
+        except:
+            return {'success':False}
+        prev_objects = model.objects.filter(id__in=session[model.__name__])
+
+        if relation_model and search_field == relation_model:
+            pk_list = get_filter_list_by_conn_model(request, model, relation_model)
+            command = 'prev_objects.filter(id__in=pk_list).order_by(order_by)'
+
+        elif filter_option == '__range':
+                if data1 == 'all_date' and data2 == 'all_date':
+                    command = 'prev_objects.order_by(order_by)'
                 else:
-                    first_q = eval('Q(%s%s = data1)'%(search_field, filter_option, ))
-                    second_q = eval('Q(%s%s = data2)'%(search_field, filter_option, ))
-                    command = 'prev_objects.filter(first_q %s second_q).order_by(order_by)'%relation
-                #print(request.GET)
-                #print('command : ',command)
-
-                objects = eval(command)
-
+                    command = 'prev_objects.filter(%s%s = [data1,data2]).order_by(order_by)' %(search_field, filter_option)
         else:
-            # GET 요청이면서 세션이 없는경우 : 모든오브젝트
-            objects = model.objects.all().order_by(default_order)
+            first_q = eval('Q(%s%s = data1)'%(search_field, filter_option, ))
+            second_q = eval('Q(%s%s = data2)'%(search_field, filter_option, ))
+            command = 'prev_objects.filter(first_q %s second_q).order_by(order_by)'%relation
+
+        objects = eval(command)
+
     else:
-        # GET 요청이 아닐경우
-        objects = model.objects.all().order_by(default_order)
+        # GET 요청이면서 세션이 없는경우 : 모든오브젝트
+        return {'success':False}
 
     session[model.__name__] = list(objects.values_list('id', flat=True))
-    return objects, page
+
+    return {'success':True, 'data':(objects,page)}
 
 
 def get_filter_list_by_conn_model(request, model, relation_model):
@@ -209,3 +205,15 @@ def save_connected_model(conn_model, model_object, form, max_length, request):
             widget_id = key
             value = get_label_by_id(form, widget_id)
             conn_model(outflow=model_object, widget_id=widget_id, value=value).save()
+
+def set_default(model, request, GET):
+
+    objects = model.objects.all().order_by('created')
+    request.session[model.__name__] = list(objects.values_list('id', flat=True))
+    request.session[settings.LIST_CONDITIONS_ID] = {
+        Outflow.__name__: {
+            'pk_list': list(objects.values_list('id', flat=True)),
+            'uri': reverse('post:list', args=[Outflow.__name__]) + GET,
+        }
+    }
+    return HttpResponseRedirect(reverse('post:list', args=[Outflow.__name__]) + GET)

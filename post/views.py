@@ -4,7 +4,7 @@ from post.all_views.check.views import check
 
 from post.all_views.search.views import search
 
-from post.all_views.notification_status.views import writeRansomware_post, detailRansomware_post, updateRansomware_post, listRansomware_post
+from post.all_views.notification_status.views import writeRansomwarepost, detailRansomwarepost, updateRansomwarepost, listRansomwarepost
 
 from post.all_views.notification_status.views import writeOutflow, updateOutflow, listOutflow, detailOutflow
 
