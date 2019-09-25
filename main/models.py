@@ -121,6 +121,9 @@ class Security(models.Model):
 
     etc = models.CharField(max_length=255, null=True, blank=True)
 
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
 
 class Internal(models.Model):
     contract = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('contract'))
@@ -137,6 +140,9 @@ class Internal(models.Model):
 
     etc = models.CharField(max_length=255, null=True, blank=True)
 
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
 
 class Virus(models.Model):
     contract = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('contract'))
@@ -151,6 +157,9 @@ class Virus(models.Model):
 
     etc = models.CharField(max_length=255, null=True, blank=True)
 
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
 
 class Ransomware(models.Model):
     contract = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('contract'))
@@ -165,7 +174,9 @@ class Ransomware(models.Model):
 
     etc = models.CharField(max_length=255, null=True, blank=True)
 
+    created = models.DateTimeField(auto_now_add=True)
 
+    updated = models.DateTimeField(auto_now=True)
 
 class Company(models.Model):
     name = models.CharField(max_length=50, verbose_name='회사이름')
@@ -269,6 +280,10 @@ class Company(models.Model):
     virus = models.ForeignKey(Virus, on_delete=models.DO_NOTHING)
 
     ransomware = models.ForeignKey(Ransomware, on_delete=models.DO_NOTHING)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
 
 
 

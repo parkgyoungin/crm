@@ -148,6 +148,10 @@ def get_objects_by_request_ex(request, model, default_GET, relation_model=None):
         prev_objects = model.objects.filter(id__in=session[model.__name__])
 
         if relation_model and search_field == relation_model:
+            pk_list = get_filter_list_by_business_category(request, model)
+            command = 'prev_objects.filter(id__in=pk_list).order_by(order_by)'
+
+        elif relation_model and search_field == relation_model:
             pk_list = get_filter_list_by_conn_model(request, model, relation_model)
             command = 'prev_objects.filter(id__in=pk_list).order_by(order_by)'
 
@@ -170,6 +174,43 @@ def get_objects_by_request_ex(request, model, default_GET, relation_model=None):
     session[model.__name__] = list(objects.values_list('id', flat=True))
 
     return {'success':True, 'data':(objects,page)}
+
+
+def get_filter_list_by_business_category(request, model):
+    search_fields = [
+        'large_scale',
+        'major_partner',
+        'closed_net',
+        'defense_industry',
+        'smart_factory',
+        'operation_etc',
+    ]
+    #d1 = '경기'
+    #d2 = ''
+    #opt = '__icontains'
+    #companys = Company.objects.all()
+    #relation = '&'
+
+    session = request.session
+    filter_option = request.GET['filter_option']
+    relation = request.GET['relation']
+    data1 = request.GET['search_data']
+    data2 = request.GET['search_data2']
+    prev_objects = model.objects.filter(id__in=session[model.__name__])
+
+    Q1 = Q()
+    Q2 = Q()
+    for search_field in search_fields:
+        q1 = eval( " Q(%s%s = data1)"%(search_field, filter_option) )
+        q2 = eval( " Q(%s%s = data2)"%(search_field, filter_option) )
+        Q1 = Q1 | q1
+        Q2 = Q2 | q2
+
+    return list(eval('prev_objects.filter(Q1 %s Q2)'%relation).values_list('id', flat=True))
+
+
+
+
 
 
 def get_filter_list_by_conn_model(request, model, relation_model):
@@ -217,3 +258,11 @@ def set_default(model, request, GET):
         }
     }
     return HttpResponseRedirect(reverse('post:list', args=[Outflow.__name__]) + GET)
+
+def set_session(request, objects, model):
+    request.session[settings.LIST_CONDITIONS_ID] = {
+        model.__name__: {
+            'pk_list': list(objects.values_list('id', flat=True)),
+            'uri': request.build_absolute_uri()
+        }
+    }

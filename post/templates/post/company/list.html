@@ -11,24 +11,24 @@
     td {height:50px;}
 </style>
 <div>
-    <a href="{% url 'post:list' 'ransomware_post'%}"><h3>랜섬웨어</h3></a>
+    <a href="{% url 'post:list' 'company'%}"><h3>수혜기업 현황</h3></a>
     <h5>*Total : {{total}}</h5>
     <table class="t1">
         <thead>
         <tr>
             <td><a style="cursor:pointer" id="name" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">업체명&#9660;</a></td>
-            <td><a style="cursor:pointer" id="document_n" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">업체구분&#9660;</a> </td>
-            <td><a style="cursor:pointer" id="company" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">기업명&#9660;</a> </td>
-            <td><a style="cursor:pointer" id="path" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">대상경로&#9660;</a></td>
-            <td><a style="cursor:pointer" id="file_name" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">파일명&#9660;</a></td>
-            <td><a style="cursor:pointer" id="reply" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">회신유무&#9660;</a></td>
-            <td><a style="cursor:pointer" id="process_state" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">처리상태&#9660;</a></td>
+            <td><a style="cursor:pointer" id="business_category" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">업체구분&#9660;</a> </td>
+            <td><a style="cursor:pointer" id="ss_security" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">보안관제&#9660;</a> </td>
+            <td><a style="cursor:pointer" id="ss_internal" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">내부정보&#9660;</a></td>
+            <td><a style="cursor:pointer" id="ss_virus" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">악성코드&#9660;</a></td>
+            <td><a style="cursor:pointer" id="ss_ransomware" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">랜섬웨어&#9660;</a></td>
+            <td><a style="cursor:pointer" id="process_state" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">지역&#9660;</a></td>
         </tr>
         </thead>
         <tbody>
         {% for object in objects %}
             <tr>
-                <td><a href="#" onclick="location.href ='{% url 'post:detail' 'ransomware_post' object.id %}'">{{object.send_date}}</a></td>
+                <td><a href="#" onclick="location.href ='{% url 'post:detail' 'company' object.id %}'">{{object.send_date}}</a></td>
                 <td>{{object.document_n}}</td>
                 <td> {{object.company}}</td>
                 <td>{{object.path}}</td>

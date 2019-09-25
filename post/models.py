@@ -45,6 +45,10 @@ class DetectionPat(models.Model):
     #대응방안
     countermeasures = models.TextField()
 
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
 #랜섬웨어
 
 class RansomwarePost(models.Model):
@@ -118,3 +122,7 @@ class Comment(models.Model):
     com_class = models.CharField(max_length=50, null=True, blank=True)
 
     comment = models.TextField()
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)

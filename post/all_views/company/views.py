@@ -1,6 +1,6 @@
 from main.models import Company, Security, Internal, Virus, Ransomware
 from post.all_forms.company.forms import CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm
-from post.my_def import get_fomrs, get_instance_forms, get_objects_by_request
+from post.my_def import get_fomrs, get_instance_forms, get_objects_by_request, get_objects_by_request_ex, set_session, set_default
 from django.db.models import Max
 from django.conf import settings
 from django.shortcuts import render, HttpResponseRedirect, reverse
@@ -48,14 +48,19 @@ def updateCompany(request, pk):
     return render(request, 'post/company/write.html', forms)
 
 def listCompany(request):
-    default_order = 'send_date'
-    objects, page = get_objects_by_request(request, Company, default_order)
-    request.session[settings.LIST_CONDITIONS_ID] = {
-        'model': 'RansomwarePost',
-        'pk_list': list(objects.values_list('id', flat=True)),
-        'uri': request.build_absolute_uri(),
-    }
+    model = Company
+    default_GET = '?order_by=created&search_field=company&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
 
+    if not request.GET:
+        return set_default(model, request, default_GET)
+
+    result = get_objects_by_request_ex(request, model, default_GET, relation_model='business_category')
+    if result['success']:
+        objects, page = result['data']
+    else:
+        return set_default(model, request, default_GET)
+
+    set_session(request, objects, model)
     total = len(objects)
     paginator = Paginator(objects, PAGE)
 
@@ -65,8 +70,8 @@ def listCompany(request):
         objects = paginator.page(1)
 
     content = {
-        'objects':objects,
-        'total':total,
+        'objects': objects,
+        'total': total,
     }
     return render(request, 'post/company/list.html', content)
 
