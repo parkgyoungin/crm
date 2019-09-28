@@ -100,7 +100,7 @@ def updateOutflow(request, id):
 
 def listRansomwarepost(request):
     model = RansomwarePost
-    default_GET = '?order_by=created&search_field=company&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
+    default_GET = '?reverse=false&order_by=created&search_field=company&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
 
     if not request.GET:
         return set_default(model, request, default_GET)
@@ -129,7 +129,7 @@ def listRansomwarepost(request):
 
 def listOutflow(request):
     model = Outflow
-    default_GET = '?order_by=created&search_field=company&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
+    default_GET = '?reverse=false&order_by=-created&search_field=company&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
 
     if not request.GET:
         return set_default(model, request, default_GET)

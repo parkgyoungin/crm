@@ -1,0 +1,371 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: aliceblue;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .btn_div *{margin:30px;}
+     .btn_div {text-align:center;}
+     .t3 span {margin:15px;}
+
+
+     .t8 .c1, .t8 .c2, .t8 .c4, .t8 .c6, .t8 .c8, .t8 .c10 {
+        background-color: aliceblue;
+        text-align: center;
+     }
+     .t8 .c3, .t8 .c5, .t8 .c7, .t8 .c9, .t8 .c11{
+        width: 120px;
+        background-color: white;
+        text-align: center;
+     }
+
+
+     {% for set_cmd in object.set_ss_state_color %}
+        {{set_cmd}}
+     {% endfor %}
+     .ss_state {margin:20px; display: inline-block;}
+
+</style>
+<h3>{{object.name}}</h3>
+
+<div class="tb">
+    <h4>고객정보</h4>
+    <table class="t1" border="1">
+        <tr>
+            <td class="c1">서비스현황</td>
+            <td colspan="5">
+                <div class="ss_state">보안관제( <span id="ss_security">{{object.ss_security}}</span> )</div> |
+                <div class="ss_state">내부정보( <span id="ss_internal">{{object.ss_internal}}</span> )</div> |
+                <div class="ss_state">악성코드( <span id="ss_virus">{{object.ss_virus}}</span> )</div> |
+                <div class="ss_state">랜섬웨어( <span id="ss_ransomware">{{object.ss_ransomware}}</span> )</div>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="c1">허수 현황</td>
+            <td colspan="5">{{object.get_im_state}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">사업자 유형</td>
+            <td class="c2">{{object.business_type}}</td>
+            <td class="c3">업태</td>
+            <td class="c4">{{object.business_uptae}}</td>
+            <td class="c5">업종</td>
+            <td class="c6">{{object.business_class}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">가입경로</td>
+            <td class="c2">{{object.join_path}}</td>
+            <td class="c3">대표자명</td>
+            <td class="c4">{{object.top_name}}</td>
+            <td class="c5">대표자<br>이메일</td>
+            <td class="c6">{{object.top_email}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">홈페이지</td>
+            <td class="c2">{{object.homepage}}</td>
+            <td class="c3">사업자번호</td>
+            <td colspan="3">{{object.business_n}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">주소</td>
+            <td colspan="c2">{{object.get_address}}</td>
+            <td class="c3">설치주소</td>
+            <td colspan="3">{{object.get_iaddress}}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="tb">
+    <h4>업체구분</h4>
+    <table class="t2" border="1">
+        <tr>
+            <td rowspan="7" class="c1">운영환경</td>
+        </tr>
+
+        {% if object.large_scale %}
+        <tr>
+            <td style="background-color:aliceblue">테크노파크, 지식재산센터 등 대규모 입주단지</td>
+            <td>{{object.large_scale}}</td>
+        </tr>
+        {% endif %}
+
+        {% if object.major_partner %}
+        <tr>
+            <td style="background-color:aliceblue">대기업 협력사</td>
+            <td>{{object.major_partner}}</td>
+        </tr>
+        {% endif %}
+
+        {% if object.closed_net %}
+        <tr>
+            <td style="background-color:aliceblue">폐쇄망 운영 여부</td>
+            <td>{{object.closed_net}}</td>
+        </tr>
+        {% endif %}
+
+        {% if object.defense_industry %}
+        <tr>
+            <td style="background-color:aliceblue">방위산업체/방위산업협력기업</td>
+            <td>{{object.defense_industry}}</td>
+        </tr>
+        {% endif %}
+
+        {% if object.smart_factory %}
+        <tr>
+            <td style="background-color:aliceblue">스마트공장</td>
+            <td>{{object.smart_factory}}</td>
+        </tr>
+        {% endif %}
+
+        {% if object.operation_etc %}
+        <tr>
+            <td style="background-color:aliceblue">기타</td>
+            <td>{{object.operation_etc}}</td>
+        </tr>
+        {% endif %}
+
+    </table>
+</div>
+
+<div class="tb">
+    <h4>서비스정보</h4>
+    <table class="t3" border="1">
+        <tr>
+            <td rowspan="7" class="c1">보안관제</td>
+        </tr>
+
+        <tr>
+            <td class="c1">계약사항</td>
+            <td class="c2">{{security.contract}}</td>
+            <td class="c3">선차단 권한</td>
+            <td class="c4">{{security.block_permis}}</td>
+            <td class="c5">보고서<br>발송일</td>
+            <td class="c6">{{security.send_date}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">연동일</td>
+            <td class="c2">{{security.interlock_date}}</td>
+            <td class="c3">시리얼 번호</td>
+            <td class="c4">{{security.serial}}</td>
+            <td class="c5">라이선스<br>만료일</td>
+            <td class="c6">{{security.expiry_date}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">장비 펌웨어</td>
+            <td class="c2">{{security.firmware}}</td>
+            <td class="c3">장비 분류</td>
+            <td class="c4">{{security.equipment_class}}</td>
+            <td class="c5">소유권</td>
+            <td class="c6">{{security.ownership}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">접근 권한</td>
+            <td class="c2">{{security.access_permis}}</td>
+            <td class="c3">IPS/Check</td>
+            <td colspan="3">
+                <span style="font-weight:bold;" id="ips_rule">ips_rule  </span>
+                <span style="font-weight:bold;" id="sys_log">sys_log  </span>
+                <span style="font-weight:bold;" id="icmp">icmp  </span>
+                <span style="font-weight:bold;" id="snmp">snmp  {% if security.snmp %} ({{security.snmp_sub}}) {% endif %}</span>
+            </td>
+
+        </tr>
+
+    </table>
+</div>
+
+<div class="tb">
+    <table class="t4" border="1">
+        <tr>
+            <td rowspan="4" class="c1">내부보안</td>
+        </tr>
+
+        <tr>
+            <td class="c1">계약사항</td>
+            <td class="c2">{{internal.contract}}</td>
+            <td class="c3">신청대수</td>
+            <td class="c4">{{internal.apply_n}}</td>
+            <td class="c5">연동일</td>
+            <td class="c6">{{internal.interlock_date}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">IP</td>
+            <td class="c2">{{internal.ip}}</td>
+            <td class="c3">해지일(사유)</td>
+            <td colspan="3">{{internal.termination_date}} {{internal.termination_reason}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">기타사항</td>
+            <td colspan="5">{{internal.etc}}</td>
+        </tr>
+
+    </table>
+</div>
+
+<div class="tb">
+    <table class="t6" border="1">
+        <tr>
+            <td rowspan="4" class="c1">악성코드</td>
+        </tr>
+
+        <tr>
+            <td class="c1">계약사항</td>
+            <td class="c2">{{virus.contract}}</td>
+            <td class="c3">신청대수</td>
+            <td class="c4">{{virus.apply_n}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">연동일</td>
+            <td class="c2">{{virus.interlock_date}}</td>
+            <td class="c3">해지일(사유)</td>
+            <td colspan="3">{{virus.termination_date}} {{virus.termination_reason}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">기타사항</td>
+            <td colspan="3">{{virus.etc}}</td>
+        </tr>
+
+    </table>
+</div>
+
+<div class="tb">
+    <table class="t7" border="1">
+        <tr>
+            <td rowspan="4" class="c1">랜섬웨어</td>
+        </tr>
+
+        <tr>
+            <td class="c1">계약사항</td>
+            <td class="c2">{{ransomware.contract}}</td>
+            <td class="c3">신청대수</td>
+            <td class="c4">{{ransomware.apply_n}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">연동일</td>
+            <td class="c2">{{ransomware.interlock_date}}</td>
+            <td class="c3">해지일(사유)</td>
+            <td colspan="3">{{ransomware.termination_date}} {{ransomware.termination_reason}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">기타사항</td>
+            <td colspan="3">{{ransomware.etc}}</td>
+        </tr>
+
+    </table>
+</div>
+
+<div class="tb">
+    <h4>담당자 정보</h4>
+    <table class="t8" border="1">
+        <tr>
+            <td class="c1">(정)</td>
+            <td class="c2">이름</td>
+            <td class="c3">{{object.manager_m_name}}</td>
+            <td class="c4">부서</td>
+            <td class="c5">{{object.manager_m_depart}}</td>
+            <td class="c6">휴대폰</td>
+            <td class="c7">{{object.manager_m_phone}}</td>
+            <td class="c8">회사<br>전화</td>
+            <td class="c9">{{object.manager_m_cphone}}</td>
+            <td class="c10">E-mail</td>
+            <td class="c11">{{object.manager_m_email}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">(부)</td>
+            <td class="c2">이름</td>
+            <td class="c3">{{object.manager_s_name}}</td>
+            <td class="c4">부서</td>
+            <td class="c5">{{object.manager_s_depart}}</td>
+            <td class="c6">휴대폰</td>
+            <td class="c7">{{object.manager_s_phone}}</td>
+            <td class="c8">회사<br>전화</td>
+            <td class="c9">{{object.manager_s_cphone}}</td>
+            <td class="c10">E-mail</td>
+            <td class="c11">{{object.manager_s_email}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">(요금)</td>
+            <td class="c2">이름</td>
+            <td class="c3">{{object.manager_f_name}}</td>
+            <td class="c4">부서</td>
+            <td class="c5">{{object.manager_f_depart}}</td>
+            <td class="c6">휴대폰</td>
+            <td class="c7">{{object.manager_f_phone}}</td>
+            <td class="c8">회사<br>전화</td>
+            <td class="c9">{{object.manager_f_cphone}}</td>
+            <td class="c10">E-mail</td>
+            <td class="c11">{{object.manager_f_email}}</td>
+        </tr>
+
+        <tr>
+            <td colspan="2" class="c1">세금계산서 발송일</td>
+            <td colspan="9">매월 {{object.bill_send_date}} 일</td>
+        </tr>
+    </table>
+</div>
+
+<div class="tb">
+    <h4>기타</h4>
+    <div style="width:100%; height: 150px; border: 1px solid;">
+        {{object.etc}}
+    </div>
+</div>
+
+첨부파일 : <a href="{{object.file}}" download>{{object.file}}</a>
+<div class="btn_div">
+    {% if next_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'company' next_obj.id %}'"><button type="button">다음글</button></a>
+    {% endif %}
+    <a href="#" onclick="location.href = '{{uri}}'"><button type="button">목록으로</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:update' 'company' object.id %} '"><button type="button">수정하기</button></a>
+</div>
+<script>
+    window.onload = function(){
+        {% if security.ips_rule == '사용' %}
+            document.getElementById('ips_rule').style.color = 'green';
+        {% else %}
+            document.getElementById('ips_rule').style.color = 'gainsboro';
+        {% endif %}
+
+        {% if security.sys_log == '사용' %}
+            document.getElementById('sys_log').style.color = 'green';
+        {% else %}
+            document.getElementById('sys_log').style.color = 'gainsboro';
+        {% endif %}
+
+        {% if security.icmp == '사용' %}
+            document.getElementById('icmp').style.color = 'green';
+        {% else %}
+            document.getElementById('icmp').style.color = 'gainsboro';
+        {% endif %}
+
+        {% if security.snmp == '사용' %}
+            document.getElementById('snmp').style.color = 'green';
+        {% else %}
+            document.getElementById('snmp').style.color = 'gainsboro';
+        {% endif %}
+    }
+</script>
+{% endblock %}

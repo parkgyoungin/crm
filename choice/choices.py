@@ -94,6 +94,7 @@ join_path = [
 
 large_scale = [
     ('','선택하세요'),
+    ('직접입력(추가)','직접입력(추가)'),
     ('(재)경기도경제과학진흥원','(재)경기도경제과학진흥원'),
     ('(재)서울산업진흥원','(재)서울산업진흥원'),
     ('한국기술벤처재단','한국기술벤처재단'),
@@ -118,11 +119,11 @@ large_scale = [
     ('청주대학교창업보육센터','청주대학교창업보육센터'),
     ('충북보건과학대학교산학협력단','충북보건과학대학교산학협력단'),
     ('한양대학교창업보육센터','한양대학교창업보육센터'),
-    ('직접입력(추가)','직접입력(추가)'),
 ]
 
 major_partner = [
     ('','선택하세요'),
+    ('직접입력(추가)', '직접입력(추가)'),
     ('KT','KT'),
     ('대우조선해양','대우조선해양'),
     ('삼성전자협력사','삼성전자협력사'),
@@ -135,7 +136,6 @@ major_partner = [
     ('한국항공우주산업','한국항공우주산업'),
     ('현대기아자동차그룹','현대기아자동차그룹'),
     ('현대자동차협력사','현대자동차협력사'),
-    ('직접입력(추가)','직접입력(추가)'),
 ]
 
 closed_net = [
@@ -152,8 +152,8 @@ defense_industry = [
 
 smart_factory = [
     ('','선택하세요'),
-    ('스마트공장','스마트공장'),
     ('직접입력(추가)','직접입력(추가)'),
+    ('스마트공장','스마트공장'),
 ]
 
 contract = [
@@ -235,6 +235,23 @@ choices = {
     'process_state':process_state
 }
 
+widgets = {
+    'ss_security' : 'service_state',
+    'ss_internal' : 'service_state',
+    'ss_virus' : 'service_state',
+    'ss_ransomware' : 'service_state',
+    'business_type' : 'business_type',
+    'business_uptae' : 'business_uptae',
+    'business_class' : 'business_class',
+    'join_path' : 'join_path',
+    'large_scale' : 'large_scale',
+    'major_partner' : 'major_partner',
+    'closed_net' : 'closed_net',
+    'defense_industry' : 'defense_industry',
+    'smart_factory' : 'smart_factory',
+    'contract' : 'contract',
+    'equipment_class' : 'equipment_class',
+}
 
 def insert_db():
     from .models import Choice
@@ -256,5 +273,5 @@ def get_choices(field_name):
         result.append( (c.value, c.value) )
     return result
 
-#from post.choices import inset_db
-#inset_db()
+#from choice.choices import insert_db
+#insert_db()

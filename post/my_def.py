@@ -1,7 +1,8 @@
 from django.conf import settings
-from post.models import RansomwarePost, Outflow
+from post.models import RansomwarePost, Outflow, Company
 from django.db.models import Q
 from django.shortcuts import reverse, HttpResponseRedirect
+from main.models import Address
 
 def get_fomrs(forms, POST=None, FILES=None):
     new_forms = {}
@@ -143,11 +144,21 @@ def get_objects_by_request_ex(request, model, default_GET, relation_model=None):
             relation = request.GET['relation']
             data1 = request.GET['search_data']
             data2 = request.GET['search_data2']
+            if request.GET['reverse'] == 'true':
+                if order_by[0] == '-':
+                    order_by = order_by[1:]
+                else:
+                    order_by = '-' + order_by
         except:
             return {'success':False}
         prev_objects = model.objects.filter(id__in=session[model.__name__])
 
-        if relation_model and search_field == relation_model:
+        if search_field == 'address':
+            first_q = eval('Q(%s__address%s = data1)' % (search_field, filter_option,))
+            second_q = eval('Q(%s__address%s = data2)' % (search_field, filter_option,))
+            command = 'prev_objects.filter(first_q %s second_q).order_by(order_by+"__address")' % relation
+
+        elif relation_model and search_field == 'business_category':
             pk_list = get_filter_list_by_business_category(request, model)
             command = 'prev_objects.filter(id__in=pk_list).order_by(order_by)'
 
@@ -164,15 +175,17 @@ def get_objects_by_request_ex(request, model, default_GET, relation_model=None):
             first_q = eval('Q(%s%s = data1)'%(search_field, filter_option, ))
             second_q = eval('Q(%s%s = data2)'%(search_field, filter_option, ))
             command = 'prev_objects.filter(first_q %s second_q).order_by(order_by)'%relation
-
         objects = eval(command)
+
+        print("prev : ", prev_objects)
+        print("objects : ",objects)
 
     else:
         # GET 요청이면서 세션이 없는경우 : 모든오브젝트
         return {'success':False}
 
     session[model.__name__] = list(objects.values_list('id', flat=True))
-
+    print('saved_pk_list : ',session[model.__name__])
     return {'success':True, 'data':(objects,page)}
 
 
@@ -209,7 +222,22 @@ def get_filter_list_by_business_category(request, model):
     return list(eval('prev_objects.filter(Q1 %s Q2)'%relation).values_list('id', flat=True))
 
 
+def get_filter_list_by_address(request, model):
 
+    filter_option = request.GET['filter_option']
+    relation = request.GET['relation']
+    data1 = request.GET['search_data']
+    data2 = request.GET['search_data2']
+
+    #filter_option = '__icontains'
+    #relation = '&'
+    #data1 = '서울'
+    #data2 = ''
+    Q1 = eval("Q(address%s = data1)"%filter_option)
+    Q2 = eval("Q(address%s = data2)"%filter_option)
+
+    address = eval("Address.objects.filter(Q1 %s Q2)"%relation)
+    return list(address.values_list('id', flat=True))
 
 
 
@@ -252,12 +280,12 @@ def set_default(model, request, GET):
     objects = model.objects.all().order_by('created')
     request.session[model.__name__] = list(objects.values_list('id', flat=True))
     request.session[settings.LIST_CONDITIONS_ID] = {
-        Outflow.__name__: {
-            'pk_list': list(objects.values_list('id', flat=True)),
-            'uri': reverse('post:list', args=[Outflow.__name__]) + GET,
+        model.__name__: {
+            'pk_list': list(objects.values_list('id', flat=True)) or [1],
+            'uri': reverse('post:list', args=[model.__name__]) + GET,
         }
     }
-    return HttpResponseRedirect(reverse('post:list', args=[Outflow.__name__]) + GET)
+    return HttpResponseRedirect(reverse('post:list', args=[model.__name__]) + GET)
 
 def set_session(request, objects, model):
     request.session[settings.LIST_CONDITIONS_ID] = {

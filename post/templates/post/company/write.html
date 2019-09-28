@@ -94,6 +94,7 @@
   /* etc */
   #id_co-etc {width:100%; height:100px;}
 </style>
+
 <h3>전체 수혜기업 현황 글쓰기</h3>
 <form method="post" action="" enctype="multipart/form-data" id="post_form" onsubmit="return last_check()">
     <input type="hidden" name="csrfmiddlewaretoken" value="1VmNIWcKmUEQSmjozN9eQgMuOWeG3PgqBsm4czWmiYB6eT0QY6L88ZGvqZGu0Glw">
@@ -104,7 +105,7 @@
             <td class='c1'>업체명</td>
             <td class="c2">{{co_form.name}} {{co_form.tenant}} {{co_form.tenant.label_tag}}</td>
             <td class="c3">관리번호</td>
-            <td class="c4" colspan="3"> * 필요시 수정</td>
+            <td class="c4" colspan="3"> <a style="font-weight:bold;">{{next_id}}</a>  * 필요시 수정</td>
         </tr>
         <tr>
             <td class="c1">서비스현황</td>
@@ -141,9 +142,22 @@
 
         <tr>
             <td class="c1">주소</td>
-            <td class="c2">{{co_form.address}}</td>
+            <td class="c2">
+                {{ad_form.zip_code}}
+                <input type="button" onclick="search_address_ad()" value="우편번호 찾기"><br>
+                {{ad_form.address}} {{ad_form.address_old}}
+                <span id="guide1" style="color:#999;display:none"></span><br>
+                {{ad_form.detail}} {{ad_form.note}}
+
+            </td>
             <td class="c3">설치주소</td>
-            <td class="c4" colspan="3">{{co_form.install_address}}</td>
+            <td class="c4" colspan="3">
+                {{ia_form.zip_code}}
+                <input type="button" onclick="search_address_ia()" value="우편번호 찾기"><br>
+                {{ia_form.address}} {{ia_form.address_old}}
+                <span id="guide2" style="color:#999;display:none"></span><br>
+                {{ia_form.detail}} {{ia_form.note}}
+            </td>
         </tr>
     </table>
     </div>
@@ -362,10 +376,11 @@
         <h5>첨부파일</h5>
         {{co_form.file}}
         <button type="submit">작성완료</button>
-        <button type="button">취소</button>
+        <input type=button value="취소" onClick="javascript:history.go(-1);">
     </div>
 </form>
-
+{{co_form.errors}}
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <script>
     //전역변수
@@ -450,11 +465,7 @@
     }
 
     //중복체크 팝업
-    function popup_check(model, field_name, id){
-        var model_field = '/' + model + '/' + field_name + '/' + id;
-        var url_mask = "/post/check/abc/def/ghi".replace('/abc/def/ghi', model_field);
-        child = window.open(url_mask, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
-    }
+
 
     function change_data(){
         var v1 = (document.getElementById('id_co-im_1').checked ==true) ? '1':'0';
@@ -476,5 +487,25 @@
         return true;
     }
 
+    //주소
+    function search_address_ad(){
+        ids = {
+            'zip': 'id_ad-zip_code',
+            'add': 'id_ad-address',
+            'add_old': 'id_ad-address_old',
+            'note' : 'id_ad-note',
+        };
+        search_address_js(ids);
+    }
+
+    function search_address_ia(){
+        ids = {
+            'zip': 'id_ia-zip_code',
+            'add': 'id_ia-address',
+            'add_old': 'id_ia-address_old',
+            'note' : 'id_ia-note',
+        };
+        search_address_js(ids);
+    }
 </script>
 {% endblock %}

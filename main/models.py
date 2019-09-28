@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (BaseUserManager, AbstractBaseUser)
 from django.utils import timezone
 from choice.choices import get_choices
+from django.db.models import Q
 
 class UserManager(BaseUserManager):
     def create_user(self,userid, name, nickname ,email, password=None):
@@ -82,6 +83,18 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
+
+
+class Address(models.Model):
+    address = models.CharField(max_length=200)
+
+    address_old = models.CharField(max_length=200)
+
+    detail = models.CharField(max_length=100)
+
+    zip_code = models.CharField(max_length=20)
+
+    note = models.CharField(max_length=100)
 
 
 class Security(models.Model):
@@ -205,25 +218,15 @@ class Company(models.Model):
 
     top_name = models.CharField(max_length=50)
 
-    top_email = models.EmailField()
+    #top_email = models.EmailField()
 
     homepage = models.CharField(max_length=100, null=True, blank=True)
 
     business_n = models.IntegerField(verbose_name='사업자번호')
 
-    address = models.CharField(max_length=100)
+    address = models.ForeignKey(Address, on_delete=models.DO_NOTHING, related_name='company_address')
 
-    install_address = models.CharField(max_length=100)
-
-    large_scale = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('large_scale'))
-
-    major_partner = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('major_partner'))
-
-    closed_net = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('closed_net'))
-
-    defense_industry = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('defense_industry'))
-
-    smart_factory = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('smart_factory'))
+    #install_address = models.ForeignKey(Address, on_delete=models.DO_NOTHING, related_name='install_address')
 
     operation_etc = models.CharField(max_length=50, null=True, blank=True)
 
@@ -236,6 +239,16 @@ class Company(models.Model):
     defense_etc = models.CharField(max_length=50, null=True, blank=True)
 
     smart_etc = models.CharField(max_length=50, null=True, blank=True)
+
+    large_scale = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('large_scale'))
+
+    major_partner = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('major_partner'))
+
+    closed_net = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('closed_net'))
+
+    defense_industry = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('defense_industry'))
+
+    smart_factory = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('smart_factory'))
 
     manager_m_name = models.CharField(max_length=50)
 
@@ -267,7 +280,7 @@ class Company(models.Model):
 
     manager_f_email = models.EmailField(null=True, blank=True)
 
-    bill_send_date = models.IntegerField()
+    #bill_send_date = models.IntegerField()
 
     etc = models.TextField(null=True, blank=True)
 
@@ -284,6 +297,206 @@ class Company(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     updated = models.DateTimeField(auto_now=True)
+
+    colors = {
+        '미사용': 'white',
+        '사용중': 'green',
+        '개통예정': 'darkviolet',
+        '해지': 'red',
+    }
+    def get_area(self):
+        try:
+            address = self.address.address
+            space = address.find(' ')
+        except:
+            address = ''
+        return address[:space]
+
+    def get_business_category(self):
+        field_list = [
+            self.large_scale,
+            self.major_partner,
+            self.closed_net,
+            self.defense_industry,
+            self.smart_factory,
+            self.operation_etc
+        ]
+        datas = []
+        for field in field_list:
+            if field:
+                datas.append(field)
+
+        result = ', '.join(datas)
+        html = '<span class="bscate">%s</span>'%result
+        return html
+
+    def get_im_state(self):
+        value_list = [
+            '보안관제',
+            '내부보안',
+            '악성코드',
+            '랜섬웨어'
+        ]
+        result = ''
+        for i, bite in enumerate(self.im_state):
+            if int(bite):
+                result += value_list[i] + '  '
+
+        return result
+
+    def get_address(self):
+        ad = self.address
+        result = '%s, %s  %s'%(
+            ad.address,
+            ad.detail,
+            ad.note,
+        )
+        return result
+
+    def get_iaddress(self):
+        ad = self.install_address
+        result = '%s, %s  %s'%(
+            ad.address,
+            ad.detail,
+            ad.note,
+        )
+        return result
+
+    def set_ss_state_color(self):
+        colors = dict(self.colors)
+        colors['미사용'] = 'gainsboro'
+        ids = [
+            'ss_security',
+            'ss_internal',
+            'ss_virus',
+            'ss_ransomware',
+        ]
+        result = []
+        for id in ids:
+            val = eval('self.%s'%id)
+            color = colors[val]
+            result.append('#%s {color:%s; font-weight:bold;}'%(id,color))
+        return result
+
+    def set_security_color(self):
+        color = self.colors[self.ss_security]
+        return 'style="color:%s; font-weight:bold;"'%color
+
+    def set_internal_color(self):
+        color = self.colors[self.ss_internal]
+        return 'style="color:%s; font-weight:bold;"'%color
+
+    def set_virus_color(self):
+        color = self.colors[self.ss_virus]
+        return 'style="color:%s; font-weight:bold;"'%color
+
+    def set_ransomware_color(self):
+        color = self.colors[self.ss_ransomware]
+        return 'style="color:%s; font-weight:bold;"'%color
+
+    @staticmethod
+    def get_state():
+        result = {
+            'all' : {
+                'ss_security' : {},
+                'ss_internal' : {},
+                'ss_virus' : {},
+                'ss_ransomware' : {},
+                'total' : {
+                    'use':0,
+                    'soon':0,
+                    'termination':0,
+                    'sum':0,
+                    'sum_all':0,
+                }
+            },
+            'defense' : {
+                'ss_security': {},
+                'ss_internal': {},
+                'ss_virus': {},
+                'ss_ransomware': {},
+                'total' : {
+                    'use':0,
+                    'soon':0,
+                    'termination':0,
+                    'sum':0,
+                    'sum_all':0,
+                }
+            },
+        }
+        fields = ['ss_security', 'ss_internal', 'ss_virus', 'ss_ransomware']
+        Q1 = lambda field : "Q(%s = '사용중')"%field
+        Q2 = lambda field : "Q(%s = '개통예정')"%field
+        Q3 = lambda field : "Q(%s = '해지')"%field
+        Q4 = lambda field : "Q(%s = '사용중') & Q(defense_industry__icontains = '방위')"%field
+        Q5 = lambda field: "Q(%s = '개통예정') & Q(defense_industry__icontains = '방위')" % field
+        Q6 = lambda field: "Q(%s = '해지') & Q(defense_industry__icontains = '방위')" % field
+
+
+        for field in fields:
+            use = result['all'][field]['use'] = Company.get_state_by_conditions(field, Q1)
+            soon = result['all'][field]['soon'] = Company.get_state_by_conditions(field, Q2)
+            termination = result['all'][field]['termination'] = Company.get_state_by_conditions(field, Q3)
+            sum = result['all'][field]['sum'] = Company.get_state_by_conditions(field, Q1, Q2)
+            sum_all = result['all'][field]['sum_all'] = Company.get_state_by_conditions(field, Q1, Q2, Q3)
+            result['all'][field]['content'] = "사용중 : %s , 개통예정 : %s, 해지 : %s <br> %s+%s (%s+%s+%s)"%(
+                result['all'][field]['use'], result['all'][field]['soon'], result['all'][field]['termination'],
+                result['all'][field]['use'], result['all'][field]['soon'],
+                result['all'][field]['use'], result['all'][field]['soon'], result['all'][field]['termination']
+            )
+            # += total
+            result['all']['total']['use'] += use
+            result['all']['total']['soon'] += soon
+            result['all']['total']['termination'] += termination
+            result['all']['total']['sum'] += sum
+            result['all']['total']['sum_all'] += sum_all
+
+            use = result['defense'][field]['use'] = Company.get_state_by_conditions(field, Q4)
+            soon = result['defense'][field]['soon'] = Company.get_state_by_conditions(field, Q5)
+            termination = result['defense'][field]['termination'] = Company.get_state_by_conditions(field, Q6)
+            sum = result['defense'][field]['sum'] = Company.get_state_by_conditions(field, Q4, Q5)
+            sum_all = result['defense'][field]['sum_all'] = Company.get_state_by_conditions(field, Q4, Q5, Q6)
+            result['defense'][field]['content'] = "사용중 : %s , 개통예정 : %s, 해지 : %s <br> %s+%s (%s+%s+%s)" % (
+                result['defense'][field]['use'], result['defense'][field]['soon'], result['defense'][field]['termination'],
+                result['defense'][field]['use'], result['defense'][field]['soon'],
+                result['defense'][field]['use'], result['defense'][field]['soon'], result['defense'][field]['termination']
+            )
+            # += total
+            result['defense']['total']['use'] += use
+            result['defense']['total']['soon'] += soon
+            result['defense']['total']['termination'] += termination
+            result['defense']['total']['sum'] += sum
+            result['defense']['total']['sum_all'] += sum_all
+
+        result['all']['total']['content'] = "사용중 : %s , 개통예정 : %s, 해지 : %s <br> %s+%s (%s+%s+%s)" % (
+            result['all']['total']['use'], result['all']['total']['soon'], result['all']['total']['termination'],
+            result['all']['total']['use'], result['all']['total']['soon'],
+            result['all']['total']['use'], result['all']['total']['soon'], result['all']['total']['termination']
+        )
+        result['defense']['total']['content'] = "사용중 : %s , 개통예정 : %s, 해지 : %s <br> %s+%s (%s+%s+%s)" % (
+            result['defense']['total']['use'], result['defense']['total']['soon'], result['defense']['total']['termination'],
+            result['defense']['total']['use'], result['defense']['total']['soon'],
+            result['defense']['total']['use'], result['defense']['total']['soon'], result['defense']['total']['termination']
+        )
+
+        return result
+
+    @staticmethod
+    def get_state_by_conditions(field, *args):
+        all_Q = Q()
+
+        for q in args:
+            all_Q = all_Q | eval(q(field))
+
+        return Company.objects.filter(all_Q).count()
+
+
+
+
+
+
+
+
 
 
 

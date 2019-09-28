@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from main.models import Company
+from main.models import Company, User
 
 def check(request, model,field_name, ele_id):
     success = False
@@ -7,7 +7,7 @@ def check(request, model,field_name, ele_id):
     confirm_data = ""
     if request.method == 'POST':
         confirm_data = request.POST['confirm_data']
-        if not eval("%s.objects.filter(%s=%s)"%(model,field_name,confirm_data)):
+        if not eval("%s.objects.filter(%s='%s')"%(model,field_name,confirm_data)):
             success = True
     content = {
         'verbose_name':verbose_name,

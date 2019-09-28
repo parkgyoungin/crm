@@ -9,37 +9,68 @@
     table *{text-align:center;}
     thead {background-color:lightcyan;}
     td {height:50px;}
+    .ss_state {
+        display : inline-block;
+        margin : 5px 20px;
+    }
+
+    .bscate { display: inline-block; width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 </style>
 <div>
     <a href="{% url 'post:list' 'company'%}"><h3>수혜기업 현황</h3></a>
     <h5>*Total : {{total}}</h5>
+    전체 기업 :
+    <div class="ss_state"><a data-toggle="popover" data-content="{{all.ss_security.content|safe}}" data-html="true">보안관제 : {{all.ss_security.sum}} ({{ all.ss_security.sum_all }})</a></div>
+    <div class="ss_state"><a data-toggle="popover" data-content="{{all.ss_internal.content|safe}}" data-html="true">내부정보 : {{all.ss_internal.sum}} ({{ all.ss_internal.sum_all }})</a></div>
+    <div class="ss_state"><a data-toggle="popover" data-content="{{all.ss_virus.content|safe}}" data-html="true">내부정보 : {{all.ss_virus.sum}} ({{ all.ss_virus.sum_all }})</a></div>
+    <div class="ss_state"><a data-toggle="popover" data-content="{{all.ss_ransomware.content|safe}}" data-html="true">랜섬웨어 : {{all.ss_ransomware.sum}} ({{ all.ss_ransomware.sum_all }})</a></div>
+    <div class="ss_state"><a data-toggle="popover" data-content="{{all.total.content|safe}}" data-html="true">Total : {{all.total.sum}} ({{ all.total.sum_all }})</a></div>
+
+    <br> 방산 기업 :
+    <div class="ss_state"><a data-toggle="popover" data-content="{{defense.ss_security.content|safe}}" data-html="true">보안관제 : {{defense.ss_security.sum}} ({{ defense.ss_security.sum_all }})</a></div>
+    <div class="ss_state"><a data-toggle="popover" data-content="{{defense.ss_internal.content|safe}}" data-html="true">내부정보 : {{defense.ss_internal.sum}} ({{ defense.ss_internal.sum_all }})</a></div>
+    <div class="ss_state"><a data-toggle="popover" data-content="{{defense.ss_virus.content|safe}}" data-html="true">내부정보 : {{defense.ss_virus.sum}} ({{ defense.ss_virus.sum_all }})</a></div>
+    <div class="ss_state"><a data-toggle="popover" data-content="{{defense.ss_ransomware.content|safe}}" data-html="true">랜섬웨어 : {{defense.ss_ransomware.sum}} ({{ defense.ss_ransomware.sum_all }})</a></div>
+    <div class="ss_state"><a data-toggle="popover" data-content="{{defense.total.content|safe}}" data-html="true">Total : {{defense.total.sum}} ({{ defense.total.sum_all }})</a></div>
+
+    <p></p>
+    <a href="{% url 'post:list' 'company'%}">필터링초기화</a>
     <table class="t1">
         <thead>
         <tr>
+            <td><a style="cursor:pointer" id="no" onclick="set_reverse()">번호&#9660;</a></td>
             <td><a style="cursor:pointer" id="name" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">업체명&#9660;</a></td>
-            <td><a style="cursor:pointer" id="business_category" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">업체구분&#9660;</a> </td>
+            <td><a style="cursor:pointer" id="business_category" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_only">업체구분&#9660;</a> </td>
             <td><a style="cursor:pointer" id="ss_security" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">보안관제&#9660;</a> </td>
             <td><a style="cursor:pointer" id="ss_internal" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">내부정보&#9660;</a></td>
             <td><a style="cursor:pointer" id="ss_virus" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">악성코드&#9660;</a></td>
             <td><a style="cursor:pointer" id="ss_ransomware" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">랜섬웨어&#9660;</a></td>
-            <td><a style="cursor:pointer" id="process_state" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">지역&#9660;</a></td>
+            <td><a style="cursor:pointer" id="address" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">지역&#9660;</a></td>
         </tr>
         </thead>
         <tbody>
         {% for object in objects %}
             <tr>
-                <td><a href="#" onclick="location.href ='{% url 'post:detail' 'company' object.id %}'">{{object.send_date}}</a></td>
-                <td>{{object.document_n}}</td>
-                <td> {{object.company}}</td>
-                <td>{{object.path}}</td>
-                <td>{{object.file_name}}</td>
-                <td>{{object.reply}}</td>
-                <td>{{object.process_state}}</td>
+                <td>
+                    {% if request.GET.reverse == 'false' %}
+                    {{forloop.revcounter}}
+                    {% else %}
+                    {{forloop.counter}}
+                    {% endif %}
+                </td>
+                <td><a href="#" onclick="location.href ='{% url 'post:detail' 'company' object.id %}'">{{object.name}}</a></td>
+                <td>{{object.get_business_category|safe}}</td>
+                <td {{object.set_security_color|safe}}>{{object.ss_security}}</td>
+                <td {{object.set_internal_color|safe}}>{{object.ss_internal}}</td>
+                <td {{object.set_virus_color|safe}}>{{object.ss_virus}}</td>
+                <td {{object.set_ransomware_color|safe}}>{{object.ss_ransomware}}</td>
+                <td>{{object.get_area}}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
+<a href="#" onclick="location.href = '{% url 'post:write' 'company' %}'"><button type="button">글쓰기</button></a>
 <div>
 {% if objects.has_other_pages %}
   <ul class="pagination">
@@ -66,6 +97,7 @@
 
 <div>
     <form id="condition" action="" method="get">
+        <input type="hidden" id="reverse" name="reverse" value="false">
         <input type="hidden" id="order_by" name="order_by" value="send_date">
         <input type="hidden" id="filter_option" name="filter_option" value="__icontains">
         <input type="hidden" id="relation" name="relation" value="and">
@@ -78,6 +110,7 @@
 
 {% include 'post/modal/textFilter.html'  %}
 {% include 'post/modal/dateFilter.html'  %}
+{% include 'post/modal/onlyFilter.html'  %}
 <script>
     var form = document.getElementById('condition');
     var search_field = '';
@@ -100,8 +133,12 @@
             ele.innerHTML = inner + '▲';
     }
 
-    function set_order_by(ele){
-        document.getElementById('order_by').value = get_btn_value(ele);
+    function set_reverse(){
+        reverse = document.getElementById('reverse').value;
+        if(reverse == 'true')
+            document.getElementById('reverse').value = 'false';
+        else
+            document.getElementById('reverse').value = 'true';
         form.submit();
     }
     function set_page(i){
@@ -119,6 +156,12 @@
         search_field = ele.id;
     }
 
+    $(document).ready(function() {
+       $('[data-toggle="popover"]').popover({
+          placement: 'top',
+          trigger: 'hover'
+       });
+    });
 
 </script>
 {% endblock %}

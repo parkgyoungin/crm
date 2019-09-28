@@ -3,11 +3,10 @@ from .models import User
 
 class UserCreationForm(forms.ModelForm):
     password_confirm = forms.CharField(widget=forms.PasswordInput, label='비밀번호 확인')
-    userid_h = forms.CharField(widget=forms.HiddenInput)
-    nickname_h = forms.CharField(widget=forms.HiddenInput)
+
     class Meta:
         model = User
-        fields =['userid', 'password', 'password_confirm','email', 'user_name', 'nickname', 'userid_h', 'nickname_h']
+        fields =['userid', 'password', 'password_confirm','email', 'user_name', 'nickname']
         widgets = {
             'userid': forms.TextInput,
             'password':forms.PasswordInput,

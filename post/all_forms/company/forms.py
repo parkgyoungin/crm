@@ -1,6 +1,8 @@
 from django import forms
 from post.my_def import to_date_widget
-from main.models import Company, Security, Internal, Virus, Ransomware
+from main.models import Company, Security, Internal, Virus, Ransomware, Address
+from choice.models import Choice
+from choice.choices import get_choices
 
 duplicate_check_fields = {
     'business_n',
@@ -47,11 +49,19 @@ class CompanyForm(forms.ModelForm):
         im_state = get_available('im_state', *args, **kwargs)
         super(CompanyForm, self).__init__(*args, **kwargs)
 
+        #append_choices_fileds
+        self.fields['large_scale'] = forms.ChoiceField(choices=get_choices('large_scale'), required=False)
+        self.fields['major_partner'] = forms.ChoiceField(choices=get_choices('major_partner'), required=False)
+        self.fields['closed_net'] = forms.ChoiceField(choices=get_choices('closed_net'), required=False)
+        self.fields['defense_industry'] = forms.ChoiceField(choices=get_choices('defense_industry'), required=False)
+        self.fields['smart_factory'] = forms.ChoiceField(choices=get_choices('smart_factory'), required=False)
+
         #위젯 attribute 수정
         for key, field in self.fields.items():
             for config in attrs_configs:
                 if key in config['fields']:
                     self.fields[key].widget.attrs[config['attrs']] = config['value']
+
         self.fields['im_state'].widget = forms.HiddenInput()
 
         #im_state 초기 설정
@@ -68,11 +78,41 @@ class CompanyForm(forms.ModelForm):
 
     class Meta:
         model = Company
-        exclude = ('security', 'internal', 'virus', 'ransomware')
+        exclude = ('security', 'internal', 'virus', 'ransomware', 'address', 'install_address')
 
     @staticmethod
     def get_prefix():
         return 'co'
+
+    def clean(self):
+        cleaned_data = super(CompanyForm, self).clean()
+        return cleaned_data
+
+    def clean_large_scale(self):
+        field_name = 'large_scale'
+        etc_name = 'large_etc'
+        self.append_choices(field_name, etc_name)
+        return self.cleaned_data[field_name]
+
+    def clean_major_partner(self):
+        field_name = 'major_partner'
+        etc_name = 'major_etc'
+        self.append_choices(field_name, etc_name)
+        return self.cleaned_data[field_name]
+
+    def clean_smart_factory(self):
+        field_name = 'smart_factory'
+        etc_name = 'smart_etc'
+        self.append_choices(field_name, etc_name)
+        return self.cleaned_data[field_name]
+
+
+    def append_choices(self,field_name, etc_name):
+        etc = self.cleaned_data[etc_name]
+        selected = self.cleaned_data[field_name]
+        if etc and selected == '직접입력(추가)' and not Choice.objects.filter(field_name=field_name, value=etc):
+            Choice(field_name=field_name, value=etc).save()
+
 
 
 class SecurityForm(forms.ModelForm):
@@ -126,3 +166,37 @@ class RansomwareForm(forms.ModelForm):
     @staticmethod
     def get_prefix():
         return 'ra'
+
+class AddressForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AddressForm, self).__init__(*args, **kwargs)
+        self.fields['zip_code'].widget.attrs['placeholder'] = '우편번호'
+        self.fields['address'].widget.attrs['placeholder'] = '도로명주소'
+        self.fields['address_old'].widget.attrs['placeholder'] = '지번주소'
+        self.fields['detail'].widget.attrs['placeholder'] = '상세주소'
+        self.fields['note'].widget.attrs['placeholder'] = '참고'
+
+    class Meta:
+        model = Address
+        fields = '__all__'
+
+    @staticmethod
+    def get_prefix():
+        return 'ad'
+
+class Install_AddressForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(Install_AddressForm, self).__init__(*args, **kwargs)
+        self.fields['zip_code'].widget.attrs['placeholder'] = '우편번호'
+        self.fields['address'].widget.attrs['placeholder'] = '도로명주소'
+        self.fields['address_old'].widget.attrs['placeholder'] = '지번주소'
+        self.fields['detail'].widget.attrs['placeholder'] = '상세주소'
+        self.fields['note'].widget.attrs['placeholder'] = '참고'
+
+    class Meta:
+        model = Address
+        fields = '__all__'
+
+    @staticmethod
+    def get_prefix():
+        return 'ia'
