@@ -138,3 +138,12 @@ function popup_check(model, field_name, id){
     var url_mask = "/post/check/abc/def/ghi".replace('/abc/def/ghi', model_field);
     child = window.open(url_mask, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
 }
+
+function set_reverse(){
+    reverse = document.getElementById('reverse').value;
+    if(reverse == 'true')
+        document.getElementById('reverse').value = 'false';
+    else
+        document.getElementById('reverse').value = 'true';
+    form.submit();
+}

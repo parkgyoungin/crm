@@ -10,7 +10,7 @@
         text-align: center;
      }
      .tb {margin-top:40px;}
-     .btn_div *{margin:30px;}
+     .btn_div *{margin:20px;}
      .btn_div {text-align:center;}
      .t3 span {margin:15px;}
 
@@ -65,9 +65,7 @@
             <td class="c1">가입경로</td>
             <td class="c2">{{object.join_path}}</td>
             <td class="c3">대표자명</td>
-            <td class="c4">{{object.top_name}}</td>
-            <td class="c5">대표자<br>이메일</td>
-            <td class="c6">{{object.top_email}}</td>
+            <td colspan="3">{{object.top_name}}</td>
         </tr>
 
         <tr>
@@ -79,9 +77,8 @@
 
         <tr>
             <td class="c1">주소</td>
-            <td colspan="c2">{{object.get_address}}</td>
-            <td class="c3">설치주소</td>
-            <td colspan="3">{{object.get_iaddress}}</td>
+            <td colspan="5">{{object.get_address}}</td>
+
         </tr>
     </table>
 </div>
@@ -319,10 +316,6 @@
             <td class="c11">{{object.manager_f_email}}</td>
         </tr>
 
-        <tr>
-            <td colspan="2" class="c1">세금계산서 발송일</td>
-            <td colspan="9">매월 {{object.bill_send_date}} 일</td>
-        </tr>
     </table>
 </div>
 
@@ -335,11 +328,16 @@
 
 첨부파일 : <a href="{{object.file}}" download>{{object.file}}</a>
 <div class="btn_div">
+    {% if pre_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'company' pre_obj.id %}'"><button type="button">이전글</button></a>
+    {% endif %}
     {% if next_obj %}
     <a href="#" onclick="location.href = '{% url 'post:detail' 'company' next_obj.id %}'"><button type="button">다음글</button></a>
     {% endif %}
     <a href="#" onclick="location.href = '{{uri}}'"><button type="button">목록으로</button></a>
     <a href="#" onclick="location.href = ' {% url 'post:update' 'company' object.id %} '"><button type="button">수정하기</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:delete' 'company' object.id %} '"><button type="button">삭제</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:write' 'company' %} '"><button type="button">글쓰기</button></a>
 </div>
 <script>
     window.onload = function(){

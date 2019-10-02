@@ -118,13 +118,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ko'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -149,3 +149,9 @@ SUMMERNOTE_CONFIG = {
 }
 
 LIST_CONDITIONS_ID = 'list_conditions_in_session'
+
+OBJECTS_IN_PAGE = 5
+
+AUTH_USER_MODEL = 'main.User'
+
+LOGIN_URL = '/login'

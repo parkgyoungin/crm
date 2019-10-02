@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from main.models import Company, User
+from post.models import DetectionPattern
 
 def check(request, model,field_name, ele_id):
     success = False

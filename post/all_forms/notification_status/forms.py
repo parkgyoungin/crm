@@ -8,6 +8,7 @@ class RansomwarePostForm(forms.ModelForm):
         super(RansomwarePostForm, self).__init__(*args, **kwargs)
         to_date_widget(self.fields)
         self.fields['send_date'].widget.attrs['onchange'] = 'set_process_state(this)'
+        self.fields['company'].widget = forms.HiddenInput()
 
     class Meta:
         model = RansomwarePost
@@ -19,6 +20,7 @@ class OutflowForm(forms.ModelForm):
         to_date_widget(self.fields)
         self.fields['send_date'].widget.attrs['onchange'] = 'set_process_state(this)'
         self.fields['content'].widget = SummernoteWidget()
+        self.fields['company'].widget = forms.HiddenInput()
 
     weekness1 = forms.BooleanField(label='인젝션', label_suffix='', required=False)
     weekness2 = forms.BooleanField(label='파일다운로드', label_suffix='', required=False)

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    table {width:100%;}
+    td {height: 100px;}
+    tbody td {vertical-align:top;}
+</style>
+<a href="{% url 'post:list' 'calendar' %}?year={{request.GET.year|add:-1}}&month={{request.GET.month}}"><<</a>
+<a href="{% url 'post:list' 'calendar' %}?year={{request.GET.year}}&month={{request.GET.month|add:-1}}"><</a>
+<h5 style="display:inline-block">{{request.GET.year}}년{{request.GET.month}}월</h5>
+<a href="{% url 'post:list' 'calendar' %}?year={{request.GET.year}}&month={{request.GET.month|add:1}}">></a>
+<a href="{% url 'post:list' 'calendar' %}?year={{request.GET.year|add:1}}&month={{request.GET.month}}">>></a>
+
+<table border="1">
+    <thead>
+    <tr style="background-color:lightcyan">
+        <td>일</td><td>월</td><td>화</td><td>수</td><td>목</td><td>금</td><td>토</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for week in days %}
+    <tr>
+        {% for day in week %}
+        <td>{% if day %} {{day}} {% endif %}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

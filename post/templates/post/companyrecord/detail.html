@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load post_extras %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .btn_div *{margin:20px;}
+     .btn_div {text-align:center;}
+</style>
+<h3>[{{object.division}}]{{object.title}}</h3>
+
+
+<div class="tb">
+    <h5>업무 처리 현황</h5>
+    <table border="1">
+        <tr>
+            <td class="c1">수혜기업명</td>
+            <td class="c2">{{object.company.name}}</td>
+            <td class="c3">업무처리 상태</td>
+            <td class="c4">{{object.process_state}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">업무구분</td>
+            <td class="c2">{{object.division}}</td>
+            <td class="c3">사업자 유형</td>
+            <td class="c4">{{object.company.business_type}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">처리방법</td>
+            <td class="c2">{{object.process_method}} {{object.process_method_etc | not_none}}</td>
+            <td class="c3">접수/발생 일시</td>
+            <td class="c4">{{object.occurr_date}}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="tb">
+    <h5>업무 처리 관련 담당자 정보</h5>
+    <table border="1">
+        <thead>
+        <tr>
+            <td class="c1">이름</td>
+            <td class="c1">회사전화</td>
+            <td class="c1">핸드폰</td>
+            <td class="c1">E-mail</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% if object.visible_m %}
+        <tr>
+            <td>{{object.company.manager_m_name}}</td>
+            <td>{{object.company.manager_m_cphone}}</td>
+            <td>{{object.company.manager_m_phone}}</td>
+            <td>{{object.company.manager_m_email}}</td>
+        </tr>
+        {% endif %}
+
+        {% if object.visible_s %}
+        <tr>
+            <td>{{object.company.manager_s_name}}</td>
+            <td>{{object.company.manager_s_cphone}}</td>
+            <td>{{object.company.manager_s_phone}}</td>
+            <td>{{object.company.manager_s_email}}</td>
+        </tr>
+        {% endif %}
+
+        {% if object.visible_e %}
+        <tr>
+            <td>{{object.manager_e_name}}</td>
+            <td>{{object.manager_e_cphone}}</td>
+            <td>{{object.manager_e_phone}}</td>
+            <td>{{object.manager_e_email}}</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="tb">
+    <h5>업무 처리 내용 및 관련 사항</h5>
+    <table border="1">
+        <tr>
+            <td>{{object.title}}</td>
+        </tr>
+        <tr>
+            <td>{{object.content}}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="tb">
+<div class="btn_div">
+    {% if pre_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'companyrecord' pre_obj.id %}'"><button type="button">이전글</button></a>
+    {% endif %}
+    {% if next_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'companyrecord' next_obj.id %}'"><button type="button">다음글</button></a>
+    {% endif %}
+    <a href="#" onclick="location.href = '{{uri}}'"><button type="button">목록으로</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:update' 'companyrecord' object.id %} '"><button type="button">수정하기</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:delete' 'companyrecord' object.id %} '"><button type="button">삭제</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:write' 'companyrecord' %} '"><button type="button">글쓰기</button></a>
+</div>
+</div>
+{% endblock %}

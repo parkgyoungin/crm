@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="/static/js/mystyle.css">
 {% endblock %}
 {% block content %}
+{% load post_extras %}
 <style>
     table {width:100%;}
     table *{text-align:center;}
@@ -16,9 +17,10 @@
     <table class="t1">
         <thead>
         <tr>
+            <td><a style="cursor:pointer" id="no" onclick="set_reverse()">번호&#9660;</a></td>
             <td><a style="cursor:pointer" id="send_date" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_date">발송 날짜&#9660;</a></td>
             <td><a style="cursor:pointer" id="document_n" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">문서번호&#9660;</a> </td>
-            <td><a style="cursor:pointer" id="company" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">기업명&#9660;</a> </td>
+            <td><a style="cursor:pointer" id="company__name" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">기업명&#9660;</a> </td>
             <td><a style="cursor:pointer" id="weekness" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_only">발견 취약점&#9660;</a></td>
             <td><a style="cursor:pointer" id="process_state" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">처리상태&#9660;</a></td>
         </tr>
@@ -26,9 +28,16 @@
         <tbody>
         {% for object in objects %}
             <tr>
+                <td>
+                    {% if request.GET.reverse == 'false' %}
+                    {{total | sub:forloop.counter0 | sub:objects.start_index | add:1}}
+                    {% else %}
+                    {{forloop.counter0|add:objects.start_index}}
+                    {% endif %}
+                </td>
                 <td><a href="#" onclick="location.href ='{% url 'post:detail' 'outflow' object.id %}'">{{object.send_date}}</a></td>
                 <td>{{object.document_n}}</td>
-                <td> {{object.company}}</td>
+                <td> {{object.company.name}}</td>
                 <td>{{object.get_weekness_as_text}}</td>
                 <td>{{object.process_state}}</td>
             </tr>
@@ -36,6 +45,9 @@
         </tbody>
     </table>
 </div>
+
+<a href="#" onclick="location.href = '{% url 'post:write' 'outflow' %}'"><button type="button">글쓰기</button></a>
+
 <div>
 {% if objects.has_other_pages %}
   <ul class="pagination">
@@ -62,6 +74,7 @@
 
 <div>
     <form id="condition" action="" method="get">
+        <input type="hidden" id="reverse" name="reverse" value="false">
         <input type="hidden" id="order_by" name="order_by" value="send_date">
         <input type="hidden" id="filter_option" name="filter_option" value="__icontains">
         <input type="hidden" id="relation" name="relation" value="&">

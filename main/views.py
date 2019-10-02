@@ -1,5 +1,7 @@
-from django.shortcuts import render, HttpResponseRedirect, reverse
-from .forms import UserCreationForm, CheckUseridForm, CheckNicknameForm
+from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
+from .forms import UserCreationForm, CheckUseridForm, CheckNicknameForm, loginForm
+from django.contrib.auth import logout as set_logout
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     #get_data, DB완성시 수정요망
@@ -53,3 +55,21 @@ def check_nickname(request):
         form = CheckNicknameForm()
 
     return render(request, 'main/nicknameCheck.html', {'form': form})
+
+def login(request):
+    if request.method == 'POST':
+        form = loginForm(request.POST)
+        if form.is_valid():
+            form.login(request)
+            redirect = request.GET.get('next') or reverse('main:home')
+            return HttpResponseRedirect(redirect)
+    else:
+        form = loginForm()
+
+    return render(request, 'main/login.html', {'form': form})
+
+@login_required
+def logout(request):
+    set_logout(request)
+    redirect = request.GET.get('next') or reverse('main:home')
+    return HttpResponseRedirect(redirect)

@@ -1,5 +1,6 @@
 from django import forms
 from .models import User
+from django.contrib.auth import logout , login
 
 class UserCreationForm(forms.ModelForm):
     password_confirm = forms.CharField(widget=forms.PasswordInput, label='비밀번호 확인')
@@ -50,3 +51,27 @@ class CheckNicknameForm(forms.Form):
             raise forms.ValidationError('이미 사용중인 닉네임 입니다.')
         return nickname
 
+
+class loginForm(forms.Form):
+    userid = forms.CharField(max_length=100)
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    def clean_password(self):
+        password = self.cleaned_data['password']
+        userid = self.cleaned_data['userid']
+        try:
+            user = User.objects.get(userid=userid)
+        except:
+            user = None
+
+        if user and not user.check_password(password):
+            raise forms.ValidationError('비밀번호가 일치하지 않습니다.')
+        elif not user:
+            raise forms.ValidationError('존재하지 않는 아이디입니다.')
+
+        return password
+
+    def login(self, request):
+        userid = self.cleaned_data['userid']
+        user = User.objects.get(userid=userid)
+        login(request, user)

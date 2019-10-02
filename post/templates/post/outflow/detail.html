@@ -10,7 +10,7 @@
         text-align: center;
      }
      .tb {margin-top:40px;}
-     .btn_div *{margin:30px;}
+     .btn_div *{margin:20px;}
      .btn_div {text-align:center;}
 </style>
 <h3>기술유출 상세</h3>
@@ -52,14 +52,16 @@
 
 <div class="tb">
 <div class="btn_div">
+    {% if pre_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'outflow' pre_obj.id %}'"><button type="button">이전글</button></a>
+    {% endif %}
     {% if next_obj %}
     <a href="#" onclick="location.href = '{% url 'post:detail' 'outflow' next_obj.id %}'"><button type="button">다음글</button></a>
     {% endif %}
-    <a href="#" onclick="location.href = '{{uri}}'">
-        <button type="button">목록으로</button>
-    </a>
-
-    <button type="button">취소</button>
+    <a href="#" onclick="location.href = '{{uri}}'"><button type="button">목록으로</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:update' 'outflow' object.id %} '"><button type="button">수정하기</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:delete' 'outflow' object.id %} '"><button type="button">삭제</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:write' 'outflow' %} '"><button type="button">글쓰기</button></a>
 </div>
 </div>
 {% endblock %}

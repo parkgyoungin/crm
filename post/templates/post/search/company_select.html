@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% load post_extras %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {{object.name}}
+<script>
+    window.onload = function(){
+        ids = {
+            'id_company' : '{{object.id}}',
+            'id_company_name' : '{{object.name}}',
+            'id_business_type' : '{{object.business_type}}',
+            'id_manager_m_name' : '{{object.manager_m_name}}',
+            'id_manager_m_depart' : '{{object.manager_m_depart}}',
+            'id_manager_m_phone' : '{{object.manager_m_phone}}',
+            'id_manager_m_cphone' : '{{object.manager_m_cphone}}',
+            'id_manager_m_email' : '{{object.manager_m_email}}',
+            'id_manager_s_name' : '{{object.manager_s_name | not_none}}',
+            'id_manager_s_depart' : '{{object.manager_s_depart | not_none}}',
+            'id_manager_s_phone' : '{{object.manager_s_phone | not_none}}',
+            'id_manager_s_cphone' : '{{object.manager_s_cphone | not_none}}',
+            'id_manager_s_email' : '{{object.manager_s_email | not_none}}',
+        };
+        for(var id in ids){
+            try{
+                opener.document.getElementById(id).value = ids[id];
+            }
+            catch(e){
+                //pass
+            }
+        }
+        window.close();
+    }
+</script>
+</body>
+</html>

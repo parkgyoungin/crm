@@ -70,7 +70,9 @@
         </tbody>
     </table>
 </div>
+
 <a href="#" onclick="location.href = '{% url 'post:write' 'company' %}'"><button type="button">글쓰기</button></a>
+
 <div>
 {% if objects.has_other_pages %}
   <ul class="pagination">
@@ -133,14 +135,7 @@
             ele.innerHTML = inner + '▲';
     }
 
-    function set_reverse(){
-        reverse = document.getElementById('reverse').value;
-        if(reverse == 'true')
-            document.getElementById('reverse').value = 'false';
-        else
-            document.getElementById('reverse').value = 'true';
-        form.submit();
-    }
+
     function set_page(i){
         document.getElementById('page').value = i;
         form.submit();

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load post_extras %}
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -34,7 +35,7 @@
         {% for object in objects %}
             <tr>
 
-                <td><button class="astext" onclick="select_data('{{object.name}}', 'id_company')" type="button">{{object.name}}</button></td>
+                <td><button class="astext" onclick="location.href='{% url 'post:select' 'Company' object.id %}'" type="button">{{object.name}}</button></td>
                 <td>{{object.business_n}}</td>
             </tr>
         {% endfor %}
@@ -43,11 +44,7 @@
     </table>
 </form>
 <script>
-    function select_data(data, send_id){
-        ele = opener.document.getElementById(send_id)
-        ele.value = data;
-        window.close();
-    }
+
     function bold_text(ele){
         ele.style.fontweight = '900';
     }

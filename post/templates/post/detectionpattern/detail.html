@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load post_extras %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .btn_div *{margin:20px;}
+     .btn_div {text-align:center;}
+</style>
+<h3>[{{object.equipment_class}}]{{object.pattern_name}}</h3>
+
+
+<div class="tb">
+    <h5>탐지패턴 정보</h5>
+    <table border="1">
+        <tr>
+            <td class="c1">IPS 탐지 패턴명</td>
+            <td class="c2">{{object.pattern_name}}</td>
+            <td class="c3">CVE</td>
+            <td class="c4">{{object.cve}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">공격 분류</td>
+            <td class="c2">{{object.attack_class}}</td>
+            <td class="c3">공격 유형</td>
+            <td class="c4">{{object.attack_type}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">IPS룰 등록일</td>
+            <td colspan="3">{{object.rule_regist_date}}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="tb">
+    <h5>탐지근거 및 패턴분석</h5>
+    {{object.content|safe}}
+</div>
+
+<div class="tb">
+    <h5>업무 처리 내용 및 관련 사항</h5>
+    {{object.countermeasures}}
+</div>
+
+<div class="tb">
+<div class="btn_div">
+    {% if pre_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'detectionpattern' pre_obj.id %}'"><button type="button">이전글</button></a>
+    {% endif %}
+    {% if next_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'detectionpattern' next_obj.id %}'"><button type="button">다음글</button></a>
+    {% endif %}
+    <a href="#" onclick="location.href = '{{uri}}'"><button type="button">목록으로</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:update' 'detectionpattern' object.id %} '"><button type="button">수정하기</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:delete' 'detectionpattern' object.id %} '"><button type="button">삭제</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:write' 'detectionpattern' %} '"><button type="button">글쓰기</button></a>
+</div>
+</div>
+{% endblock %}

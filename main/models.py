@@ -72,7 +72,7 @@ class User(AbstractBaseUser):
         ordering = ('-date_joined',)
 
     def __str__(self):
-        return self.nickname
+        return self.user_name
 
     def has_perm(self, perm, obj=None):
         return True
@@ -100,7 +100,7 @@ class Address(models.Model):
 class Security(models.Model):
     contract = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('contract'))
 
-    block_permis = models.CharField(max_length=50, null=True, blank=True)
+    block_permis = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('block_permis'))
 
     send_date = models.DateField(null=True, blank=True)
 
@@ -353,14 +353,7 @@ class Company(models.Model):
         )
         return result
 
-    def get_iaddress(self):
-        ad = self.install_address
-        result = '%s, %s  %s'%(
-            ad.address,
-            ad.detail,
-            ad.note,
-        )
-        return result
+
 
     def set_ss_state_color(self):
         colors = dict(self.colors)

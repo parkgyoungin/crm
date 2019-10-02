@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block script %}
+<script src = "/static/js/my.js"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .errorlist {color:red;}
+
+     .t2 input {width:130px;}
+
+     ul > li {display:inline-block;}
+     ul  {display:inline-block;}
+</style>
+<h3>수혜기업 이력관리 글쓰기</h3>
+<form action="" method="post">
+    {% csrf_token %}
+    <div class="tb">
+        <h5>업무처리 현황</h5>
+        <table border="1" class="t1">
+            <tr>
+
+                <td class="c1">수혜기업명</td>
+                <td class="c2"><input id="id_company_name" readonly>{{form.company}} <button type="button" onclick="search('Company', 'name')">검색</button></td>
+            </tr>
+
+            <tr>
+                <td class="c1">사업자 유형</td>
+                <td class="c2"><input id="id_business_type" readonly></td>
+            </tr>
+
+            <tr>
+                <td class="c1">업무구분</td>
+                <td class="c2">{{form.division}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">처리방법</td>
+                <td class="c2">{{form.process_method}} {{form.process_method_etc}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">접수/발생 일시</td>
+                <td class="c2">{{form.occurr_date}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">업무처리 상태</td>
+                <td class="c2">{{form.process_state}}</td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div class="tb">
+        <h5>담당자 등록정보</h5>
+        <table border="1" class="t2">
+            <tr>
+                <td class="c1">{{form.visible_m}} {{form.visible_m.label_tag}}</td>
+                <td class="c1">이름</td>
+                <td class="c2"><input id="id_manager_m_name" readonly></td>
+                <td class="c3">부서</td>
+                <td class="c4"><input id="id_manager_m_depart" readonly></td>
+                <td class="c5">휴대폰</td>
+                <td class="c6"><input id="id_manager_m_phone" readonly></td>
+                <td class="c7">회사전화</td>
+                <td class="c8"><input id="id_manager_m_cphone" readonly></td>
+                <td class="c9">E-mail</td>
+                <td class="c10"><input id="id_manager_m_email" readonly></td>
+            </tr>
+
+            <tr>
+                <td class="c1">{{form.visible_s}} {{form.visible_s.label_tag}}</td>
+                <td class="c1">이름</td>
+                <td class="c2"><input id="id_manager_s_name" readonly></td>
+                <td class="c3">부서</td>
+                <td class="c4"><input id="id_manager_s_depart" readonly></td>
+                <td class="c5">휴대폰</td>
+                <td class="c6"><input id="id_manager_s_phone" readonly></td>
+                <td class="c7">회사전화</td>
+                <td class="c8"><input id="id_manager_s_cphone" readonly></td>
+                <td class="c9">E-mail</td>
+                <td class="c10"><input id="id_manager_s_email" readonly></td>
+            </tr>
+
+            <tr>
+                <td class="c1">{{form.visible_e}} {{form.visible_e.label_tag}}</td>
+                <td class="c1">이름</td>
+                <td class="c2">{{form.manager_e_name}}</td>
+                <td class="c3">부서</td>
+                <td class="c4">{{form.manager_e_depart}}</td>
+                <td class="c5">휴대폰</td>
+                <td class="c6">{{form.manager_e_phone}}</td>
+                <td class="c7">회사전화</td>
+                <td class="c8">{{form.manager_e_cphone}}</td>
+                <td class="c9">E-mail</td>
+                <td class="c10">{{form.manager_e_email}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="tb">
+        <h5>업무 처리 내용 및 관련 사항</h5>
+        <table border="1" class="t3">
+            <tr>
+                <td class="c1">제목</td>
+                <td class="c2">{{form.title}}</td>
+            </tr>
+            <tr>
+                <td class="c1">세부 내용</td>
+                <td class="c2">{{form.content}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="tb">
+        <button type="submit">작성완료</button>
+        <input type=button value="취소" onClick="javascript:history.go(-1);">
+    </div>
+</form>
+{{ form.errors }}
+<script>
+    window.onload = function(){
+        //document.getElementById('id_company_name').value = '{{object.name}}';
+        //document.getElementById('id_company_name').value = '{{object.name}}';
+        {% if object %}
+        url = '{% url 'post:select' 'Company' object.id %}';
+        if(url)
+            child = window.open(url, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+        {% endif %}
+        //alert('{{form.occurr_date.value}}');
+    }
+
+
+</script>
+{% endblock %}

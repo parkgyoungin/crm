@@ -9,7 +9,7 @@ from django.core.paginator import Paginator
 PAGE = 5
 
 def writeCompany(request):
-    Forms = [CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm, AddressForm, Install_AddressForm]
+    Forms = [CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm, AddressForm]
     id_max = Company.objects.all().aggregate(Max('id'))['id__max']
     next_id = id_max + 1 if id_max else 1
 
@@ -21,14 +21,12 @@ def writeCompany(request):
             vi = forms['vi_form'].save()
             ra = forms['ra_form'].save()
             ad = forms['ad_form'].save()
-            ia = forms['ia_form'].save()
             co = forms['co_form'].save(commit=False)
             co.security = se
             co.internal = it
             co.virus = vi
             co.ransomware = ra
             co.address = ad
-            co.install_address = ia
             model_update(co, get_update_list(forms['co_form']))
             co.save()
             return HttpResponseRedirect(reverse('post:list', args=['company']))
@@ -42,7 +40,7 @@ def writeCompany(request):
 def updateCompany(request, pk):
     Forms = {
         'main': CompanyForm,
-        'sub': [SecurityForm, InternalForm, VirusForm, RansomwareForm, AddressForm, Install_AddressForm]
+        'sub': [SecurityForm, InternalForm, VirusForm, RansomwareForm, AddressForm]
     }
     if request.method == 'POST':
         forms = get_instance_forms(Forms, pk, request.POST, request.FILES)

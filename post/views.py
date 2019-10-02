@@ -2,11 +2,19 @@ from post.all_views.company.views import writeCompany, listCompany, detailCompan
 
 from post.all_views.check.views import check
 
-from post.all_views.search.views import search
+from post.all_views.search.views import search,select
 
 from post.all_views.notification_status.views import writeRansomwarepost, detailRansomwarepost, updateRansomwarepost, listRansomwarepost
 
 from post.all_views.notification_status.views import writeOutflow, updateOutflow, listOutflow, detailOutflow
+
+from post.all_views.company_record.views import writeCompanyrecord, updateCompanyrecord, listCompanyrecord, detailCompanyrecord
+
+from post.all_views.event_management.views import writeDetectionpattern, listDetectionpattern, updateDetectionpattern, detailDetectionpattern
+
+from post.all_views.event_management.views import writeIpstune, listIpstune, detailIpstune, updateIpstune
+
+from post.all_views.calendar.views import listCalendar
 
 
 def write(request, model):
@@ -27,5 +35,10 @@ def list(request, model):
 def detail(request, model,pk):
     model = model[0].upper() + model[1:]
     command = 'detail%s(request, %s)' %(model,pk)
+    return eval(command)
+
+def delete(request, model,pk):
+    model = model[0].upper() + model[1:]
+    command = 'delete%s(request, %s)' %(model,pk)
     return eval(command)
 

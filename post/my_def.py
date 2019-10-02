@@ -1,5 +1,5 @@
 from django.conf import settings
-from post.models import RansomwarePost, Outflow, Company
+from post.models import RansomwarePost, Outflow, Company, CompanyRecord, IPSTune
 from django.db.models import Q
 from django.shortcuts import reverse, HttpResponseRedirect
 from main.models import Address
@@ -150,8 +150,9 @@ def get_objects_by_request_ex(request, model, default_GET, relation_model=None):
                 else:
                     order_by = '-' + order_by
         except:
-            return {'success':False}
+            return {'success':False, 'error':'데이터 일부 없음'}
         prev_objects = model.objects.filter(id__in=session[model.__name__])
+
 
         if search_field == 'address':
             first_q = eval('Q(%s__address%s = data1)' % (search_field, filter_option,))
@@ -177,15 +178,15 @@ def get_objects_by_request_ex(request, model, default_GET, relation_model=None):
             command = 'prev_objects.filter(first_q %s second_q).order_by(order_by)'%relation
         objects = eval(command)
 
-        print("prev : ", prev_objects)
-        print("objects : ",objects)
+        #print("prev : ", prev_objects)
+        #print("objects : ",objects)
 
     else:
         # GET 요청이면서 세션이 없는경우 : 모든오브젝트
-        return {'success':False}
+        return {'success':False, 'error':'세션없음'}
 
     session[model.__name__] = list(objects.values_list('id', flat=True))
-    print('saved_pk_list : ',session[model.__name__])
+    #print('saved_pk_list : ',session[model.__name__])
     return {'success':True, 'data':(objects,page)}
 
 
@@ -278,14 +279,14 @@ def save_connected_model(conn_model, model_object, form, max_length, request):
 def set_default(model, request, GET):
 
     objects = model.objects.all().order_by('created')
-    request.session[model.__name__] = list(objects.values_list('id', flat=True))
+    request.session[model.__name__] = list(objects.values_list('id', flat=True)) or [None]
     request.session[settings.LIST_CONDITIONS_ID] = {
         model.__name__: {
-            'pk_list': list(objects.values_list('id', flat=True)) or [1],
+            'pk_list': list(objects.values_list('id', flat=True)),
             'uri': reverse('post:list', args=[model.__name__]) + GET,
         }
     }
-    return HttpResponseRedirect(reverse('post:list', args=[model.__name__]) + GET)
+    return HttpResponseRedirect(reverse('post:list', args=[model.__name__[0].upper()+ model.__name__[1:].lower()]) + GET)
 
 def set_session(request, objects, model):
     request.session[settings.LIST_CONDITIONS_ID] = {
@@ -294,3 +295,7 @@ def set_session(request, objects, model):
             'uri': request.build_absolute_uri()
         }
     }
+
+def view(object):
+    object.view += 1
+    object.save()

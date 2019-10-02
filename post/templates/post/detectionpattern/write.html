@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block script %}
+<script src = "/static/js/my.js"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .errorlist {color:red;}
+
+     .t2 input {width:130px;}
+
+     ul > li {display:inline-block;}
+     ul  {display:inline-block;}
+</style>
+<h3>탐지패턴 분석 글쓰기</h3>
+<form action="" method="post">
+    {% csrf_token %}
+    <div class="tb">
+        <h5>탐지패턴 정보</h5>
+        <table border="1" class="t1">
+           <tr>
+               <td class="c1">IPS 탐지 패턴명</td>
+               <td class="c2">{{form.pattern_name}} <button type="button" onclick="popup_check('DetectionPattern','pattern_name', 'id_pattern_name')">중복확인</button></td>
+               <td class="c3">위험도</td>
+               <td class="c4">{{form.risk}}</td>
+               <td class="c5">CVE</td>
+               <td class="c6">{{form.cve}}</td>
+           </tr>
+
+            <tr>
+                <td class="c1">IPS룰 등록일</td>
+                <td class="c2">{{form.rule_regist_date}}</td>
+                <td class="c3">업무처리 상태</td>
+                <td colspan="3">{{form.process_state}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">보안장비 분류</td>
+                <td colspan="5">{{form.equipment_class}} {{form.equipment_etc}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">공격 분류</td>
+                <td colspan="5">{{form.attack_class}} {{form.attack_class_etc}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">공격 유형 선택</td>
+                <td colspan="5">{{form.attack_type}} {{form.attack_type_etc}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="tb">
+        <h5>탐지근거 및 패턴분석</h5>
+        <table border="1" class="t2">
+            <tr>
+                <td>탐지근거 및 패턴분석</td>
+            </tr>
+            <tr>
+                <td>{{form.content | safe}}</td>
+            </tr>
+            <tr>
+                <td>대응 방안</td>
+            </tr>
+            <tr>
+                <td>{{form.countermeasures}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="tb">
+        <button type="submit">작성완료</button>
+        <input type=button value="취소" onClick="javascript:history.go(-1);">
+    </div>
+</form>
+{{ form.errors }}
+<script>
+    select_list = {
+        'id_attack_class_0':{{subs.id_attack_class_0 |safe}},
+        'id_attack_class_1':{{subs.id_attack_class_1 |safe}},
+        'id_attack_class_2':{{subs.id_attack_class_2 |safe}},
+        'id_attack_class_3':{{subs.id_attack_class_3 |safe}},
+        'id_attack_class_4':{{subs.id_attack_class_4 |safe}},
+    }
+
+    window.onload = function(){
+        window.check_list = {'id_pattern_name':false};
+        for(var key in window.check_list){
+            if(document.getElementById(key).value){
+                window.check_list[key] = true;
+            }
+        }
+        set_default();
+    }
+
+    function addOption(option){
+        var select = document.getElementById("id_attack_type");
+        select.options[select.options.length] = option;
+    }
+
+    function removeOption(){
+        var select = document.getElementById("id_attack_type");
+        select.options[select.selectedIndex] = null;
+    }
+
+    function removeAllOptions(){
+        var select = document.getElementById("id_attack_type");
+        select.options.length = 0;
+    }
+
+    function set_default(){
+        var select = document.getElementById("id_attack_type");
+        select.options.length = 0;
+        opt = new Option('공격 분류를 선택해 주세요', '', false, false);
+        addOption(opt);
+    }
+
+    function set_sub_list(ele){
+        removeAllOptions();
+        subs = select_list[ele.id];
+        opt = new Option('선택하세요', '', false, false);
+        addOption(opt);
+        for(var i=0; i<subs.length; i++){
+            opt = new Option(subs[i], subs[i], false, false);
+            addOption(opt);
+        }
+    }
+
+
+</script>
+{% endblock %}

@@ -212,7 +212,80 @@ reply = [
     ('미회신', '미회신')
 ]
 
+division = [
+    ('','선택하세요'),
+    ('네트워크 장애 통보','네트워크 장애 통보'),
+    ('방화벽 정책 설정 지원','방화벽 정책 설정 지원'),
+    ('IPS 정책 설정 지원','IPS 정책 설정 지원'),
+    ('보안관제 기술지원','보안관제 기술지원'),
+    ('내부정보 기술지원','내부정보 기술지원'),
+    ('악성코드 기술지원','악성코드 기술지원'),
+    ('랜섬웨어 기술지원','랜섬웨어 기술지원'),
+]
 
+process_method = [
+    ('유선통화', '유선통화'),
+    ('E-mail', 'E-mail'),
+    ('원격지원', '원격지원'),
+    ('SMS', 'SMS'),
+    ('기타', '기타')
+]
+
+se_equipment_class = [
+    ('TrusGuard', 'TrusGuard'),
+    ('Fortigate', 'Fortigate'),
+    ('SNIPER', 'SNIPER'),
+    ('secui', 'secui'),
+    ('PaloAlto', 'PaloAlto'),
+    ('기타', '기타'),
+]
+
+attack_class = [
+    ('웹 해킹 시도 탐지','웹 해킹 시도 탐지'),
+    ('악성코드 감염 의심 트래픽 탐지','악성코드 감염 의심 트래픽 탐지'),
+    ('서비스 거부(Dos/DDos) 공격 탐지','서비스 거부(Dos/DDos) 공격 탐지'),
+    ('정보 수집 시도 탐지','정보 수집 시도 탐지'),
+    ('기타','기타'),
+]
+
+attack_class_sub1 = [
+    ('SQL Injection','SQL Injection'),
+    ('Command Injection','Command Injection'),
+    ('WebShell','WebShell'),
+    ('XSS(CrossSiteScript)','XSS(CrossSiteScript)'),
+    ('Directory Listing','Directory Listing'),
+    ('BufferOverFlow','BufferOverFlow'),
+    ('Application','Application'),
+    ('콘텐츠필터','콘텐츠필터'),
+    ('Hijacking','Hijacking'),
+    ('기타','기타'),
+]
+
+attack_class_sub2 = [
+    ('Adware','Adware'),
+    ('Confiker','Confiker'),
+    ('기타','기타'),
+]
+
+attack_class_sub3 = [
+    ('Dos/DDoS','Dos/DDoS'),
+    ('기타','기타'),
+]
+
+attack_class_sub4 = [
+    ('BruteForce Attack','BruteForce Attack'),
+    ('Application','Application'),
+    ('Scan','Scan'),
+    ('Spoofing','Spoofing'),
+    ('BufferOverFlow','BufferOverFlow'),
+    ('기타','기타'),
+]
+
+risk = [
+    ('High','High'),
+    ('Medium','Medium'),
+    ('Low','Low'),
+]
 
 choices = {
     'snmp_sub': snmp_sub,
@@ -232,7 +305,17 @@ choices = {
     'business_type':business_type,
     'service_state':service_state,
     'reply':reply,
-    'process_state':process_state
+    'process_state':process_state,
+    'division':division,
+    'process_method': process_method,
+    'se_equipment_class' : se_equipment_class,
+    'attack_class' : attack_class,
+    'attack_class_sub1' : attack_class_sub1,
+    'attack_class_sub2' : attack_class_sub2,
+    'attack_class_sub3' : attack_class_sub3,
+    'attack_class_sub4' : attack_class_sub4,
+    'risk' : risk
+
 }
 
 widgets = {
@@ -264,11 +347,13 @@ def insert_db():
                 continue
             Choice(**{'field_name': name, 'value':value}).save()
 
-def get_choices(field_name):
+def get_choices(field_name, defalut = True):
     #return [('', 'test')]
     from .models import Choice
     choice = Choice.objects.filter(field_name=field_name)
-    result = [('','선택하세요')]
+    result = []
+    if defalut:
+        result = [('','선택하세요')]
     for c in choice:
         result.append( (c.value, c.value) )
     return result

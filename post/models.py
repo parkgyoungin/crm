@@ -1,58 +1,133 @@
 from django.db import models
-from main.models import Company
+from main.models import Company, User
 from choice.choices import get_choices
 
-class DetectionPat(models.Model):
-    #IPS 탐지 패턴명
-    pat_name = models.CharField(max_length=50)
+class CompanyRecord(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='record')
 
-    #위험도
-    risk = models.CharField(max_length=50)
+    division = models.CharField(max_length=100, choices=get_choices('division'))
 
-    #CVE
-    cve = models.CharField(max_length=50)
+    process_method = models.CharField(max_length=100)
 
-    #IPS룰 등록일
-    rule_rdate = models.DateField()
+    process_method_etc = models.CharField(max_length=200, null=True, blank=True)
 
-    #IPS룰 갱신일
-    rule_udate = models.DateField()
+    occurr_date = models.DateTimeField()
 
-    #업무처리 상태
-    pro_state = models.CharField(max_length=50)
+    process_state = models.CharField(max_length=100, choices=get_choices('process_state'))
 
-    #장비분류
-    equ_class = models.CharField(max_length=50)
+    title = models.TextField()
 
-    #장비분류-기타
-    etc_equ_class = models.CharField(max_length=50, null=True)
+    content = models.TextField()
 
-    #공격분류
-    att_class = models.CharField(max_length=50)
+    manager_e_name = models.CharField(max_length=100, null=True, blank=True)
 
-    #공격분류-기타
-    etc_att_class = models.CharField(max_length=50, null=True)
+    manager_e_depart = models.CharField(max_length=100, null=True, blank=True)
 
-    #공격유형
-    att_type = models.CharField(max_length=50)
+    manager_e_phone = models.CharField(max_length=100, null=True, blank=True)
 
-    #공격유형-기타
-    etc_att_type = models.CharField(max_length=50, null=True)
+    manager_e_cphone = models.CharField(max_length=100, null=True, blank=True)
 
-    #패턴분석
-    pat_analysis = models.TextField()
+    manager_e_email = models.EmailField(max_length=100, null=True, blank=True)
 
-    #대응방안
+    visible_m = models.BooleanField(null=True, blank=True, default=False, verbose_name='(정)')
+
+    visible_s = models.BooleanField(null=True, blank=True, default=False, verbose_name='(부)')
+
+    visible_e = models.BooleanField(null=True, blank=True, default=False, verbose_name='(기타)')
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
+class DetectionPattern(models.Model):
+    pattern_name = models.CharField(max_length=100, verbose_name='탐지 패턴명')
+
+    risk = models.CharField(max_length=100, choices=get_choices('risk'))
+
+    cve = models.CharField(max_length=100)
+
+    rule_regist_date = models.DateField(null=True, blank=True)
+
+    process_state = models.CharField(max_length=100, choices=get_choices('process_state'))
+
+    equipment_class = models.CharField(max_length=100)
+
+    equipment_etc = models.CharField(max_length=200, null=True, blank=True)
+
+    attack_class = models.CharField(max_length=100)
+
+    attack_class_etc = models.CharField(max_length=200, null=True, blank=True)
+
+    attack_type = models.CharField(max_length=100)
+
+    attack_type_etc = models.CharField(max_length=200, null=True, blank=True)
+
+    content = models.TextField()
+
     countermeasures = models.TextField()
 
     created = models.DateTimeField(auto_now_add=True)
 
     updated = models.DateTimeField(auto_now=True)
 
-#랜섬웨어
+class IPSTune(models.Model):
 
+    title = models.CharField(max_length=200)
+
+    content = models.TextField()
+
+    file1 = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    file2 = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    views = models.PositiveIntegerField(default=0)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
+
+    def view(self):
+        self.views += 1
+        self.save()
+
+class Schedule(models.Model):
+    start_date = models.DateField()
+
+    end_date = models.DateField()
+
+    process_state = models.CharField(max_length=50, choices=get_choices('process_state'))
+
+    title = models.CharField(max_length=200)
+
+    content = models.TextField()
+
+    file1 = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    file2 = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
+    views = models.PositiveIntegerField()
+
+
+class Attendance(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    attendance_date = models.DateField()
+
+    note = models.TextField()
+
+
+#랜섬웨어
 class RansomwarePost(models.Model):
-    company = models.CharField(max_length=100)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
     document_n = models.PositiveIntegerField()
 
@@ -77,7 +152,7 @@ class RansomwarePost(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 class Outflow(models.Model):
-    company = models.CharField(max_length=100)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
     document_n = models.PositiveIntegerField()
 

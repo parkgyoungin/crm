@@ -3,7 +3,7 @@ from post.all_forms.notification_status.forms import RansomwarePostForm, Outflow
 from post.models import RansomwarePost, Comment, Outflow, Weekness
 from django.core.paginator import Paginator
 from django.conf import settings
-from post.my_def import get_side_obj, get_pk_list, get_page, get_objects_by_request, get_objects_by_request_ex, config_page_uri, save_connected_model
+from post.my_def import get_side_obj, get_pk_list, get_page, get_objects_by_request, get_objects_by_request_ex, config_page_uri, save_connected_model, set_default
 from django.db.models import Q
 
 
@@ -100,7 +100,7 @@ def updateOutflow(request, id):
 
 def listRansomwarepost(request):
     model = RansomwarePost
-    default_GET = '?reverse=false&order_by=created&search_field=company&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
+    default_GET = '?reverse=false&order_by=-created&search_field=company__name&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
 
     if not request.GET:
         return set_default(model, request, default_GET)
@@ -109,6 +109,7 @@ def listRansomwarepost(request):
     if result['success']:
         objects, page = result['data']
     else:
+        print(result['error'])
         return set_default(model, request, default_GET)
 
     set_session(request,objects,model)
@@ -129,7 +130,7 @@ def listRansomwarepost(request):
 
 def listOutflow(request):
     model = Outflow
-    default_GET = '?reverse=false&order_by=-created&search_field=company&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
+    default_GET = '?reverse=false&order_by=-created&search_field=company__name&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
 
     if not request.GET:
         return set_default(model, request, default_GET)
@@ -138,6 +139,7 @@ def listOutflow(request):
     if result['success']:
         objects, page = result['data']
     else:
+        print('error : ', result.get('error', '알수없음'))
         return set_default(model, request, default_GET)
 
     set_session(request,objects,model)
@@ -160,17 +162,7 @@ def listOutflow(request):
 #from post.models import Outflow
 #get_filter_list_by_conn_model('a', Outflow)
 
-def set_default(model, request, GET):
 
-    objects = model.objects.all().order_by('created')
-    request.session[model.__name__] = list(objects.values_list('id', flat=True))
-    request.session[settings.LIST_CONDITIONS_ID] = {
-        model.__name__: {
-            'pk_list': list(objects.values_list('id', flat=True)),
-            'uri': reverse('post:list', args=[model.__name__]) + GET,
-        }
-    }
-    return HttpResponseRedirect(reverse('post:list', args=[model.__name__[0].upper()+ model.__name__[1:].lower()]) + GET)
 
 def set_session(request, objects, model):
     request.session[settings.LIST_CONDITIONS_ID] = {

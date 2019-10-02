@@ -97,7 +97,7 @@
 
 <h3>전체 수혜기업 현황 글쓰기</h3>
 <form method="post" action="" enctype="multipart/form-data" id="post_form" onsubmit="return last_check()">
-    <input type="hidden" name="csrfmiddlewaretoken" value="1VmNIWcKmUEQSmjozN9eQgMuOWeG3PgqBsm4czWmiYB6eT0QY6L88ZGvqZGu0Glw">
+    {% csrf_token %}
     <div class="tb">
     <h5>고객정보 등록</h5>
     <table class="t1" border="1">
@@ -128,9 +128,7 @@
             <td class="c1">가입경로</td>
             <td>{{co_form.join_path}}</td>
             <td class="c1">대표자명</td>
-            <td>{{co_form.top_name}}</td>
-            <td class="c1">대표자<br>E-mail</td>
-            <td>{{co_form.top_email}}</td>
+            <td colspan="3">{{co_form.top_name}}</td>
         </tr>
 
         <tr>
@@ -142,21 +140,13 @@
 
         <tr>
             <td class="c1">주소</td>
-            <td class="c2">
+            <td colspan="5">
                 {{ad_form.zip_code}}
                 <input type="button" onclick="search_address_ad()" value="우편번호 찾기"><br>
                 {{ad_form.address}} {{ad_form.address_old}}
                 <span id="guide1" style="color:#999;display:none"></span><br>
                 {{ad_form.detail}} {{ad_form.note}}
 
-            </td>
-            <td class="c3">설치주소</td>
-            <td class="c4" colspan="3">
-                {{ia_form.zip_code}}
-                <input type="button" onclick="search_address_ia()" value="우편번호 찾기"><br>
-                {{ia_form.address}} {{ia_form.address_old}}
-                <span id="guide2" style="color:#999;display:none"></span><br>
-                {{ia_form.detail}} {{ia_form.note}}
             </td>
         </tr>
     </table>
@@ -362,11 +352,6 @@
             <td class="c9">{{co_form.manager_f_cphone}}</td>
             <td class="c10">E-mail</td>
             <td class="c11">{{co_form.manager_f_email}}</td>
-        </tr>
-
-        <tr>
-            <td colspan="2" class="c1">세금계산서 발송일</td>
-            <td colspan="9">매월 {{co_form.bill_send_date}} 일</td>
         </tr>
     </table>
     </div>
