@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block script %}
+<script src = "/static/js/my.js"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .errorlist {color:red;}
+</style>
+<h3>이상징후 글쓰기</h3>
+<form action="" method="post">
+    {% csrf_token %}
+    <div class="tb">
+        <table border="1">
+            <tr>
+                <td class="c1">탐지날짜</td>
+                <td class="c2">{{form.detect_date}}</td>
+                <td class="c3">기업명</td>
+                <td class="c4"><input id="id_company_name" readonly>{{form.company}} <button type="button" onclick="search('Company', 'name')">검색</button></td>
+                <td class="c5">제품명</td>
+                <td class="c6">{{form.product_name}} {{form.product_etc}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">탐지명</td>
+                <td class="c2">{{form.detect_name}}</td>
+                <td class="c3">출발지</td>
+                <td class="c4">{{form.start_point}}</td>
+                <td class="c5">목적지</td>
+                <td class="c6">{{form.end_point}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">Dport</td>
+                <td class="c2">{{form.dport}}</td>
+                <td class="c3">국가</td>
+                <td class="c4">{{form.country}}</td>
+                <td class="c5">공격유형</td>
+                <td class="c6">{{form.attack_type}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">방향성</td>
+                <td class="c2">{{form.direction}}</td>
+                <td class="c3">대응유형</td>
+                <td colspan="3">
+                    {{form.responsetype1}} {{form.responsetype1.label_tag}}
+                    {{form.responsetype2}} {{form.responsetype2.label_tag}}
+                    {{form.responsetype3}} {{form.responsetype3.label_tag}}<br>
+                    {{form.responsetype4}} {{form.responsetype4.label_tag}} {{form.event_report_etc}}
+                    {{form.responsetype5}} {{form.responsetype5.label_tag}} {{form.response_type_etc}}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="tb">
+        <table border="1">
+            <tr>
+                <td>분석내용</td>
+            </tr>
+            <tr>
+                <td>{{form.content}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="tb">
+        <table border="1">
+            <tr>
+                <td>권고 및 대응 내용</td>
+            </tr>
+            <tr>
+                <td>{{form.countermeasures}}</td>
+            </tr>
+        </table>
+    </div>
+    {{form.errors}}
+    <div class="tb">
+        <button type="submit">작성완료</button>
+        <input type=button value="취소" onClick="javascript:history.go(-1);">
+    </div>
+</form>
+<script>
+    window.onload = function(){
+        {% for r in response %}
+            document.getElementById('id_{{r.widget_id}}').setAttribute('checked', 'true');
+        {% endfor %}
+
+        {% if object %}
+        url = '{% url 'post:select' 'Company' object.company.id %}';
+        if(url)
+            child = window.open(url, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+        {% endif %}
+    }
+</script>
+{% endblock %}

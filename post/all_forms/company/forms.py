@@ -78,7 +78,7 @@ class CompanyForm(forms.ModelForm):
 
     class Meta:
         model = Company
-        exclude = ('security', 'internal', 'virus', 'ransomware', 'address', 'install_address')
+        exclude = ('security', 'internal', 'virus', 'ransomware', 'address', 'install_address', 'user', 'views')
 
     @staticmethod
     def get_prefix():
@@ -168,6 +168,7 @@ class RansomwareForm(forms.ModelForm):
         return 'ra'
 
 class AddressForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         super(AddressForm, self).__init__(*args, **kwargs)
         self.fields['zip_code'].widget.attrs['placeholder'] = '우편번호'
@@ -175,6 +176,8 @@ class AddressForm(forms.ModelForm):
         self.fields['address_old'].widget.attrs['placeholder'] = '지번주소'
         self.fields['detail'].widget.attrs['placeholder'] = '상세주소'
         self.fields['note'].widget.attrs['placeholder'] = '참고'
+        self.fields['overseas_address'] = forms.CharField(max_length=200, required=False, label='국외주소', label_suffix='',)
+        self.fields['overseas_address'].widget.attrs['placeholder'] = '국외주소 입력시'
 
     class Meta:
         model = Address
@@ -183,6 +186,17 @@ class AddressForm(forms.ModelForm):
     @staticmethod
     def get_prefix():
         return 'ad'
+
+    '''
+    def save(self, commit=True):
+        obj = super(AddressForm, self).save(commit=False)
+        overseas_address = self.cleaned_data.get('overseas_address', '')
+
+        if overseas_address:
+            obj.address = overseas_address
+
+        obj.save()
+    '''
 
 class Install_AddressForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

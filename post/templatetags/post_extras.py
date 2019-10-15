@@ -12,3 +12,10 @@ def not_none(value):
         return value
     else:
         return ''
+
+@register.filter
+def index(list, idx):
+    if len(list[idx]) >0:
+        return list[idx]
+    else:
+        return ''

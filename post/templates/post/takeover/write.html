@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block script %}
+<script src = "/static/js/my.js"></script>
+{% endblock %}
+
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .errorlist {color:red;}
+</style>
+<h3>인계인수 글쓰기</h3>
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="tb">
+        <table border="1">
+            <tr>
+                <td class="c1">제목</td>
+                <td class="c2">{{form.title}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">내용</td>
+                <td class="c2">{{form.content}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">파일 #1</td>
+                <td class="c2">{{form.file1}}</td>
+            </tr>
+
+            <tr>
+                <td class="c1">파일 #2</td>
+                <td class="c2">{{form.file2}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="tb">
+        <button type="submit">작성완료</button>
+        <input type=button value="취소" onClick="javascript:history.go(-1);">
+    </div>
+</form>
+{{form.errors}}
+<script>
+
+</script>
+{% endblock %}

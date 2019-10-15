@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="/static/js/mystyle.css">
 {% endblock %}
 {% block content %}
+{% load post_extras %}
 <style>
     table {width:100%;}
     table *{text-align:center;}
@@ -53,9 +54,9 @@
             <tr>
                 <td>
                     {% if request.GET.reverse == 'false' %}
-                    {{forloop.revcounter}}
+                    {{total | sub:forloop.counter0 | sub:objects.start_index | add:1}}
                     {% else %}
-                    {{forloop.counter}}
+                    {{forloop.counter0|add:objects.start_index}}
                     {% endif %}
                 </td>
                 <td><a href="#" onclick="location.href ='{% url 'post:detail' 'company' object.id %}'">{{object.name}}</a></td>
@@ -72,6 +73,7 @@
 </div>
 
 <a href="#" onclick="location.href = '{% url 'post:write' 'company' %}'"><button type="button">글쓰기</button></a>
+<a href="#" onclick="location.href = '{% url 'post:export' 'company' %}?order_by={{request.GET.order_by}}'"><button type="button">Excel로 다운로드</button></a>
 
 <div>
 {% if objects.has_other_pages %}

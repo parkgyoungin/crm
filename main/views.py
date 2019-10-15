@@ -1,7 +1,11 @@
 from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
-from .forms import UserCreationForm, CheckUseridForm, CheckNicknameForm, loginForm
+from .forms import UserCreationForm, CheckUseridForm, CheckNicknameForm, loginForm, UpdateUserForm, SendEmailForm
 from django.contrib.auth import logout as set_logout
 from django.contrib.auth.decorators import login_required
+from post.models import Attendance
+from main.models import SendEmail
+import datetime
+
 
 def home(request):
     #get_data, DB완성시 수정요망
@@ -61,6 +65,8 @@ def login(request):
         form = loginForm(request.POST)
         if form.is_valid():
             form.login(request)
+            if not Attendance.objects.filter(user=request.user, attendance_date=datetime.date.today()):
+                Attendance(user=request.user).save()
             redirect = request.GET.get('next') or reverse('main:home')
             return HttpResponseRedirect(redirect)
     else:
@@ -73,3 +79,46 @@ def logout(request):
     set_logout(request)
     redirect = request.GET.get('next') or reverse('main:home')
     return HttpResponseRedirect(redirect)
+
+@login_required
+def confirmPassword(request):
+    result = ''
+    if request.method == 'POST':
+        user = request.user
+        if user.check_password(request.POST['password']):
+            return HttpResponseRedirect(reverse('main:update_user'))
+        result = '비밀번호가 다릅니다.'
+    return render(request, 'main/confirm_password.html', {'result':result})
+
+@login_required
+def updateUser(request):
+    user = request.user
+
+    if request.user.is_admin:
+        try:
+            send_email = SendEmail.objects.all()[0]
+        except:
+            send_email = None
+
+
+        if request.method == 'POST':
+            form = UpdateUserForm(request.POST, instance=user)
+            ad_form = SendEmailForm(request.POST, instance=send_email, prefix='ad')
+            if form.is_valid() and ad_form.is_valid():
+                form.save()
+                ad_form.save()
+                return HttpResponseRedirect(reverse('main:home'))
+        else:
+            form = UpdateUserForm(instance=user)
+            ad_form = SendEmailForm(instance=send_email, prefix='ad')
+        return render(request, 'main/update_user.html', {'form': form, 'ad_form':ad_form})
+
+    else:
+        if request.method == 'POST':
+            form = UpdateUserForm(request.POST, instance=user)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect(reverse('main:home'))
+        else:
+            form = UpdateUserForm(instance=user)
+        return render(request, 'main/update_user.html', {'form': form})

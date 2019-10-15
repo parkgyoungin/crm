@@ -32,4 +32,6 @@ class CompanyRecordForm(forms.ModelForm):
 
     class Meta:
         model = CompanyRecord
-        fields = '__all__'
+        #fields = '__all__'
+        exclude = ('user', 'views')
+

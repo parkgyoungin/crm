@@ -38,6 +38,12 @@
         document.getElementById('search_data').value =  document.getElementById('data_date').value || 'all_date';
         document.getElementById('search_data2').value = document.getElementById('data2_date').value || 'all_date';
 
+        if(document.getElementById('search_data').value == 'all_date' && document.getElementById('search_data2').value != 'all_date')
+            document.getElementById('search_data').value = '1900-01-01';
+
+        if(document.getElementById('search_data').value != 'all_date' && document.getElementById('search_data2').value == 'all_date')
+            document.getElementById('search_data2').value = '2100-01-01';
+
         f = document.getElementById('condition');
         f.submit();
     }

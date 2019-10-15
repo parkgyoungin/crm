@@ -1,5 +1,5 @@
 from django.conf import settings
-from post.models import RansomwarePost, Outflow, Company, CompanyRecord, IPSTune
+from post.models import *
 from django.db.models import Q
 from django.shortcuts import reverse, HttpResponseRedirect
 from main.models import Address
@@ -268,13 +268,15 @@ def get_label_by_id(form, id):
         if field.name == id:
             return field.label
 
-def save_connected_model(conn_model, model_object, form, max_length, request):
+def save_connected_model(conn_model, model_object, form, max_length, request, forignkey = 'outflow'):
     for i in range(1, max_length+1):
         key = (conn_model.__name__).lower() + str(i)
         if request.POST.get(key):
             widget_id = key
             value = get_label_by_id(form, widget_id)
-            conn_model(outflow=model_object, widget_id=widget_id, value=value).save()
+            #conn_model(outflow=model_object, widget_id=widget_id, value=value).save()
+            eval('conn_model(%s=model_object, widget_id=widget_id, value=value).save()'%forignkey)
+
 
 def set_default(model, request, GET):
 
@@ -297,5 +299,5 @@ def set_session(request, objects, model):
     }
 
 def view(object):
-    object.view += 1
+    object.views += 1
     object.save()

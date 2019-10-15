@@ -39,6 +39,10 @@ class CompanyRecord(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    views = models.PositiveIntegerField(default=0)
+
 class DetectionPattern(models.Model):
     pattern_name = models.CharField(max_length=100, verbose_name='탐지 패턴명')
 
@@ -70,6 +74,28 @@ class DetectionPattern(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    views = models.PositiveIntegerField(default=0)
+
+    def get_equipment_class(self):
+        if self.equipment_class == '기타':
+            return self.equipment_etc
+        else:
+            return self.equipment_class
+
+    def get_attack_class(self):
+        if self.equipment_class == '기타':
+            return self.attack_class_etc
+        else:
+            return self.attack_class
+
+    def get_attack_type(self):
+        if self.equipment_class == '기타':
+            return self.attack_type_etc
+        else:
+            return self.attack_type
+
 class IPSTune(models.Model):
 
     title = models.CharField(max_length=200)
@@ -89,9 +115,122 @@ class IPSTune(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
-    def view(self):
-        self.views += 1
-        self.save()
+class Timetable(models.Model):
+    title = models.CharField(max_length=200)
+
+    content = models.TextField()
+
+    file1 = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    file2 = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    views = models.PositiveIntegerField(default=0)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
+class Notice(models.Model):
+    title = models.CharField(max_length=200)
+
+    content = models.TextField()
+
+    file1 = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    file2 = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    views = models.PositiveIntegerField(default=0)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
+    division = models.CharField(max_length=100, choices=get_choices('notice_division'))
+
+    execute_date = models.DateField()
+
+class Takeover(models.Model):
+    title = models.CharField(max_length=200)
+
+    content = models.TextField()
+
+    file1 = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    file2 = models.FileField(upload_to='files/%Y/%m/%d', null=True, blank=True)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    views = models.PositiveIntegerField(default=0)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
+class Symptom(models.Model):
+    detect_date = models.DateField()
+
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+
+    product_name = models.CharField(max_length=100, choices=get_choices('product_name'))
+
+    product_etc = models.CharField(max_length=200, null=True, blank=True)
+
+    detect_name = models.CharField(max_length=100)
+
+    start_point = models.CharField(max_length=100)
+
+    end_point = models.CharField(max_length=100)
+
+    dport = models.CharField(max_length=200)
+
+    direction = models.CharField(max_length=100, choices=get_choices('direction'))
+
+    event_report_etc = models.CharField(max_length=100, null=True, blank=True)
+
+    response_type_etc = models.CharField(max_length=100, null=True, blank=True)
+
+    country = models.CharField(max_length=100)
+
+    attack_type = models.CharField(max_length=100, choices=get_choices('attack_class'))
+
+    content = models.TextField()
+
+    countermeasures = models.TextField()
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
+    views = models.PositiveIntegerField(default=0)
+
+    def get_response_type(self):
+        rts = list(self.response_type.all().values_list('value', flat=True))
+        try:
+            etc_idx = rts.index('기타')
+            rts[etc_idx] = '기타(%s)'%(self.response_type_etc or ' ')
+
+        except:
+            pass
+
+        return ', '.join(rts)
+
+class ResponseType(models.Model):
+    symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE, related_name='response_type')
+
+    widget_id = models.CharField(max_length=100)
+
+    value = models.CharField(max_length=100)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
 
 class Schedule(models.Model):
     start_date = models.DateField()
@@ -114,15 +253,15 @@ class Schedule(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
 
-    views = models.PositiveIntegerField()
+    views = models.PositiveIntegerField(default=0)
 
 
 class Attendance(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    attendance_date = models.DateField()
+    attendance_date = models.DateField(auto_now_add=True)
 
-    note = models.TextField()
+    note = models.TextField(null=True, blank=True, verbose_name='메모')
 
 
 #랜섬웨어

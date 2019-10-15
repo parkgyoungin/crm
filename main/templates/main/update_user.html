@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block script %}
+<script src = "/static/js/my.js"></script>
+{% endblock %}
+
+{% block content %}
+<form action="" method="post" onsubmit="return last_check()">
+    {% csrf_token %}
+    <table border="1">
+        <tr><td>아이디</td> <td>{{request.user.userid}}</td></tr>
+        <tr><td>비밀번호</td> <td>{{form.password}}</td></tr>
+        <tr><td>비밀번호확인</td> <td>{{form.password_confirm}}</td></tr>
+        <tr><td>이름</td> <td>{{form.user_name}}</td></tr>
+        <tr><td>닉네임</td> <td>{{form.nickname}} <button type="button" onclick="popup_check('User','nickname', 'id_nickname')">중복확인</button></td></tr>
+        <tr><td>E-mail</td> <td>{{form.email}}</td></tr>
+        {% if request.user.is_admin %}
+        <tr><td>발송용 메일</td> <td>{{ad_form.email}}</td></tr>
+        <tr><td>발송용 메일 앱 비밀번호</td> <td>{{ad_form.password}}</td></tr>
+        {% endif %}
+    </table>
+    <button>정보수정</button> <input type=button value="취소" onClick="javascript:history.go(-1);">
+</form>
+<script>
+    window.onload = function(){
+        window.check_list = {'id_nickname':false};
+        for(var key in window.check_list){
+            if(document.getElementById(key).value){
+                window.check_list[key] = true;
+            }
+        }
+    }
+
+    function last_check(){
+        for(var key in window.check_list){
+            if(window.check_list[key] == false){
+                alert('중복확인이 되지않은 항목이 있습니다');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function change_check(ele){
+        window.check_list[ele.id] = false;
+    }
+</script>
+{% endblock %}

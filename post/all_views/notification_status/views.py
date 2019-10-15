@@ -1,14 +1,16 @@
 from django.shortcuts import render, HttpResponseRedirect, reverse
-from post.all_forms.notification_status.forms import RansomwarePostForm, OutflowForm
-from post.models import RansomwarePost, Comment, Outflow, Weekness
+from post.all_forms.notification_status.forms import RansomwarePostForm, OutflowForm, SymptomForm
+from post.models import RansomwarePost, Comment, Outflow, Weekness, Symptom, ResponseType
 from django.core.paginator import Paginator
 from django.conf import settings
 from post.my_def import get_side_obj, get_pk_list, get_page, get_objects_by_request, get_objects_by_request_ex, config_page_uri, save_connected_model, set_default
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 
 PAGE = 5
 
+@login_required
 def writeRansomwarepost(request):
     if request.method == 'POST':
         form = RansomwarePostForm(request.POST)
@@ -19,6 +21,7 @@ def writeRansomwarepost(request):
         form = RansomwarePostForm()
     return render(request, 'post/ransomware/write.html', {'form':form})
 
+@login_required
 def writeOutflow(request):
     if request.method == 'POST':
         form = OutflowForm(request.POST)
@@ -30,6 +33,20 @@ def writeOutflow(request):
     else:
         form = OutflowForm()
     return render(request, 'post/outflow/write.html', {'form': form})
+
+@login_required
+def writeSymptom(request):
+    if request.method == 'POST':
+        form = SymptomForm(request.POST)
+        if form.is_valid():
+            symptom = form.save(commit=False)
+            symptom.user = request.user
+            symptom.save()
+            save_connected_model(ResponseType, symptom, form, 5, request, forignkey='symptom')
+            return HttpResponseRedirect(reverse("post:list", args=['symptom']))
+    else:
+        form = SymptomForm()
+    return render(request, 'post/symptom/write.html', {'form': form})
 
 def detailRansomwarepost(request, id):
     model = RansomwarePost
@@ -73,6 +90,27 @@ def detailOutflow(request, id):
 
     return render(request, 'post/outflow/detail.html', content)
 
+def detailSymptom(request, id):
+    model = Symptom
+
+    object = model.objects.get(id=id)
+    pre_obj, next_obj = get_side_obj(request, id, model=model.__name__)
+    comment = Comment.objects.filter(model_name=model.__name__, model_pk=id)
+
+    uri = reverse('post:list', args=[model.__name__])
+    if request.session[settings.LIST_CONDITIONS_ID].get(model.__name__):
+        uri = config_page_uri(request, id, model.__name__, PAGE)
+
+    content = {
+        'object':object,
+        'pre_obj':pre_obj,
+        'next_obj':next_obj,
+        'comment':comment,
+        'uri' : uri,
+    }
+
+    return render(request, 'post/symptom/detail.html', content)
+
 def updateRansomwarepost(request, id):
     instance = RansomwarePost.objects.get(id=id)
     if request.method == 'POST':
@@ -96,7 +134,21 @@ def updateOutflow(request, id):
             return HttpResponseRedirect(reverse(('main:home')))
     else:
         form = OutflowForm(instance=instance)
-    return render(request, 'post/outflow/write.html', {'form':form, 'weekness':weekness})
+    return render(request, 'post/outflow/write.html', {'form':form, 'weekness':weekness, 'object':instance})
+
+def updateSymptom(request, id):
+    instance = Symptom.objects.get(id=id)
+    response = ResponseType.objects.filter(symptom_id=id)
+    if request.method == 'POST':
+        form = SymptomForm(request.POST, instance=instance)
+        if form.is_valid():
+            symptom = form.save()
+            response.delete()
+            save_connected_model(ResponseType, symptom, form, 5, request, forignkey='symptom')
+            return HttpResponseRedirect(reverse(('main:home')))
+    else:
+        form = SymptomForm(instance=instance)
+    return render(request, 'post/symptom/write.html', {'form':form, 'response':response, 'object':instance})
 
 def listRansomwarepost(request):
     model = RansomwarePost
@@ -157,6 +209,35 @@ def listOutflow(request):
     }
     return render(request, 'post/outflow/list.html', content)
 
+
+def listSymptom(request):
+    model = Symptom
+    default_GET = '?reverse=false&order_by=-created&search_field=company__name&filter_option=__icontains&search_data=&search_data2=&relation=%26&page=1'
+
+    if not request.GET:
+        return set_default(model, request, default_GET)
+
+    result = get_objects_by_request_ex(request, model, default_GET, relation_model='response_type')
+    if result['success']:
+        objects, page = result['data']
+    else:
+        print('error : ', result.get('error', '알수없음'))
+        return set_default(model, request, default_GET)
+
+    set_session(request,objects,model)
+    total = len(objects)
+    paginator = Paginator(objects, PAGE)
+
+    try:
+        objects = paginator.page(page)
+    except:
+        objects = paginator.page(1)
+
+    content = {
+        'objects':objects,
+        'total':total,
+    }
+    return render(request, 'post/symptom/list.html', content)
 
 #from post.all_views.notification_status.views import get_filter_list_by_conn_model
 #from post.models import Outflow

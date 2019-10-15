@@ -21,8 +21,8 @@ class DetectionPatternForm(forms.ModelForm):
 
     class Meta:
         model = DetectionPattern
-        fields = '__all__'
-
+        #fields = '__all__'
+        exclude = ('user', 'views')
 
 class IPSTuneForm(forms.ModelForm):
     class Meta:

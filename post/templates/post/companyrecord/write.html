@@ -132,7 +132,7 @@
         //document.getElementById('id_company_name').value = '{{object.name}}';
         //document.getElementById('id_company_name').value = '{{object.name}}';
         {% if object %}
-        url = '{% url 'post:select' 'Company' object.id %}';
+        url = '{% url 'post:select' 'Company' object.company.id %}';
         if(url)
             child = window.open(url, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
         {% endif %}

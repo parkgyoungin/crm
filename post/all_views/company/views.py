@@ -1,13 +1,16 @@
-from main.models import Company, Security, Internal, Virus, Ransomware
+from main.models import Company, Security, Internal, Virus, Ransomware, SendEmail
 from post.all_forms.company.forms import CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm, AddressForm, Install_AddressForm
-from post.my_def import get_fomrs, get_instance_forms, get_objects_by_request, get_objects_by_request_ex, set_session, set_default, get_side_obj, config_page_uri
+from post.my_def import get_fomrs, get_instance_forms, get_objects_by_request, get_objects_by_request_ex, set_session, set_default, get_side_obj, config_page_uri, view
 from django.db.models import Max
 from django.conf import settings
-from django.shortcuts import render, HttpResponseRedirect, reverse
+from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
 PAGE = 5
+admin = SendEmail.objects.all()[0]
 
+@login_required
 def writeCompany(request):
     Forms = [CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm, AddressForm]
     id_max = Company.objects.all().aggregate(Max('id'))['id__max']
@@ -27,8 +30,15 @@ def writeCompany(request):
             co.virus = vi
             co.ransomware = ra
             co.address = ad
+            co.user = request.user
             model_update(co, get_update_list(forms['co_form']))
             co.save()
+
+            FROM = (admin.email, admin.password)
+            TO = co.manager_m_email
+            send_joined_email(FROM, TO)
+
+
             return HttpResponseRedirect(reverse('post:list', args=['company']))
     else:
         forms = get_fomrs(Forms)
@@ -89,6 +99,7 @@ def detailCompany(request, id):
     model = Company
 
     object = model.objects.get(id= id)
+    view(object)
     security = object.security
     internal = object.internal
     virus = object.virus
@@ -133,3 +144,120 @@ def get_update_list(form):
 def model_update(obj, dic):
     for key, val in dic.items():
         exec('obj.%s = "%s" '%(key, val))
+
+def send_joined_email(strFrom, strTo):
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    from email.mime.image import MIMEImage
+
+    password = strFrom[1]
+    strFrom = strFrom[0]
+
+    # Create the root message and fill in the from, to, and subject headers
+    msgRoot = MIMEMultipart('related')
+    msgRoot['Subject'] = '한국산업기술보호협회 [가입완료]'
+    msgRoot['From'] = strFrom
+    msgRoot['To'] = strTo
+    msgRoot.preamble = 'This is a multi-part message in MIME format.'
+
+    # Encapsulate the plain and HTML versions of the message body in an
+    # 'alternative' part, so message agents can decide which they want to display.
+    msgAlternative = MIMEMultipart('alternative')
+    msgRoot.attach(msgAlternative)
+
+    msgText = MIMEText('This is the alternative plain text message.')
+    msgAlternative.attach(msgText)
+
+    # We reference the image in the IMG SRC attribute by the ID we give it below
+    content = '''
+    <pre>
+    안녕하십니까....
+    가입되었습니다
+    <img src="cid:image1">
+
+    상세내용
+    생략-
+    </pre>
+    '''
+    msgText = MIMEText(content, 'html')
+    msgAlternative.attach(msgText)
+
+    # This example assumes the image is in the current directory
+    fp = open('statics/image/test.jpg', 'rb')
+    msgImage = MIMEImage(fp.read())
+    fp.close()
+
+    # Define the image's ID as referenced above
+    msgImage.add_header('Content-ID', '<image1>')
+    msgRoot.attach(msgImage)
+
+    # Send the email (this example assumes SMTP authentication is required)
+    import smtplib
+
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+
+    s.starttls()
+
+    s.login(strFrom, password)
+
+    s.sendmail(strFrom, strTo, msgRoot.as_string())
+
+    s.quit()
+
+def exportCompany(request):
+    import xlwt
+    from post.export_excel import company, security, internal, virus, ransomware, get_dict
+
+    MODEL = Company
+    SPACE = (' ' * 10,)
+    CELL_WIDTH = 15
+    ORDER_BY = request.GET.get('order_by', 'created')
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="company.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('수혜기업현황')
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    row_num = 0
+
+    # header
+    columns = [('고객기업정보',)] + [(kor['name'],eng,'company') for eng, kor in company.items()] + [SPACE]
+    columns += [('보안관제',)] + [(kor['name'],eng,'security') for eng, kor in security.items()] + [SPACE]
+    columns += [('내부정보',)] + [(kor['name'],eng,'internal') for eng, kor in internal.items()] + [SPACE]
+    columns += [('악성코드',)] + [(kor['name'],eng,'virus') for eng, kor in virus.items()] + [SPACE]
+    columns += [('랜섬웨어',)] + [(kor['name'],eng,'ransomware') for eng, kor in ransomware.items()] + [SPACE]
+    for col_num in range(len(columns)):
+        ws.col(col_num).width = 256 * CELL_WIDTH
+        ws.write(row_num, col_num, columns[col_num][0], font_style)
+
+    row_num += 1
+
+    pk_list = request.session.get(MODEL.__name__)
+    if pk_list:
+        objects = MODEL.objects.filter(id__in = pk_list).order_by(ORDER_BY)
+    else:
+        objects = MODEL.objects.all()
+
+    # body
+    font_style.font.bold = False
+    for object in objects:
+        company = get_dict(object)
+        security = get_dict(object.security)
+        internal = get_dict(object.internal)
+        virus = get_dict(object.virus)
+        ransomware = get_dict(object.ransomware)
+
+        for col_num, column in enumerate(columns):
+            if len(column)<3:
+                continue
+            field = column[1]
+            obj = column[2]
+            data = eval('%s[field]["data"]'%obj)
+            ws.write(row_num, col_num, data, font_style)
+        row_num += 1
+
+    wb.save(response)
+    return response

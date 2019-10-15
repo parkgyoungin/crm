@@ -65,6 +65,12 @@
 
         if(!document.getElementById('id_process_state').value)
             document.getElementById('id_process_state').value = '처리중';
+
+        {% if object %}
+        url = '{% url 'post:select' 'Company' object.company.id %}';
+        if(url)
+            child = window.open(url, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+        {% endif %}
     }
 
     function set_process_state(ele){

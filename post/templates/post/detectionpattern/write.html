@@ -99,8 +99,24 @@
                 window.check_list[key] = true;
             }
         }
+        {% if form.attack_class.value %}
+        ele = get_checked_ele();
+        set_sub_list(ele);
+        document.getElementById('id_attack_type').value = '{{form.attack_type.value}}';
+        {% else %}
         set_default();
+        {% endif %}
     }
+
+    function get_checked_ele(){
+        for(var key in select_list){
+            ele = document.getElementById(key);
+            if(ele.checked)
+                return ele;
+        }
+        return -1;
+    }
+
 
     function addOption(option){
         var select = document.getElementById("id_attack_type");

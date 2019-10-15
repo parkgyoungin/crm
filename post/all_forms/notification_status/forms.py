@@ -1,7 +1,8 @@
 from django import forms
-from post.models import RansomwarePost, Outflow
+from post.models import RansomwarePost, Outflow, Symptom
 from post.my_def import to_date_widget
 from django_summernote.widgets import SummernoteWidget
+
 
 class RansomwarePostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -38,4 +39,24 @@ class OutflowForm(forms.ModelForm):
     class Meta:
         model = Outflow
         fields = '__all__'
+
+class SymptomForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SymptomForm, self).__init__(*args, **kwargs)
+        to_date_widget(self.fields)
+        self.fields['content'].widget = SummernoteWidget()
+        self.fields['company'].widget = forms.HiddenInput()
+        self.fields['event_report_etc'].widget.attrs['placeholder'] = '탐지보고서 선택시'
+        self.fields['response_type_etc'].widget.attrs['placeholder'] = '기타 선택시'
+        self.fields['product_etc'].widget.attrs['placeholder'] = '기타 선택시'
+
+    responsetype1 = forms.BooleanField(label='분석', label_suffix='', required=False)
+    responsetype2 = forms.BooleanField(label='통보', label_suffix='', required=False)
+    responsetype3 = forms.BooleanField(label='IP차단', label_suffix='', required=False)
+    responsetype4 = forms.BooleanField(label='이벤트 탐지 보고서', label_suffix='', required=False)
+    responsetype5 = forms.BooleanField(label='기타', label_suffix='', required=False)
+
+    class Meta:
+        model = Symptom
+        exclude = ('user', 'views')
 

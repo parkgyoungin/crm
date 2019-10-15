@@ -14,6 +14,7 @@
 <div>
     <a href="{% url 'post:list' 'companyrecord'%}"><h3>수혜기업 이력관리</h3></a>
     <h5>*Total : {{total}}</h5>
+    <a href="{% url 'post:list' 'companyrecord'%}">필터링초기화</a>
     <table class="t1">
         <thead>
         <tr>
@@ -23,6 +24,7 @@
             <td><a style="cursor:pointer" id="company__name" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">수혜기업명&#9660;</a> </td>
             <td><a style="cursor:pointer" id="content" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_only">내용&#9660;</a></td>
             <td><a style="cursor:pointer" id="process_method" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">처리방법&#9660;</a></td>
+            <td><a style="cursor:pointer" id="user__user_name" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">접수자&#9660;</a></td>
             <td><a style="cursor:pointer" id="process_state" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">처리상태&#9660;</a></td>
         </tr>
         </thead>
@@ -41,6 +43,7 @@
                 <td> {{object.company.name}}</td>
                 <td>{{object.content}}</td>
                 <td>{{object.process_method}}</td>
+                <td>{{object.user.user_name}}</td>
                 <td>{{object.process_state}}</td>
             </tr>
         {% endfor %}
@@ -49,6 +52,7 @@
 </div>
 
 <a href="#" onclick="location.href = '{% url 'post:write' 'companyrecord' %}'"><button type="button">글쓰기</button></a>
+<a href="#" onclick="location.href = '{% url 'post:export' 'companyrecord' %}?order_by={{request.GET.order_by}}'"><button type="button">Excel로 다운로드</button></a>
 
 <div>
 {% if objects.has_other_pages %}

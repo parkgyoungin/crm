@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .btn_div *{margin:20px;}
+     .btn_div {text-align:center;}
+</style>
+<h3>인계인수 상세</h3>
+
+
+<div class="tb">
+    <table border="1">
+        <tr>
+            <td class="c1">제목</td>
+            <td class="c2">{{object.title}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">내용</td>
+            <td class="c2">{{object.content|safe}}</td>
+        </tr>
+
+        <tr>
+            <td class="c1">파일 #1</td>
+            <td class="c2"><a href="{{object.file1}}" download>{{object.file1}}</a></td>
+        </tr>
+
+        <tr>
+            <td class="c1">파일 #2</td>
+            <td class="c2"><a href="{{object.file2}}" download>{{object.file2}}</a></td>
+        </tr>
+    </table>
+</div>
+
+<div class="tb">
+<div class="btn_div">
+    {% if pre_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'takeover' pre_obj.id %}'"><button type="button">이전글</button></a>
+    {% endif %}
+    {% if next_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'takeover' next_obj.id %}'"><button type="button">다음글</button></a>
+    {% endif %}
+    <a href="#" onclick="location.href = '{{uri}}'"><button type="button">목록으로</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:update' 'takeover' object.id %} '"><button type="button">수정하기</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:delete' 'takeover' object.id %} '"><button type="button">삭제</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:write' 'takeover' %} '"><button type="button">글쓰기</button></a>
+</div>
+</div>
+{% endblock %}

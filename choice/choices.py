@@ -287,6 +287,31 @@ risk = [
     ('Low','Low'),
 ]
 
+notice_division = [
+    ('보안권고문','보안권고문'),
+    ('정보보호동향', '정보보호동향')
+]
+
+direction = [
+    ('외 -> 내', '외 -> 내'),
+    ('내 -> 외', '내 -> 외'),
+    ('내 -> 내', '내 -> 내'),
+]
+
+product_name = [
+    ('TrusGuard', 'TrusGuard'),
+    ('MF2', 'MF2'),
+    ('FortiGate', 'FortiGate'),
+    ('NXG', 'NXG'),
+    ('Neobox', 'Neobox'),
+    ('기타', '기타'),
+]
+
+location = [
+    ('국내', '국내'),
+    ('국외', '국외'),
+]
+
 choices = {
     'snmp_sub': snmp_sub,
     'ips_check':ips_check,
@@ -314,8 +339,11 @@ choices = {
     'attack_class_sub2' : attack_class_sub2,
     'attack_class_sub3' : attack_class_sub3,
     'attack_class_sub4' : attack_class_sub4,
-    'risk' : risk
-
+    'risk' : risk,
+    'notice_division': notice_division,
+    'direction': direction,
+    'product_name': product_name,
+    'location': location,
 }
 
 widgets = {

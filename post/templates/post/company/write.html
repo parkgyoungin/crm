@@ -141,11 +141,18 @@
         <tr>
             <td class="c1">주소</td>
             <td colspan="5">
-                {{ad_form.zip_code}}
-                <input type="button" onclick="search_address_ad()" value="우편번호 찾기"><br>
-                {{ad_form.address}} {{ad_form.address_old}}
-                <span id="guide1" style="color:#999;display:none"></span><br>
-                {{ad_form.detail}} {{ad_form.note}}
+                <div style="display:inline-block;">
+                    {{ad_form.location}}<br>
+                    {{ad_form.zip_code}}
+                    <input type="button" onclick="search_address_ad()" value="우편번호 찾기"><br>
+                    {{ad_form.address}} {{ad_form.address_old}}
+                    <span id="guide1" style="color:#999;display:none"></span><br>
+                    {{ad_form.detail}} {{ad_form.note}}
+                </div>
+                <div style="display:inline-block;">
+                    {{ad_form.overseas_address.label_tag}}<br>
+                    {{ad_form.overseas_address}}
+                </div>
 
             </td>
         </tr>
@@ -411,6 +418,8 @@
             {'main':[1, selected_ex_none], 'sub': [[0,set_checked], [1,able]]},
         ];
         set_another_js(document.getElementById(connections[0][1]), connections, sets);
+
+
 
     }
 

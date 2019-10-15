@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+
+     .label {background-color: #EFFBFB; text-align: center;}
+
+
+     .tb {margin-top:40px;}
+     .btn_div *{margin:20px;}
+     .btn_div {text-align:center;}
+</style>
+<h3>이상징후</h3>
+
+
+<div class="tb">
+    <table border="1">
+        <tr>
+            <td class="label">탐지날짜</td>
+            <td class="c2">{{object.detect_date}}</td>
+            <td class="label">기업명</td>
+            <td class="c4">{{object.company.name}}</td>
+            <td class="label">제품명</td>
+            <td class="c6">{{object.product_name}}</td>
+            <td class="label">대응유형</td>
+            <td class="c8">{{object.get_response_type}}</td>
+            <td class="label">문서번호</td>
+            <td class="c10">{{object.event_report_etc}}</td>
+        </tr>
+
+        <tr>
+            <td class="label">출발지</td>
+            <td class="c2">{{object.start_point}}</td>
+            <td class="label">목적지</td>
+            <td class="c4">{{object.end_point}}</td>
+            <td class="label">Dport</td>
+            <td class="c6">{{object.dport}}</td>
+            <td class="label">국가</td>
+            <td class="c8">{{object.country}}</td>
+            <td class="label">공격유형</td>
+            <td class="c10">{{object.attack_type}}</td>
+        </tr>
+
+        <tr>
+            <td class="label">탐지명</td>
+            <td colspan="5">{{object.detect_name}}</td>
+            <td class="label ">방향성</td>
+            <td colspan="5">{{object.direction}}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="tb">
+    <table border="1">
+        <tr><td>분석내용</td></tr>
+        <tr><td>{{object.content|safe}}</td></tr>
+        <tr><td>권고 및 대응 내용</td></tr>
+        <tr><td>{{object.countermeasures}}</td></tr>
+    </table>
+</div>
+
+<div class="tb">
+<div class="btn_div">
+    {% if pre_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'symptom' pre_obj.id %}'"><button type="button">이전글</button></a>
+    {% endif %}
+    {% if next_obj %}
+    <a href="#" onclick="location.href = '{% url 'post:detail' 'symptom' next_obj.id %}'"><button type="button">다음글</button></a>
+    {% endif %}
+    <a href="#" onclick="location.href = '{{uri}}'"><button type="button">목록으로</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:update' 'symptom' object.id %} '"><button type="button">수정하기</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:delete' 'symptom' object.id %} '"><button type="button">삭제</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:write' 'symptom' %} '"><button type="button">글쓰기</button></a>
+</div>
+</div>
+{% endblock %}

@@ -47,9 +47,9 @@
       </button>
       <div class="dropdown-menu">
         <a class="dropdown-item" href="{% url 'post:list' 'calendar' %}">일정 관리</a>
-        <a class="dropdown-item" href="#">근무표</a>
-        <a class="dropdown-item" href="#">보안 공지</a>
-        <a class="dropdown-item" href="#">인계인수(순환근무)</a>
+        <a class="dropdown-item" href="{% url 'post:list' 'timetable' %}">근무표</a>
+        <a class="dropdown-item" href="{% url 'post:list' 'notice' %}">보안 공지</a>
+        <a class="dropdown-item" href="{% url 'post:list' 'takeover' %}">인계인수(순환근무)</a>
         <a class="dropdown-item" href="#">보고서</a>
       </div>
     </div>
@@ -59,7 +59,7 @@
         행정 및 공지
       </button>
       <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">이상징후</a>
+        <a class="dropdown-item" href="{% url 'post:list' 'symptom' %}">이상징후</a>
         <a class="dropdown-item" href="{% url 'post:list' 'outflow' %}">기술유출</a>
         <a class="dropdown-item" href="{% url 'post:list' 'ransomwarepost' %}">랜섬웨어</a>
 
@@ -79,7 +79,7 @@
     <div class="row">
         <div class="col-2">
             {% if request.user.is_authenticated %}
-                환영합니다. '{{request.user.user_name}}'님
+                '{{request.user.user_name}}'님 <a href="{% url 'main:confirm_password' %}">[내정보]</a>
                 <a href="{% url 'main:logout' %}?next={{request.path_info}}">로그아웃</a>
             {% else %}
             <a href="{% url 'main:join' %}">회원가입</a>

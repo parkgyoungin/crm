@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-
+{% load post_extras %}
 <style>
     table {width:100%;}
-    td {height: 100px;}
+    td {height: 100px; width:100px;}
     tbody td {vertical-align:top;}
 </style>
 <a href="{% url 'post:list' 'calendar' %}?year={{request.GET.year|add:-1}}&month={{request.GET.month}}"><<</a>
@@ -12,6 +12,7 @@
 <a href="{% url 'post:list' 'calendar' %}?year={{request.GET.year}}&month={{request.GET.month|add:1}}">></a>
 <a href="{% url 'post:list' 'calendar' %}?year={{request.GET.year|add:1}}&month={{request.GET.month}}">>></a>
 
+<button type="button" href="#" onclick="location.href = '{% url 'post:write' 'schedule' %}' ">일정 추가</button>
 <table border="1">
     <thead>
     <tr style="background-color:lightcyan">
@@ -22,10 +23,29 @@
     {% for week in days %}
     <tr>
         {% for day in week %}
-        <td>{% if day %} {{day}} {% endif %}</td>
+        <td>
+            {% if day.day %}
+                {{day.day}}
+
+                {% for att in day.attendance %}
+                    <a href="#" onclick="att_popup('{% url 'post:update' 'attendance' att.id %}')">{{att.user.user_name}}</a>
+                {% endfor %}
+
+                {% for sch in day.schedule %}
+                    <br>
+                    <a href="{% url 'post:detail' 'schedule' sch.id %}">{{sch.title}}</a>
+                {% endfor %}
+            {% endif %}
+        </td>
         {% endfor %}
     </tr>
     {% endfor %}
     </tbody>
 </table>
+
+<script>
+    function att_popup(url){
+        child = window.open(url, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
+    }
+</script>
 {% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load post_extras %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .btn_div *{margin:20px;}
+     .btn_div {text-align:center;}
+</style>
+<h3>{{object.title}} ({{object.start_date}} ~ {{object.end_date}} {{object.process_state}})</h3>
+
+<div class="tb">
+    {{object.content}}
+    {{object.file1}}
+    {{object.file2}}
+</div>
+
+<div class="tb">
+<div class="btn_div">
+    <a href="#" onclick="location.href = '{% url 'post:list' 'calendar'%}'"><button type="button">목록으로</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:update' 'schedule' object.id %} '"><button type="button">수정하기</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:delete' 'schedule' object.id %} '"><button type="button">삭제</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:write' 'schedule' %} '"><button type="button">글쓰기</button></a>
+</div>
+</div>
+{% endblock %}

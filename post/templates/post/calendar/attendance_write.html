@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form method="post" action="">
+    {% csrf_token %}
+    {{form.note.label_tag}} {% if success %} {{success}} 저장완료 {% endif %}
+    <br>
+    {{form.note}}
+    <br>
+    <button type="submit">저장</button> <button onclick="win_close()" type="button">닫기</button>
+</form>
+<script>
+    function win_close(){
+        window.close();
+    }
+</script>
+</body>
+</html>

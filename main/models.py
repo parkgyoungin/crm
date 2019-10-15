@@ -4,6 +4,13 @@ from django.utils import timezone
 from choice.choices import get_choices
 from django.db.models import Q
 
+class SendEmail(AbstractBaseUser):
+    email = models.EmailField(max_length=100)
+
+    password = models.CharField(max_length=100)
+
+    USERNAME_FIELD = 'email'
+
 class UserManager(BaseUserManager):
     def create_user(self,userid, name, nickname ,email, password=None):
         if not userid:
@@ -48,6 +55,9 @@ class User(AbstractBaseUser):
         verbose_name='이메일',
         max_length=255,
     )
+
+    #email_password = models.CharField(max_length=100, null=True, blank=True)
+
     nickname = models.CharField(
         verbose_name='닉네임',
         max_length=30,
@@ -62,6 +72,8 @@ class User(AbstractBaseUser):
         max_length=255
     )
     is_admin = models.BooleanField(default=False)
+
+    send_email = models.ForeignKey(SendEmail, on_delete=models.CASCADE, null=True, blank=True)
 
     objects = UserManager()
 
@@ -85,16 +97,21 @@ class User(AbstractBaseUser):
         return self.is_admin
 
 
+
 class Address(models.Model):
     address = models.CharField(max_length=200)
 
-    address_old = models.CharField(max_length=200)
+    address_old = models.CharField(max_length=200, null=True, blank=True)
 
-    detail = models.CharField(max_length=100)
+    detail = models.CharField(max_length=100, null=True, blank=True)
 
-    zip_code = models.CharField(max_length=20)
+    zip_code = models.CharField(max_length=20, null=True, blank=True)
 
-    note = models.CharField(max_length=100)
+    note = models.CharField(max_length=100, null=True, blank=True)
+
+    location = models.CharField(max_length=20, choices=get_choices('location'))
+
+    overseas_address = models.CharField(max_length=200, null=True, blank=True)
 
 
 class Security(models.Model):
@@ -297,6 +314,10 @@ class Company(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     updated = models.DateTimeField(auto_now=True)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    views = models.PositiveIntegerField(default=0)
 
     colors = {
         '미사용': 'white',

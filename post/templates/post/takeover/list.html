@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block style %}
+<script src = "/static/js/my.js"></script>
+<link rel="stylesheet" href="/static/js/mystyle.css">
+{% endblock %}
+{% block content %}
+{% load post_extras %}
+<style>
+    table {width:100%;}
+    table *{text-align:center;}
+    thead {background-color:lightcyan;}
+    td {height:50px;}
+</style>
+<div>
+    <a href="{% url 'post:list' 'takeover'%}"><h3>인계인수</h3></a>
+    <h5>*Total : {{total}}</h5>
+    <table class="t1">
+        <thead>
+        <tr>
+            <td><a style="cursor:pointer" id="no" onclick="set_reverse()">번호&#9660;</a></td>
+            <td><a style="cursor:pointer" id="title" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_date">제목&#9660;</a></td>
+            <td><a style="cursor:pointer" id="user" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">글쓴이&#9660;</a> </td>
+            <td><a style="cursor:pointer" id="created" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_text">날짜&#9660;</a> </td>
+            <td><a style="cursor:pointer" id="views" onclick="set_search_field(this)" data-toggle="modal" data-target="#m_only">조회&#9660;</a></td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in objects %}
+            <tr>
+                <td>
+                    {% if request.GET.reverse == 'false' %}
+                    {{total | sub:forloop.counter0 | sub:objects.start_index | add:1}}
+                    {% else %}
+                    {{forloop.counter0|add:objects.start_index}}
+                    {% endif %}
+                </td>
+                <td><a href="#" onclick="location.href ='{% url 'post:detail' 'takeover' object.id %}'">{{object.title}}</a></td>
+                <td>{{object.user}}</td>
+                <td> {{object.created}}</td>
+                <td>{{object.views}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="#" onclick="location.href = '{% url 'post:write' 'takeover' %}'"><button type="button">글쓰기</button></a>
+
+<div>
+{% if objects.has_other_pages %}
+  <ul class="pagination">
+    {% if objects.has_previous %}
+      <li class="page-item"><a class="page-link" onclick="set_page({{objects.previous_page_number}})">처음</a></li>
+    {% else %}
+      <li class="page-item disabled"><a class="page-link"><span>처음</span></a></li>
+    {% endif %}
+    {% for i in objects.paginator.page_range %}
+      {% if objects.number == i %}
+        <li class="page-item active "><a class="page-link"><span>{{ i }} <span class="sr-only">(current)</span></span></a></li>
+      {% else %}
+        <li class="page-item"><a class="page-link" onclick="set_page({{i}})">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if objects.has_next %}
+      <li class="page-item"><a class="page-link" onclick="set_page({{objects.next_page_number}})">맨끝</a></li>
+    {% else %}
+      <li class="page-item disabled"><a class="page-link"><span>맨끝</span></a></li>
+    {% endif %}
+  </ul>
+{% endif %}
+</div>
+
+<div>
+    <form id="condition" action="" method="get">
+        <input type="hidden" id="reverse" name="reverse" value="false">
+        <input type="hidden" id="order_by" name="order_by" value="send_date">
+        <input type="hidden" id="filter_option" name="filter_option" value="__icontains">
+        <input type="hidden" id="relation" name="relation" value="&">
+        <input type="hidden" id="search_field" name="search_field" value="company">
+        <input type="hidden" id="search_data" name="search_data" value="">
+        <input type="hidden" id="search_data2" name="search_data2" value="">
+        <input type="hidden" id="page" name="page" value="1">
+    </form>
+</div>
+
+{% include 'post/modal/textFilter.html'  %}
+{% include 'post/modal/dateFilter.html'  %}
+{% include 'post/modal/onlyFilter.html'  %}
+<script>
+    var form = document.getElementById('condition');
+    var search_field = '';
+    window.onload = function(){
+        //set_btn_inner();
+        set_request_get();
+    }
+
+    function set_btn_inner(){
+        order_by = '{{request.GET.order_by}}';
+        is_down = order_by[0] == "-";
+        if(is_down)
+            order_by = order_by.substr(1);
+        ele = document.getElementById(order_by);
+        inner = ele.innerHTML;
+        inner = inner.substr(0, inner.length-1);
+        if(is_down)
+            ele.innerHTML = inner + '▼';
+        else
+            ele.innerHTML = inner + '▲';
+    }
+
+    function set_order_by(ele){
+        document.getElementById('order_by').value = get_btn_value(ele);
+        form.submit();
+    }
+    function set_page(i){
+        document.getElementById('page').value = i;
+        form.submit();
+    }
+
+    function set_request_get(){
+        {% for key, val in request.GET.items %}
+            document.getElementById('{{key}}').value = '{{val|safe}}';
+        {% endfor %}
+    }
+
+    function set_search_field(ele){
+        search_field = ele.id;
+    }
+
+
+</script>
+{% endblock %}
