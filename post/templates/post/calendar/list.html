@@ -33,7 +33,7 @@
 
                 {% for sch in day.schedule %}
                     <br>
-                    <a href="{% url 'post:detail' 'schedule' sch.id %}">{{sch.title}}</a>
+                    <a href="{% url 'post:detail' 'schedule' sch.id %}" data-toggle="popover" data-content="{{sch.get_popup_data}}" data-html="true">{{sch.title}}</a>
                 {% endfor %}
             {% endif %}
         </td>
@@ -43,9 +43,27 @@
     </tbody>
 </table>
 
+<table border="1">
+    <tr>
+        <td>오늘일정</td>
+        <td>
+            {% for sch in today %}
+            <a href="{% url 'post:detail' 'schedule' sch.id %}" data-toggle="popover" data-content="{{sch.get_popup_data}}" data-html="true">{{sch.title}}</a><br>
+            {% endfor %}
+        </td>
+    </tr>
+</table>
+
 <script>
     function att_popup(url){
         child = window.open(url, 'window팝업', 'width=400, height=400, menubar=no, status=no, toolbar=no');
     }
+
+    $(document).ready(function() {
+       $('[data-toggle="popover"]').popover({
+          placement: 'top',
+          trigger: 'hover'
+       });
+    });
 </script>
 {% endblock %}

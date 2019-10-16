@@ -301,3 +301,15 @@ def set_session(request, objects, model):
 def view(object):
     object.views += 1
     object.save()
+
+def delete_object(model, id, cascade=[]):
+    object = model.objects.get(id=id)
+    conn_models = []
+
+    for field in cascade:
+        conn_models.append(eval('object.%s'%field))
+    object.delete()
+
+    for conn_model in conn_models:
+        conn_model.delete()
+

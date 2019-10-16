@@ -12,5 +12,10 @@ urlpatterns = [
     path('<str:model>/export/', views.export, name='export'),
     path('check/<str:model>/<str:field_name>/<str:ele_id>/', views.check, name='check'),
     path('search/<str:model>/<str:field_name>/', views.search, name='search'),
-    path('select/<str:model>/<int:id>/', views.select, name='select')
+    path('select/<str:model>/<int:id>/', views.select, name='select'),
+
+    path('<str:model>/<int:id>/answer/write/', views.writeAnswer, name='answer_write'),
+    path('answer/detail/<int:pk>/', views.detail, name='answer_detail'),
+    path('answer/update/<int:pk>/', views.detail, name='answer_update'),
+    path('answer/delete/<int:pk>/', views.detail, name='answer_delete'),
 ]

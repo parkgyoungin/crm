@@ -14,6 +14,7 @@
 <div>
     <a href="{% url 'post:list' 'takeover'%}"><h3>인계인수</h3></a>
     <h5>*Total : {{total}}</h5>
+    <a href="{% url 'post:list' 'takeover'%}">필터링초기화</a>
     <table class="t1">
         <thead>
         <tr>
@@ -39,6 +40,15 @@
                 <td> {{object.created}}</td>
                 <td>{{object.views}}</td>
             </tr>
+            {% for answer in object.answers.all %}
+            <tr>
+                <td></td>
+                <td><a href="#" onclick="location.href ='{% url 'post:answer_detail' answer.id %}'">&#8627; (Re) {{answer.title}}</a></td>
+                <td>{{answer.user}}</td>
+                <td> {{answer.created}}</td>
+                <td>{{answer.views}}</td>
+            </tr>
+            {% endfor %}
         {% endfor %}
         </tbody>
     </table>

@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponseRedirect, reverse
 from post.models import Timetable, Notice, Takeover, Comment
 from post.all_forms.administration.forms import TimetableForm, NoticeForm, TakeoverForm
-from post.my_def import set_default, get_objects_by_request_ex, set_session, get_side_obj, config_page_uri, view
+from post.my_def import set_default, get_objects_by_request_ex, set_session, get_side_obj, config_page_uri, view, delete_object
 from django.core.paginator import Paginator
 from django.conf import settings
 
@@ -241,3 +241,16 @@ def detailTakeover(request, id):
     }
 
     return render(request, 'post/takeover/detail.html', content)
+
+
+def deleteTimetable(request, id):
+    delete_object(Timetable, id)
+    return HttpResponseRedirect(reverse('post:list', args=['timetable']))
+
+def deleteNotice(request, id):
+    delete_object(Notice, id)
+    return HttpResponseRedirect(reverse('post:list', args=['notice']))
+
+def deleteTakeover(request, id):
+    delete_object(Takeover, id)
+    return HttpResponseRedirect(reverse('post:list', args=['takeover']))

@@ -13,7 +13,8 @@ class RansomwarePostForm(forms.ModelForm):
 
     class Meta:
         model = RansomwarePost
-        fields = '__all__'
+        #fields = '__all__'
+        exclude = ('user', 'views')
 
 class OutflowForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -38,7 +39,8 @@ class OutflowForm(forms.ModelForm):
 
     class Meta:
         model = Outflow
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ('user', 'views')
 
 class SymptomForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

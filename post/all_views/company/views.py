@@ -1,6 +1,6 @@
 from main.models import Company, Security, Internal, Virus, Ransomware, SendEmail
 from post.all_forms.company.forms import CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm, AddressForm, Install_AddressForm
-from post.my_def import get_fomrs, get_instance_forms, get_objects_by_request, get_objects_by_request_ex, set_session, set_default, get_side_obj, config_page_uri, view
+from post.my_def import get_fomrs, get_instance_forms, get_objects_by_request, get_objects_by_request_ex, set_session, set_default, get_side_obj, config_page_uri, view, delete_object
 from django.db.models import Max
 from django.conf import settings
 from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
@@ -124,6 +124,10 @@ def detailCompany(request, id):
 
     return render(request, 'post/company/detail.html', content)
 
+
+def deleteCompany(request, id):
+    delete_object(Company, id, cascade=['address', 'security', 'internal', 'virus', 'ransomware'])
+    return HttpResponseRedirect(reverse('post:list', args=['company']))
 
 def get_update_list(form):
     names = {

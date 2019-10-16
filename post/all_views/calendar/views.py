@@ -5,6 +5,7 @@ from post.all_forms.calendar.forms import ScheduleForm, AttendanceForm
 from django.contrib.auth.decorators import login_required
 import datetime
 from django.db.models import Q
+from post.my_def import delete_object
 
 
 @login_required
@@ -19,6 +20,10 @@ def writeSchedule(request):
     else:
         form = ScheduleForm()
     return render(request, 'post/calendar/write.html', {'form':form})
+
+def deleteSchedule(request, id):
+    delete_object(Schedule, id)
+    return HttpResponseRedirect(reverse('post:list', args=['calendar']))
 
 @login_required
 def writeAttendance(request):
@@ -81,7 +86,8 @@ def listCalendar(request):
             return set_default(default_GET)
 
         days = get_content_month(year,month)
-        return render(request, 'post/calendar/list.html', {'days': days})
+        today = Schedule.get_today()
+        return render(request, 'post/calendar/list.html', {'days': days, 'today': today})
 
 def detailSchedule(request, id):
     model = Schedule
@@ -114,7 +120,6 @@ def get_content_month(year, month):
                 date = datetime.date(year, month, day)
                 Q1 = Q(start_date__lte=date)
                 Q2 = Q(end_date__gte=date)
-                print(Q1, Q2)
                 schedule = Schedule.objects.filter(Q1 & Q2).order_by('start_date')
                 attendancd = Attendance.objects.filter(attendance_date=date)
 

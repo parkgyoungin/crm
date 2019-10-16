@@ -59,8 +59,10 @@
     <a href="#" onclick="location.href = '{% url 'post:detail' 'outflow' next_obj.id %}'"><button type="button">다음글</button></a>
     {% endif %}
     <a href="#" onclick="location.href = '{{uri}}'"><button type="button">목록으로</button></a>
+    {% if request.user.id == object.user.id %}
     <a href="#" onclick="location.href = ' {% url 'post:update' 'outflow' object.id %} '"><button type="button">수정하기</button></a>
     <a href="#" onclick="location.href = ' {% url 'post:delete' 'outflow' object.id %} '"><button type="button">삭제</button></a>
+    {% endif %}
     <a href="#" onclick="location.href = ' {% url 'post:write' 'outflow' %} '"><button type="button">글쓰기</button></a>
 </div>
 </div>

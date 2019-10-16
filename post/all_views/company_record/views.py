@@ -2,7 +2,7 @@ from post.all_forms.company_record.forms import CompanyRecordForm
 from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
 from django.conf import settings
 from post.models import CompanyRecord, Comment
-from post.my_def import set_default, get_objects_by_request_ex, set_session, get_side_obj, config_page_uri, view
+from post.my_def import set_default, get_objects_by_request_ex, set_session, get_side_obj, config_page_uri, view, delete_object
 from django.core.paginator import Paginator
 
 PAGE = settings.OBJECTS_IN_PAGE
@@ -18,6 +18,10 @@ def writeCompanyrecord(request):
     else:
         form = CompanyRecordForm()
     return render(request, 'post/companyrecord/write.html', {'form':form})
+
+def deleteCompanyRecord(request, id):
+    delete_object(CompanyRecord, id)
+    return HttpResponseRedirect(reverse('post:list', args=['companyrecord']))
 
 def updateCompanyrecord(request, id):
     instance = CompanyRecord.objects.get(id=id)

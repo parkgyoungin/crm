@@ -3,7 +3,7 @@ from post.all_forms.event_management.forms import DetectionPatternForm, IPSTuneF
 from django.shortcuts import render, HttpResponseRedirect, reverse, HttpResponse
 from django.conf import settings
 from post.models import DetectionPattern, CompanyRecord, Comment, IPSTune
-from post.my_def import set_default, get_objects_by_request_ex, set_session, get_side_obj, config_page_uri, view
+from post.my_def import set_default, get_objects_by_request_ex, set_session, get_side_obj, config_page_uri, view, delete_object
 from choice.choices import get_choices
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -30,6 +30,10 @@ def writeDetectionpattern(request):
         form = DetectionPatternForm()
     return render(request, 'post/detectionpattern/write.html', {'form':form, 'subs':subs})
 
+def deleteDetectionpattern(request, id):
+    delete_object(DetectionPattern, id)
+    return HttpResponseRedirect(reverse('post:list', args=['detectionpattern']))
+
 @login_required
 def writeIpstune(request):
     if request.method == 'POST':
@@ -43,6 +47,10 @@ def writeIpstune(request):
     else:
         form = IPSTuneForm()
     return render(request, 'post/ipstune/write.html', {'form': form})
+
+def deleteIpstune(request, id):
+    delete_object(IPSTune, id)
+    return HttpResponseRedirect(reverse('post:list', args=['ipstune']))
 
 @login_required
 def updateDetectionpattern(request, id):

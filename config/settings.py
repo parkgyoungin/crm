@@ -141,8 +141,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 SUMMERNOTE_CONFIG = {
-'summernote': {
-
+    'attachment_filesize_limit': 1024*1024*10, # default 1024*1024
+    'summernote': {
         'width': '100%',
         'height': '480',
     },

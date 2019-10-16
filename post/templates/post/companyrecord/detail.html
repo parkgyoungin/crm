@@ -106,8 +106,10 @@
     <a href="#" onclick="location.href = '{% url 'post:detail' 'companyrecord' next_obj.id %}'"><button type="button">다음글</button></a>
     {% endif %}
     <a href="#" onclick="location.href = '{{uri}}'"><button type="button">목록으로</button></a>
+    {% if request.user.id == object.user.id %}
     <a href="#" onclick="location.href = ' {% url 'post:update' 'companyrecord' object.id %} '"><button type="button">수정하기</button></a>
     <a href="#" onclick="location.href = ' {% url 'post:delete' 'companyrecord' object.id %} '"><button type="button">삭제</button></a>
+    {% endif %}
     <a href="#" onclick="location.href = ' {% url 'post:write' 'companyrecord' %} '"><button type="button">글쓰기</button></a>
 </div>
 </div>

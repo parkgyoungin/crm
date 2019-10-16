@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load post_extras %}
+<style>
+    table {width:100%;}
+    td {height:70px;}
+    .c1, .c3, .c5 {
+        width:140px;
+        background-color: #EFFBFB;
+        text-align: center;
+     }
+     .tb {margin-top:40px;}
+     .btn_div *{margin:20px;}
+     .btn_div {text-align:center;}
+</style>
+<h3>{{object.title}}</h3>
+{{object.content|safe}}
+
+<div class="tb">
+<div class="btn_div">
+    <a href="#" onclick="location.href = '{{uri}} '"><button type="button">목록으로</button></a>
+    {% if request.user.id == object.user.id %}
+    <a href="#" onclick="location.href = ' {% url 'post:answer_update' object.id %} '"><button type="button">수정하기</button></a>
+    <a href="#" onclick="location.href = ' {% url 'post:answer_delete' object.id %} '"><button type="button">삭제</button></a>
+    {% endif %}
+
+</div>
+</div>
+{% endblock %}

@@ -25,8 +25,10 @@
 <div class="tb">
 <div class="btn_div">
     <a href="#" onclick="location.href = '{% url 'post:list' 'calendar'%}'"><button type="button">목록으로</button></a>
+    {% if request.user.id == object.user.id %}
     <a href="#" onclick="location.href = ' {% url 'post:update' 'schedule' object.id %} '"><button type="button">수정하기</button></a>
     <a href="#" onclick="location.href = ' {% url 'post:delete' 'schedule' object.id %} '"><button type="button">삭제</button></a>
+    {% endif %}
     <a href="#" onclick="location.href = ' {% url 'post:write' 'schedule' %} '"><button type="button">글쓰기</button></a>
 </div>
 </div>

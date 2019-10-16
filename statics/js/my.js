@@ -147,3 +147,7 @@ function set_reverse(){
         document.getElementById('reverse').value = 'true';
     form.submit();
 }
+
+function check_login(user_id){
+    if(user_id)
+}

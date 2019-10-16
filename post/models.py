@@ -1,6 +1,10 @@
 from django.db import models
 from main.models import Company, User
 from choice.choices import get_choices
+import datetime
+from django.db.models import Q
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 
 class CompanyRecord(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='record')
@@ -114,6 +118,25 @@ class IPSTune(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
 
+class Answer(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+
+    object_id = models.PositiveIntegerField()
+
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    title = models.CharField(max_length=200, verbose_name='제목')
+
+    content = models.TextField(verbose_name='내용')
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    views = models.PositiveIntegerField(default=0)
+
+    created = models.DateTimeField(auto_now_add=True)
+
+    updated = models.DateTimeField(auto_now=True)
+
 
 class Timetable(models.Model):
     title = models.CharField(max_length=200)
@@ -131,6 +154,8 @@ class Timetable(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     updated = models.DateTimeField(auto_now=True)
+
+    answers = GenericRelation(Answer)
 
 class Notice(models.Model):
     title = models.CharField(max_length=200)
@@ -153,6 +178,8 @@ class Notice(models.Model):
 
     execute_date = models.DateField()
 
+    answers = GenericRelation(Answer)
+
 class Takeover(models.Model):
     title = models.CharField(max_length=200)
 
@@ -169,6 +196,8 @@ class Takeover(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     updated = models.DateTimeField(auto_now=True)
+
+    answers = GenericRelation(Answer)
 
 class Symptom(models.Model):
     detect_date = models.DateField()
@@ -201,11 +230,11 @@ class Symptom(models.Model):
 
     countermeasures = models.TextField()
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
     created = models.DateTimeField(auto_now_add=True)
 
     updated = models.DateTimeField(auto_now=True)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     views = models.PositiveIntegerField(default=0)
 
@@ -219,6 +248,12 @@ class Symptom(models.Model):
             pass
 
         return ', '.join(rts)
+
+    def get_product_name(self):
+        if self.product_name == '기타':
+            return self.product_etc
+        else:
+            return self.product_name
 
 class ResponseType(models.Model):
     symptom = models.ForeignKey(Symptom, on_delete=models.CASCADE, related_name='response_type')
@@ -255,6 +290,18 @@ class Schedule(models.Model):
 
     views = models.PositiveIntegerField(default=0)
 
+    def get_popup_data(self):
+        result = '작성자:%s <br> %s'%(self.user.user_name, self.content)
+        return result
+
+    @staticmethod
+    def get_today():
+        today = datetime.datetime.today()
+        Q1 = Q(start_date__lte=today)
+        Q2 = Q(end_date__gte=today)
+        schedule = Schedule.objects.filter(Q1 & Q2).order_by('start_date')
+
+        return schedule
 
 class Attendance(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -290,6 +337,10 @@ class RansomwarePost(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    views = models.PositiveIntegerField(default=0)
+
 class Outflow(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
 
@@ -307,6 +358,10 @@ class Outflow(models.Model):
 
     updated = models.DateTimeField(auto_now=True)
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    views = models.PositiveIntegerField(default=0)
+
     def get_weekness_as_text(self):
         weekness = self.weekness.all()
         text = ''
@@ -315,6 +370,10 @@ class Outflow(models.Model):
         if len(weekness) > 3:
             text += '등..'
         return text
+
+    def get_weekness(self):
+        weekness = self.weekness.all().values_list('value', flat=True)
+        return ', '.join(weekness)
 
 class Weekness(models.Model):
     outflow = models.ForeignKey(Outflow, on_delete=models.CASCADE ,related_name= 'weekness')
