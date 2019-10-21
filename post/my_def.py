@@ -313,3 +313,45 @@ def delete_object(model, id, cascade=[]):
     for conn_model in conn_models:
         conn_model.delete()
 
+
+
+is_upper = lambda c : ord(c) in {i for i in range(65,91)} #65~90
+is_lower = lambda c : ord(c) in {i for i in range(97,123)} #97~122
+is_else = lambda c : not is_lower(c) and not is_upper(c) and not c.isdigit()
+
+# 최소 9자리, 특수문자, 숫자, 문자 포함
+def rule1(password):
+    errors = {
+        'min_password' : '9자리 이상으로 입력해주세요',
+        'is_else' : '특수문자를 포함해주세요',
+        'is_alpha' : '영문자(소문자 또는 대문자)를 포함해주세요',
+        'is_digit' : '숫자를 포함해주세요'
+    }
+
+    if min_password(password, 9):
+        del errors['min_password']
+
+    for c in password:
+        if c.isdigit() and errors.get('is_digit'):
+            del errors['is_digit']
+            continue
+
+        if is_alpha(c) and errors.get('is_alpha'):
+            del errors['is_alpha']
+
+        if is_else(c) and errors.get('is_else'):
+            del errors['is_else']
+
+    return errors
+
+
+# 문자판별
+def is_alpha(c):
+    return is_upper(c) or is_lower(c)
+
+# 순자판별
+def is_digit(c):
+    return c.isdigit()
+
+def min_password(password, MIN):
+    return len(password) >= MIN

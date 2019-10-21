@@ -209,35 +209,35 @@ class Ransomware(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 class Company(models.Model):
-    name = models.CharField(max_length=50, verbose_name='회사이름')
+    name = models.CharField(max_length=50, verbose_name='업체명')
 
     tenant = models.BooleanField(blank=True, default=False, verbose_name='입주기업')
 
-    ss_security = models.CharField(max_length=20, choices=get_choices('service_state'))
+    ss_security = models.CharField(max_length=20, choices=get_choices('service_state'), verbose_name='서비스현황-보안관제')
 
-    ss_internal = models.CharField(max_length=20, choices=get_choices('service_state'))
+    ss_internal = models.CharField(max_length=20, choices=get_choices('service_state'), verbose_name='서비스현황-내부정보')
 
-    ss_virus = models.CharField(max_length=20, choices=get_choices('service_state'))
+    ss_virus = models.CharField(max_length=20, choices=get_choices('service_state'), verbose_name='서비스현황-악성코드')
 
-    ss_ransomware = models.CharField(max_length=20, choices=get_choices('service_state'))
+    ss_ransomware = models.CharField(max_length=20, choices=get_choices('service_state'), verbose_name='서비스현황-랜섬웨어')
 
     im_state = models.CharField(max_length=20, blank=True, default='0000')
 
-    business_type = models.CharField(max_length=50, choices=get_choices('business_type'))
+    business_type = models.CharField(max_length=50, choices=get_choices('business_type'), verbose_name='사업자유형')
 
     business_etc = models.CharField(max_length=50, blank=True, null=True)
 
-    business_uptae = models.CharField(max_length=50, choices=get_choices('business_uptae'))
+    business_uptae = models.CharField(max_length=50, choices=get_choices('business_uptae'), verbose_name='업태')
 
-    business_class = models.CharField(max_length=50, choices=get_choices('business_class'))
+    business_class = models.CharField(max_length=50, choices=get_choices('business_class'), verbose_name='업종')
 
-    join_path = models.CharField(max_length=50, choices=get_choices('join_path'))
+    join_path = models.CharField(max_length=50, choices=get_choices('join_path'), verbose_name='가입경로')
 
-    top_name = models.CharField(max_length=50)
+    top_name = models.CharField(max_length=50, verbose_name='대표자명')
 
     #top_email = models.EmailField()
 
-    homepage = models.CharField(max_length=100, null=True, blank=True)
+    homepage = models.CharField(max_length=100, null=True, blank=True, verbose_name='홈페이지')
 
     business_n = models.IntegerField(verbose_name='사업자번호')
 
@@ -267,7 +267,7 @@ class Company(models.Model):
 
     smart_factory = models.CharField(max_length=50, null=True, blank=True, choices=get_choices('smart_factory'))
 
-    manager_m_name = models.CharField(max_length=50)
+    manager_m_name = models.CharField(max_length=50, verbose_name='(정)-이름')
 
     manager_m_depart = models.CharField(max_length=50)
 

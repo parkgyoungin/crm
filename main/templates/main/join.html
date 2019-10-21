@@ -23,12 +23,12 @@
 
             <tr>
                 <td class="c1">비밀번호</td>
-                <td class="c2">{{form.password}}</td>
+                <td class="c2">{{form.password}} (영문, 숫자, 특수문자 포함 9~16자)</td>
             </tr>
 
             <tr>
                 <td class="c1">{{form.password_confirm.label_tag}}</td>
-                <td class="c2">{{form.password_confirm}}</td>
+                <td class="c2">{{form.password_confirm}} {{form.password_confirm.errors}}</td>
             </tr>
         </table>
     </div>
@@ -52,16 +52,23 @@
             </tr>
         </table>
     </div>
+    <div class="g-recaptcha" data-sitekey="6LdAlb4UAAAAAIFG0XNXPZTBTRkgZEcsH7XTljKN"></div>
     <button type="submit">가입하기</button>
 </form>
-{{form.errors}}
 <script>
     // 히든태그 로드
     window.check_list = {'id_userid':false, 'id_nickname':false};
 
     window.onload = function(){
-        document.getElementById("id_userid_h").value = document.getElementById("id_userid").value;
-        document.getElementById("id_nickname_h").value = document.getElementById("id_nickname").value;
+        //document.getElementById("id_userid_h").value = document.getElementById("id_userid").value;
+        //document.getElementById("id_nickname_h").value = document.getElementById("id_nickname").value;
+        {% if form.userid.value %}
+        window.check_list['id_userid'] = true;
+        {% endif %}
+
+        {% if form.nickname.value %}
+        window.check_list['id_nickname'] = true;
+        {% endif %}
     }
 
 
@@ -72,7 +79,19 @@
                 return false;
             }
         }
+        if(!check_recaptcha())
+            return false;
         return true;
+    }
+
+    function check_recaptcha(){
+        var v = grecaptcha.getResponse();
+        if(v)
+            return true;
+        else{
+            alert('자동등록방지를 체크해주세요');
+            return false;
+        }
     }
 </script>
 {% endblock %}

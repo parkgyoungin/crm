@@ -86,8 +86,8 @@ DATABASES = {
         'OPTIONS': {'charset': 'utf8mb4'},
         'NAME': 'crm',
         #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'USER': 'root',
-        'PASSWORD': '1234',
+        'USER': 'gghotted',
+        'PASSWORD': 'elwlahs2',
         'HOST':'',
         'PORT':'3306',
     }
@@ -103,6 +103,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 9,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',

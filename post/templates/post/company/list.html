@@ -74,7 +74,6 @@
 
 <a href="#" onclick="location.href = '{% url 'post:write' 'company' %}'"><button type="button">글쓰기</button></a>
 <a href="#" onclick="location.href = '{% url 'post:export' 'company' %}?order_by={{request.GET.order_by}}'"><button type="button">Excel로 다운로드</button></a>
-
 <div>
 {% if objects.has_other_pages %}
   <ul class="pagination">
@@ -98,6 +97,8 @@
   </ul>
 {% endif %}
 </div>
+
+<select></select> <input> <button>검색</button>
 
 <div>
     <form id="condition" action="" method="get">

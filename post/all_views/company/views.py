@@ -8,10 +8,11 @@ from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
 PAGE = 5
-admin = SendEmail.objects.all()[0]
+#admin = SendEmail.objects.all()[0]
 
 @login_required
 def writeCompany(request):
+    admin = SendEmail.objects.all()[0]
     Forms = [CompanyForm, SecurityForm, InternalForm, VirusForm, RansomwareForm, AddressForm]
     id_max = Company.objects.all().aggregate(Max('id'))['id__max']
     next_id = id_max + 1 if id_max else 1

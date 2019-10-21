@@ -1,6 +1,7 @@
 from django import forms
 from .models import User, SendEmail
 from django.contrib.auth import logout , login
+from post.my_def import rule1
 
 def get_available(field, *args, **kwargs):
     title = None
@@ -12,6 +13,11 @@ def get_available(field, *args, **kwargs):
 
 class UserCreationForm(forms.ModelForm):
     password_confirm = forms.CharField(widget=forms.PasswordInput, label='비밀번호 확인')
+
+    def __init__(self, *args, **kwargs):
+        super(UserCreationForm, self).__init__(*args, **kwargs)
+        self.fields['userid'].widget.attrs['readonly'] = 'true'
+        self.fields['nickname'].widget.attrs['readonly'] = 'true'
 
     class Meta:
         model = User
@@ -26,6 +32,10 @@ class UserCreationForm(forms.ModelForm):
         password_confirm = self.cleaned_data['password_confirm']
         if password_confirm != self.cleaned_data['password']:
             raise forms.ValidationError('비밀번호가 서로 다릅니다.')
+
+        for error in rule1(password_confirm).values():
+            raise forms.ValidationError(error)
+
         return password_confirm
 
     def clean_nickname(self):
